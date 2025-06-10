@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBlinks - View All Items</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f9fc;
+            color: #333;
+            padding: 15px;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* Header Styles */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .back-button {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+        }
+        
+        .back-button i {
+            font-size: 10px;
+        }
+        
+        .search-container {
+            width: 100%;
+            margin: 15px 0;
+        }
+        
+        .search-bar {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #1a73e8;
+            border-radius: 30px;
+            font-size: 12px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-bar:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.3);
+        }
+        
+        /* Title Styles */
+        .page-title {
+            color: #1a73e8;
+            text-align: center;
+            margin: 15px 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        /* Product Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(135deg, #e0f0ff, #b3d7ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .product-image i {
+            font-size: 40px;
+            color: #1a73e8;
+            opacity: 0.7;
+        }
+        
+        .discount-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background-color: #e53935;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .product-info {
+            padding: 12px;
+        }
+        
+        .product-name {
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #1a237e;
+            height: 32px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        
+        .product-price {
+            font-size: 13px;
+            font-weight: bold;
+            color: #e53935;
+            margin: 8px 0;
+        }
+        
+        .order-button {
+            display: block;
+            width: 100%;
+            background: linear-gradient(to right, #1a73e8, #0d47a1);
+            color: white;
+            text-align: center;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .order-button:hover {
+            background: linear-gradient(to right, #0d47a1, #1a73e8);
+            transform: scale(1.02);
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px 0;
+            font-size: 11px;
+            color: #666;
+            margin-top: 20px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .product-grid {
+                gap: 10px;
+            }
+            
+            .product-image {
+                height: 100px;
+            }
+            
+            .product-info {
+                padding: 8px;
+            }
+            
+            .product-name {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header with back button -->
+        <div class="header">
+            <a href="homepage.html" class="back-button">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+        </div>
+        
+        <!-- Search bar -->
+        <div class="search-container">
+            <input type="text" class="search-bar" placeholder="Search with OBlinks...">
+        </div>
+        
+        <!-- Page title -->
+        <h1 class="page-title">VIEW ALL ITEMS</h1>
+        
+        <!-- Product grid -->
+        <div class="product-grid">
+            <!-- Product Card 1 -->
+            <div class="product-card">
+                <div class="product-image">
+                    <i class="fas fa-refrigerator"></i>
+                    <span class="discount-badge">-37%</span>
+                </div>
+                <div class="product-info">
+                    <div class="product-name">120 Liters Single Door Refrigerator</div>
+                    <div class="product-price">UGX 349,000</div>
+                    <a href="order_form.html" class="order-button">ORDER NOW</a>
+                </div>
+            </div>
+            
+            <!-- Product Card 2 -->
+            <div class="product-card">
+                <div class="product-image">
+                    <i class="fas fa-tv"></i>
+                    <span class="discount-badge">-23%</span>
+                </div>
+                <div class="product-info">
+                    <div class="product-name">32 Inch Android Smart HD Frame TV</div>
+                    <div class="product-price">UGX 309,700</div>
+                    <a href="order_form.html" class="order-button">ORDER NOW</a>
+                </div>
+            </div>
+            
+            <!-- Product Card 3 -->
+            <div class="product-card">
+                <div class="product-image">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span class="discount-badge">-21%</span>
+                </div>
+                <div class="product-info">
+                    <div class="product-name">Galaxy A06 - 6.7" 4GB RAM 64GB Storage</div>
+                    <div class="product-price">UGX 315,000</div>
+                    <a href="order_form.html" class="order-button">ORDER NOW</a>
+                </div>
+            </div>
+            
+            <!-- Product Card 4 -->
+            <div class="product-card">
+                <div class="product-image">
+                    <i class="fas fa-music"></i>
+                </div>
+                <div class="product-info">
+                    <div class="product-name">3.1 Channel Home Audio System</div>
+                    <div class="product-price">UGX 99,000</div>
+                    <a href="order_form.html" class="order-button">ORDER NOW</a>
+                </div>
+            </div>
+            
+            <!-- Product Card 5 -->
+            <div class="product-card">
+                <div class="product-image">
+                    <i class="fas fa-bed"></i>
+                    <span class="discount-badge">-62%</span>
+                </div>
+                <div class="product-info">
+                    <div class="product-name">Ultimate Protection & Cozy Mosquito Net</div>
+                    <div class="product-price">UGX 37,500</div>
+                    <a href="order_form.html" class="order-button">ORDER NOW</a>
+                </div>
+            </div>
+            
+            <!-- Product Card 6 -->
+            <div class="product-card">
+                <div class="product-image">
+                    <i class="fas fa-laptop"></i>
+                    <span class="discount-badge">-49%</span>
+                </div>
+                <div class="product-info">
+                    <div class="product-name">Latitude 11" Inch 3180/3190 4G Laptop</div>
+                    <div class="product-price">UGX 359,000</div>
+                    <a href="order_form.html" class="order-button">ORDER NOW</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p>OBlinks &copy; 2023 - Your Trusted Shopping Partner</p>
+        </div>
+    </div>
+
+    <script>
+        // Simple search functionality
+        document.querySelector('.search-bar').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const productCards = document.querySelectorAll('.product-card');
+            
+            productCards.forEach(card => {
+                const productName = card.querySelector('.product-name').textContent.toLowerCase();
+                if (productName.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

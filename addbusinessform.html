@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OBlinks - Business Solutions</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #64748b;
+      --light: #f8fafc;
+      --dark: #1e293b;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --accent: #8b5cf6;
+      --border: #e2e8f0;
+      --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    
+    body {
+      background: #f1f5f9;
+      color: var(--dark);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Header Styles */
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 15px 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      z-index: 100;
+      position: sticky;
+      top: 0;
+    }
+    
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .logo-text h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    
+    .tagline {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+    
+    /* Main Container */
+    .container {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+      flex-grow: 1;
+      width: 100%;
+    }
+    
+    /* Rent Packages Container */
+    .rent-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+      margin-bottom: 40px;
+      padding: 30px;
+    }
+    
+    /* Form Container */
+    .form-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+    
+    /* Rent Packages Styles */
+    .rent-header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .rent-header h1 {
+      font-size: 28px;
+      color: var(--primary-dark);
+      margin-bottom: 10px;
+    }
+    
+    .rent-header p {
+      color: var(--secondary);
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+    
+    .choose-plan {
+      background: #eef2ff;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+      border-left: 4px solid var(--primary);
+    }
+    
+    .choose-plan i {
+      margin-right: 8px;
+      color: var(--primary);
+    }
+    
+    /* Compact Packages Table with Scroll */
+    .table-responsive {
+      overflow-x: auto;
+      margin-bottom: 30px;
+      width: 100%;
+    }
+    
+    .packages-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      min-width: 700px;
+    }
+    
+    .packages-table th {
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+      text-align: left;
+      padding: 8px 10px;
+      font-size: 12px;
+    }
+    
+    .packages-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+    }
+    
+    .packages-table tr:nth-child(even) {
+      background-color: #f8fafc;
+    }
+    
+    .packages-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .highlight {
+      background-color: #dbeafe !important;
+      font-weight: 600;
+    }
+    
+    .package-btn {
+      padding: 6px 10px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: inline-block;
+      text-align: center;
+      width: 100%;
+      font-size: 12px;
+    }
+    
+    .package-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    /* Examples Section */
+    .examples {
+      background: #f1f5f9;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 30px;
+      font-size: 13px;
+    }
+    
+    .examples h3 {
+      margin-bottom: 15px;
+      color: var(--primary-dark);
+      font-size: 16px;
+    }
+    
+    .example-item {
+      display: flex;
+      margin-bottom: 12px;
+    }
+    
+    .example-number {
+      background: var(--primary);
+      color: white;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+    
+    /* FAQ Section */
+    .faq-section {
+      margin-top: 30px;
+    }
+    
+    .faq-section h2 {
+      font-size: 18px;
+      color: var(--primary-dark);
+      margin-bottom: 15px;
+    }
+    
+    .faq-item {
+      margin-bottom: 15px;
+      font-size: 13px;
+    }
+    
+    .faq-question {
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+    
+    .faq-answer {
+      color: var(--secondary);
+      padding-left: 28px;
+      font-size: 12px;
+    }
+    
+    /* Form Styles */
+    .form-header {
+      background: linear-gradient(to right, #f8fafc, #eef2ff);
+      padding: 25px 30px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .form-header h2 {
+      color: var(--primary-dark);
+      font-size: 24px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .form-header p {
+      color: var(--secondary);
+      max-width: 700px;
+      font-size: 14px;
+    }
+    
+    .form-progress {
+      display: flex;
+      margin-top: 20px;
+      gap: 10px;
+    }
+    
+    .progress-step {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-weight: 500;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+    
+    .progress-step:hover {
+      background: #eef2ff;
+    }
+    
+    .progress-step.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    
+    .progress-step.completed {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: var(--success);
+      color: var(--success);
+    }
+    
+    .form-content {
+      padding: 30px;
+    }
+    
+    .form-section {
+      margin-bottom: 40px;
+      padding: 20px;
+      border-radius: 10px;
+      background: #f8fafc;
+    }
+    
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .section-header h3 {
+      font-size: 20px;
+      color: var(--primary);
+    }
+    
+    .section-header i {
+      background: rgba(37, 99, 235, 0.1);
+      color: var(--primary);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-bottom: 25px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--dark);
+      font-size: 14px;
+    }
+    
+    .form-group .required::after {
+      content: "*";
+      color: #ef4444;
+      margin-left: 4px;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      background: white;
+    }
+    
+    .form-control:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    textarea.form-control {
+      min-height: 120px;
+      resize: vertical;
+    }
+    
+    .form-note {
+      font-size: 13px;
+      color: var(--secondary);
+      margin-top: 5px;
+    }
+    
+    /* Package Selection Info */
+    .package-info {
+      background: #eef2ff;
+      border-radius: 8px;
+      padding: 15px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-left: 4px solid var(--primary);
+    }
+    
+    .package-info .details {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      font-size: 14px;
+    }
+    
+    .package-info .name {
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+    
+    .package-info .price {
+      font-weight: 600;
+      color: var(--dark);
+    }
+    
+    .package-info .change-btn {
+      background: white;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.3s ease;
+    }
+    
+    .package-info .change-btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+    
+    /* Payment Button */
+    .payment-btn {
+      background: var(--success);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s ease;
+      margin-right: 15px;
+    }
+    
+    .payment-btn:hover {
+      background: #059669;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .payment-btn.hidden {
+      display: none;
+    }
+    
+    /* Items Section */
+    .items-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .items-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .item-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .item-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+    
+    .item-media {
+      height: 160px;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    
+    .item-media img, .item-media video {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      transition: transform 0.3s ease;
+    }
+    
+    .item-media .placeholder {
+      color: var(--secondary);
+      text-align: center;
+      padding: 15px;
+      font-size: 13px;
+    }
+    
+    .item-body {
+      padding: 15px;
+    }
+    
+    .item-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--dark);
+    }
+    
+    .item-price {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--success);
+      margin-bottom: 15px;
+    }
+    
+    .add-item-btn {
+      background: var(--accent);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      border: none;
+      margin: 0 auto;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+    
+    .add-item-btn:hover {
+      background: #7c3aed;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    /* Form Footer */
+    .form-footer {
+      display: flex;
+      justify-content: space-between;
+      padding: 25px 30px;
+      border-top: 1px solid var(--border);
+      background: #f8fafc;
+    }
+    
+    .btn {
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    
+    .btn-submit {
+      background: var(--primary);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-submit:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .btn-submit:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .btn-back {
+      background: white;
+      color: var(--secondary);
+      border: 1px solid var(--border);
+    }
+    
+    .btn-back:hover {
+      background: #f1f5f9;
+    }
+    
+    /* Payment Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 450px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+    
+    .modal-header {
+      background: var(--primary);
+      color: white;
+      padding: 18px;
+      text-align: center;
+      position: relative;
+    }
+    
+    .modal-header h3 {
+      font-size: 20px;
+    }
+    
+    .close-modal {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 22px;
+      cursor: pointer;
+    }
+    
+    .modal-body {
+      padding: 25px;
+    }
+    
+    .payment-option {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+    
+    .payment-option:hover {
+      background: #eef2ff;
+      border-color: var(--primary);
+    }
+    
+    .payment-option.active {
+      background: #dbeafe;
+      border-color: var(--primary);
+    }
+    
+    .payment-option .details {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .payment-option .name {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+    }
+    
+    .modal-footer {
+      padding: 18px;
+      background: #f8fafc;
+      display: flex;
+      justify-content: center;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .form-row, .items-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .form-progress {
+        flex-direction: column;
+      }
+      
+      .form-footer {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .package-info {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+      }
+      
+      .payment-btn {
+        margin-right: 0;
+        margin-bottom: 10px;
+      }
+      
+      .packages-table {
+        font-size: 12px;
+      }
+      
+      .packages-table th, .packages-table td {
+        padding: 6px 8px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .form-content {
+        padding: 20px;
+      }
+      
+      .form-header, .rent-container {
+        padding: 20px;
+      }
+      
+      .progress-step {
+        padding: 10px;
+        font-size: 12px;
+      }
+      
+      .choose-plan {
+        font-size: 14px;
+      }
+    }
+    
+    /* Scroll target styling */
+    .scroll-target {
+      position: relative;
+      top: -80px;
+      visibility: hidden;
+    }
+    
+    /* Item Counter */
+    .item-counter {
+      background: var(--primary);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-block;
+      margin-left: 10px;
+    }
+    
+    /* Media Controls */
+    .media-controls {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      display: flex;
+      gap: 8px;
+    }
+    
+    .media-btn {
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .media-btn:hover {
+      background: rgba(0, 0, 0, 0.7);
+      transform: scale(1.1);
+    }
+    
+    /* Edit Controls */
+    .edit-controls {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      gap: 8px;
+      z-index: 10;
+    }
+    
+    .edit-btn {
+      background: rgba(255, 255, 255, 0.8);
+      color: var(--dark);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .edit-btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+    
+    /* Lightbox for zooming */
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .lightbox-content {
+      max-width: 90%;
+      max-height: 90%;
+    }
+    
+    .lightbox-content img, .lightbox-content video {
+      max-width: 100%;
+      max-height: 90vh;
+      object-fit: contain;
+    }
+    
+    .close-lightbox {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+    }
+    
+    /* File Input */
+    .file-input-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .file-input-wrapper input[type="file"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+    
+    /* Video Controls */
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-content">
+      <div class="logo">
+        <div class="logo-text">
+          <h1>OBlinks</h1>
+          <p class="tagline">Global Business Platform</p>
+        </div>
+      </div>
+    </div>
+  </header>
+  
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Rent Packages Section -->
+    <div class="rent-container">
+      <div class="rent-header">
+        <h1>Annual Business Listing Packages</h1>
+        <p>All plans billed annually</p>
+        <div class="choose-plan">
+          <i class="fas fa-hand-point-down"></i> Click on your preferred plan in the table below
+        </div>
+      </div>
+      
+      <!-- Packages Table with Horizontal Scroll -->
+      <div class="table-responsive">
+        <table class="packages-table">
+          <thead>
+            <tr>
+              <th>Package</th>
+              <th>Price (UGX/yr)</th>
+              <th>Items</th>
+              <th>Comm.</th>
+              <th>Pinning</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+                <td><button class="package-btn" data-package="Starter" data-price="0" data-items="2">Starter</button></td>
+              <td>0</td>
+              <td>2</td>
+              <td>20%</td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td><button class="package-btn" data-package="Basic" data-price="10000" data-items="10">Basic</button></td>
+              <td>10,000</td>
+              <td>10</td>
+              <td>30%</td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td><button class="package-btn" data-package="Standard" data-price="30000" data-items="30">Standard</button></td>
+              <td>30,000</td>
+              <td>30</td>
+              <td>40%</td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td><button class="package-btn" data-package="Advanced" data-price="50000" data-items="50">Advanced</button></td>
+              <td>50,000</td>
+              <td>50</td>
+              <td>50%</td>
+              <td>-</td>
+            </tr>
+            <tr class="highlight">
+              <td><button class="package-btn" data-package="Professional" data-price="100000" data-items="70">Professional</button></td>
+              <td>100,000</td>
+              <td>70</td>
+              <td>60%</td>
+              <td>2 days</td>
+            </tr>
+            <tr>
+              <td><button class="package-btn" data-package="Premium" data-price="150000" data-items="90">Premium</button></td>
+              <td>150,000</td>
+              <td>90</td>
+              <td>70%</td>
+              <td>3 days</td>
+            </tr>
+            <tr>
+              <td><button class="package-btn" data-package="Enterprise" data-price="200000" data-items="100">Enterprise</button></td>
+              <td>200,000</td>
+              <td>100</td>
+              <td>80%</td>
+              <td>7 days</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Examples -->
+      <div class="examples">
+        <h3>Practical Examples</h3>
+        <div class="example-item">
+          <div class="example-number">1</div>
+          <div>
+            <strong>Basic Plan (10,000 UGX/year):</strong> 
+            A small shop owner can list 10 products, earn 30% commission when referring other businesses, with no pinning benefits.
+          </div>
+        </div>
+        <div class="example-item">
+          <div class="example-number">2</div>
+          <div>
+            <strong>Professional Plan (100,000 UGX/year):</strong> 
+            A medium-sized business can list 70 products, earn 60% referral commissions, and get 2 days of featured placement in search results.
+          </div>
+        </div>
+      </div>
+      
+      <!-- FAQ Section -->
+      <div class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+        
+        <div class="faq-item">
+          <div class="faq-question">
+            <i class="fas fa-question-circle"></i>
+            What does "pinning" mean?
+          </div>
+          <div class="faq-answer">
+            Pinning features your business at the top of relevant search results and category pages for the specified duration.
+          </div>
+        </div>
+        
+        <div class="faq-item">
+          <div class="faq-question">
+            <i class="fas fa-question-circle"></i>
+            How does the referral commission work?
+          </div>
+          <div class="faq-answer">
+            You earn a percentage of referred businesses' subscription fees based on your current package. Paid annually to your mobile money or bank.
+          </div>
+        </div>
+        
+        <div class="faq-item">
+          <div class="faq-question">
+            <i class="fas fa-question-circle"></i>
+            Can I change plans later?
+          </div>
+          <div class="faq-answer">
+            Yes - upgrades apply immediately (prorated charge), downgrades take effect at next billing cycle.
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Business Form -->
+    <div class="form-container">
+      <div class="form-header">
+        <h2><i class="fas fa-store"></i> Add Your Business to OBlinks</h2>
+        <p>Showcase your business to a global audience. Fill in your business details and list your products or services to start connecting with customers.</p>
+        
+        <div class="form-progress">
+          <div class="progress-step active" onclick="scrollToSection('business-info')">1. Business Information</div>
+          <div class="progress-step" onclick="scrollToSection('items-services')">2. Items & Services</div>
+          <div class="progress-step" onclick="scrollToSection('review-submit')">3. Review & Submit</div>
+        </div>
+      </div>
+      
+      <div class="form-content">
+        <!-- Package Selection Info -->
+        <div class="package-info" id="package-info" style="display: none;">
+          <div class="details">
+            <div class="name">Selected Package: <span id="selected-package">Starter</span></div>
+            <div class="price">Price: <span id="selected-price">0</span> UGX/year</div>
+            <div>Items Allowed: <span id="selected-items">2</span></div>
+          </div>
+          <button class="change-btn" onclick="changePackage()">Change Package</button>
+        </div>
+        
+        <!-- Scroll targets -->
+        <div class="scroll-target" id="business-info"></div>
+        
+        <!-- Section 1: Business Information -->
+        <div class="form-section">
+          <div class="section-header">
+            <i class="fas fa-info-circle"></i>
+            <h3>Business Information</h3>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label class="required">Business Title</label>
+              <input type="text" class="form-control" placeholder="Enter your business name">
+            </div>
+            
+            <div class="form-group">
+              <label class="required">Business Location</label>
+              <input type="text" class="form-control" placeholder="Country, District, City etc.">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="required">Business Description</label>
+            <textarea class="form-control" placeholder="Describe your business, products/services, and what makes it unique..."></textarea>
+            <div class="form-note">Minimum 100 characters. Describe what your business offers and why customers should choose you.</div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Business Link (Optional)</label>
+              <input type="url" class="form-control" placeholder="https://yourbusiness.com">
+              <div class="form-note">Your website, social media page, or online store</div>
+            </div>
+            
+            <div class="form-group">
+              <label class="required">WhatsApp Number</label>
+              <input type="tel" class="form-control" placeholder="256712345678">
+              <div class="form-note">Customers will contact you via WhatsApp using this number</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Scroll targets -->
+        <div class="scroll-target" id="items-services"></div>
+        
+        <!-- Section 2: Items & Services -->
+        <div class="form-section">
+          <div class="section-header">
+            <i class="fas fa-box-open"></i>
+            <h3>Items & Services <span id="item-counter" class="item-counter">0/2</span></h3>
+          </div>
+          
+          <div class="items-header">
+            <h4>Add your products or services</h4>
+            <div class="form-note">Add items that customers can order directly from your business</div>
+          </div>
+          
+          <div class="items-container" id="items-container">
+            <!-- Item 1 -->
+            <div class="item-card">
+              <div class="item-media">
+                <div class="file-input-wrapper">
+                  <input type="file" class="media-input" accept="image/*,video/*">
+                  <div class="placeholder">
+                    <i class="fas fa-image fa-2x"></i>
+                    <p>Click to upload image or video</p>
+                  </div>
+                </div>
+                <div class="edit-controls">
+                  <button class="edit-btn" title="Edit item">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="item-body">
+                <input type="text" class="form-control" placeholder="Item Title" style="margin-bottom: 10px;">
+                <input type="text" class="form-control" placeholder="Price (UGX)" style="margin-bottom: 15px;">
+                <button class="btn-submit" style="padding: 8px 12px; font-size: 13px;">
+                  <i class="fas fa-save"></i> Save Changes
+                </button>
+              </div>
+            </div>
+            
+            <!-- Item 2 -->
+            <div class="item-card">
+              <div class="item-media">
+                <div class="file-input-wrapper">
+                  <input type="file" class="media-input" accept="image/*,video/*">
+                  <div class="placeholder">
+                    <i class="fas fa-image fa-2x"></i>
+                    <p>Click to upload image or video</p>
+                  </div>
+                </div>
+                <div class="edit-controls">
+                  <button class="edit-btn" title="Edit item">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="item-body">
+                <input type="text" class="form-control" placeholder="Item Title" style="margin-bottom: 10px;">
+                <input type="text" class="form-control" placeholder="Price (UGX)" style="margin-bottom: 15px;">
+                <button class="btn-submit" style="padding: 8px 12px; font-size: 13px;">
+                  <i class="fas fa-save"></i> Save Changes
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <button class="add-item-btn" id="add-item-btn">
+            <i class="fas fa-plus"></i> Add Another Item
+          </button>
+        </div>
+      </div>
+      
+      <!-- Scroll targets -->
+      <div class="scroll-target" id="review-submit"></div>
+      
+      <!-- Form Footer -->
+      <div class="form-footer">
+        <div>
+          <button class="payment-btn hidden" id="payment-btn">
+            <i class="fas fa-credit-card"></i> Pay Now
+          </button>
+          <button class="btn-submit" id="submit-btn" disabled>
+            <i class="fas fa-paper-plane"></i> Submit Business
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Payment Modal -->
+  <div class="modal" id="payment-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Complete Payment</h3>
+        <button class="close-modal" id="close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="payment-summary" style="margin-bottom: 20px; font-size: 15px;">
+          <p>Package: <strong id="modal-package">Starter</strong></p>
+          <p>Amount: <strong id="modal-amount">0 UGX</strong></p>
+          <p style="margin-top: 15px;">Payment Method:</p>
+        </div>
+        
+        <div class="payment-option active">
+          <div class="details">
+            <div class="name">
+              <i class="fas fa-mobile-alt"></i>
+              Mobile Money
+            </div>
+            <div class="info">
+              <i class="fas fa-check-circle"></i>
+            </div>
+          </div>
+        </div>
+        
+        <div class="payment-option">
+          <div class="details">
+            <div class="name">
+              <i class="fas fa-university"></i>
+              Bank Transfer
+            </div>
+          </div>
+        </div>
+        
+        <div class="payment-option">
+          <div class="details">
+            <div class="name">
+              <i class="fas fa-credit-card"></i>
+              Credit/Debit Card
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-submit" id="confirm-payment">
+          <i class="fas fa-check-circle"></i> Confirm Payment
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Lightbox for zooming -->
+  <div class="lightbox" id="lightbox">
+    <span class="close-lightbox">&times;</span>
+    <div class="lightbox-content" id="lightbox-content"></div>
+  </div>
+  
+  <script>
+    // Package selection
+    let selectedPackage = null;
+    let paymentComplete = false;
+    let maxItems = 2;
+    let currentItems = 2;
+    
+    // Package buttons
+    document.querySelectorAll('.package-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        // Get package data
+        const packageName = this.dataset.package;
+        const packagePrice = parseInt(this.dataset.price);
+        const packageItems = parseInt(this.dataset.items);
+        
+        // Store selected package
+        selectedPackage = {
+          name: packageName,
+          price: packagePrice,
+          items: packageItems
+        };
+        
+        // Update UI
+        document.getElementById('selected-package').textContent = packageName;
+        document.getElementById('selected-price').textContent = packagePrice.toLocaleString();
+        document.getElementById('selected-items').textContent = packageItems;
+        
+        // Show package info
+        document.getElementById('package-info').style.display = 'flex';
+        
+        // Update item counter
+        maxItems = packageItems;
+        updateItemCounter();
+        
+        // Update payment button
+        const paymentBtn = document.getElementById('payment-btn');
+        paymentBtn.classList.remove('hidden');
+        
+        // For Starter package, hide payment button
+        if (packageName === 'Starter') {
+          paymentBtn.classList.add('hidden');
+          document.getElementById('submit-btn').disabled = false;
+          paymentComplete = true;
+        } else {
+          document.getElementById('submit-btn').disabled = true;
+          paymentComplete = false;
+        }
+        
+        // Scroll to form
+        document.querySelector('.form-container').scrollIntoView({ 
+          behavior: 'smooth' 
+        });
+      });
+    });
+    
+    // Change package
+    function changePackage() {
+      document.querySelector('.rent-container').scrollIntoView({ 
+        behavior: 'smooth' 
+      });
+    }
+    
+    // Update item counter
+    function updateItemCounter() {
+      const counter = document.getElementById('item-counter');
+      counter.textContent = `${currentItems}/${maxItems}`;
+      
+      // Disable add button if limit reached
+      const addBtn = document.getElementById('add-item-btn');
+      if (currentItems >= maxItems) {
+        addBtn.disabled = true;
+        addBtn.style.opacity = '0.6';
+        addBtn.style.cursor = 'not-allowed';
+      } else {
+        addBtn.disabled = false;
+        addBtn.style.opacity = '1';
+        addBtn.style.cursor = 'pointer';
+      }
+    }
+    
+    // Add item functionality
+    document.getElementById('add-item-btn').addEventListener('click', function() {
+      if (currentItems < maxItems) {
+        const itemsContainer = document.getElementById('items-container');
+        const newItem = document.createElement('div');
+        newItem.className = 'item-card';
+        newItem.innerHTML = `
+          <div class="item-media">
+            <div class="file-input-wrapper">
+              <input type="file" class="media-input" accept="image/*,video/*">
+              <div class="placeholder">
+                <i class="fas fa-image fa-2x"></i>
+                <p>Click to upload image or video</p>
+              </div>
+            </div>
+            <div class="edit-controls">
+              <button class="edit-btn" title="Edit item">
+                <i class="fas fa-edit"></i>
+              </button>
+            </div>
+          </div>
+          <div class="item-body">
+            <input type="text" class="form-control" placeholder="Item Title" style="margin-bottom: 10px;">
+            <input type="text" class="form-control" placeholder="Price (UGX)" style="margin-bottom: 15px;">
+            <button class="btn-submit" style="padding: 8px 12px; font-size: 13px;">
+              <i class="fas fa-save"></i> Save Changes
+            </button>
+          </div>
+        `;
+        itemsContainer.appendChild(newItem);
+        currentItems++;
+        updateItemCounter();
+        
+        // Add media input event
+        const mediaInput = newItem.querySelector('.media-input');
+        mediaInput.addEventListener('change', handleMediaUpload);
+        
+        // Add save button event
+        const saveBtn = newItem.querySelector('.btn-submit');
+        saveBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          alert('Item changes saved successfully!');
+        });
+        
+        // Add edit button event
+        const editBtn = newItem.querySelector('.edit-btn');
+        editBtn.addEventListener('click', function() {
+          alert('Edit mode activated. Make your changes and click "Save Changes".');
+        });
+      }
+    });
+    
+    // Handle media upload
+    function handleMediaUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const wrapper = e.target.parentElement;
+      const placeholder = wrapper.querySelector('.placeholder');
+      const mediaContainer = document.createElement('div');
+      mediaContainer.className = 'media-preview';
+      
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const img = document.createElement('img');
+          img.src = event.target.result;
+          img.alt = "Product image";
+          img.style.cursor = 'zoom-in';
+          img.addEventListener('click', function() {
+            openLightbox(img.src, 'image');
+          });
+          
+          // Create zoom button
+          const zoomBtn = document.createElement('button');
+          zoomBtn.className = 'media-btn';
+          zoomBtn.title = "Zoom image";
+          zoomBtn.innerHTML = '<i class="fas fa-search-plus"></i>';
+          zoomBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            openLightbox(img.src, 'image');
+          });
+          
+          mediaContainer.appendChild(img);
+          
+          // Create media controls container
+          const controls = document.createElement('div');
+          controls.className = 'media-controls';
+          controls.appendChild(zoomBtn);
+          
+          // Replace placeholder with media
+          wrapper.innerHTML = '';
+          wrapper.appendChild(mediaContainer);
+          wrapper.appendChild(controls);
+        };
+        reader.readAsDataURL(file);
+      } 
+      else if (file.type.startsWith('video/')) {
+        const video = document.createElement('video');
+        video.src = URL.createObjectURL(file);
+        video.controls = true;
+        video.autoplay = true;
+        video.muted = true;
+        video.style.cursor = 'pointer';
+        
+        // Create fullscreen button
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'media-btn';
+        fullscreenBtn.title = "Fullscreen";
+        fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+        fullscreenBtn.addEventListener('click', function() {
+          if (video.requestFullscreen) {
+            video.requestFullscreen();
+          } else if (video.mozRequestFullScreen) {
+            video.mozRequestFullScreen();
+          } else if (video.webkitRequestFullscreen) {
+            video.webkitRequestFullscreen();
+          } else if (video.msRequestFullscreen) {
+            video.msRequestFullscreen();
+          }
+        });
+        
+        mediaContainer.appendChild(video);
+        
+        // Create media controls container
+        const controls = document.createElement('div');
+        controls.className = 'media-controls';
+        controls.appendChild(fullscreenBtn);
+        
+        // Replace placeholder with media
+        wrapper.innerHTML = '';
+        wrapper.appendChild(mediaContainer);
+        wrapper.appendChild(controls);
+      }
+    }
+    
+    // Open lightbox for zooming
+    function openLightbox(src, type) {
+      const lightbox = document.getElementById('lightbox');
+      const content = document.getElementById('lightbox-content');
+      
+      if (type === 'image') {
+        content.innerHTML = `<img src="${src}" alt="Zoomed product image">`;
+      } else {
+        content.innerHTML = `<video src="${src}" controls autoplay></video>`;
+      }
+      
+      lightbox.style.display = 'flex';
+    }
+    
+    // Close lightbox
+    document.querySelector('.close-lightbox').addEventListener('click', function() {
+      document.getElementById('lightbox').style.display = 'none';
+    });
+    
+    // Close lightbox when clicking outside content
+    document.getElementById('lightbox').addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.style.display = 'none';
+      }
+    });
+    
+    // Add media input events to initial items
+    document.querySelectorAll('.media-input').forEach(input => {
+      input.addEventListener('change', handleMediaUpload);
+    });
+    
+    // Add save button events to initial items
+    document.querySelectorAll('.item-card .btn-submit').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        alert('Item changes saved successfully!');
+      });
+    });
+    
+    // Add edit button events to initial items
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        alert('Edit mode activated. Make your changes and click "Save Changes".');
+      });
+    });
+    
+    // Payment button
+    document.getElementById('payment-btn').addEventListener('click', function() {
+      if (selectedPackage) {
+        document.getElementById('modal-package').textContent = selectedPackage.name;
+        document.getElementById('modal-amount').textContent = selectedPackage.price.toLocaleString() + ' UGX';
+        document.getElementById('payment-modal').style.display = 'flex';
+      }
+    });
+    
+    // Close modal
+    document.getElementById('close-modal').addEventListener('click', function() {
+      document.getElementById('payment-modal').style.display = 'none';
+    });
+    
+    // Confirm payment
+    document.getElementById('confirm-payment').addEventListener('click', function() {
+      paymentComplete = true;
+      document.getElementById('payment-modal').style.display = 'none';
+      document.getElementById('submit-btn').disabled = false;
+      
+      // Show success message
+      alert(`Payment of ${selectedPackage.price.toLocaleString()} UGX for ${selectedPackage.name} package confirmed!`);
+    });
+    
+    // Form submission
+    document.getElementById('submit-btn').addEventListener('click', function() {
+      // For paid packages, ensure payment is complete
+      if (selectedPackage && selectedPackage.name !== 'Starter' && !paymentComplete) {
+        alert('Please complete payment before submitting your business.');
+        return;
+      }
+      
+      this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+      setTimeout(() => {
+        alert('Business submitted successfully! Your listing will be reviewed and published soon.');
+        this.innerHTML = '<i class="fas fa-check"></i> Submitted!';
+        this.disabled = true;
+      }, 1500);
+    });
+    
+    // Scroll to section function
+    function scrollToSection(sectionId) {
+      const target = document.getElementById(sectionId);
+      if (target) {
+        // Update progress steps
+        document.querySelectorAll('.progress-step').forEach(step => {
+          step.classList.remove('active');
+        });
+        
+        if(sectionId === 'business-info') {
+          document.querySelectorAll('.progress-step')[0].classList.add('active');
+        } else if(sectionId === 'items-services') {
+          document.querySelectorAll('.progress-step')[1].classList.add('active');
+        } else if(sectionId === 'review-submit') {
+          document.querySelectorAll('.progress-step')[2].classList.add('active');
+        }
+        
+        // Scroll to target
+        window.scrollTo({
+          top: target.offsetTop - 100,
+          behavior: 'smooth'
+        });
+      }
+    }
+    
+    // Set up section scrolling
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set up click handlers for progress steps
+      document.querySelectorAll('.progress-step').forEach((step, index) => {
+        step.addEventListener('click', function() {
+          if(index === 0) {
+            scrollToSection('business-info');
+          } else if(index === 1) {
+            scrollToSection('items-services');
+          } else if(index === 2) {
+            scrollToSection('review-submit');
+          }
+        });
+      });
+      
+      // Initialize item counter
+      updateItemCounter();
+    });
+  </script>
+</body>
+</html>
