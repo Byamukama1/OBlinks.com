@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OBlinks | Global Business Platform</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <style>
-    /* Global Styles */
     * {
       margin: 0;
       padding: 0;
@@ -85,7 +86,6 @@
       gap: 15px;
     }
     
-    /* Search Container */
     .search-container {
       display: flex;
       align-items: center;
@@ -109,11 +109,6 @@
     
     .search-input:focus {
       outline: none;
-    }
-    
-    /* Dropdown Menus */
-    .dropdown {
-      position: relative;
     }
     
     .icon-btn {
@@ -174,8 +169,7 @@
       position: relative;
     }
     
-    .carousel-slide img,
-    .carousel-slide video {
+    .carousel-slide img {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -232,14 +226,13 @@
     .carousel-next {
       right: 20px;
     }
-    
-    /* Main Content */
+        /* Main Content */
     .main-content {
       max-width: 1200px;
       margin: 0 auto;
       padding: 20px;
       flex-grow: 1;
-      padding-bottom: 70px; /* Space for bottom navigation */
+      padding-bottom: 70px;
     }
     
     .content-header {
@@ -279,7 +272,6 @@
       box-shadow: 0 6px 15px rgba(0,0,0,0.12);
     }
     
-    /* Media section */
     .card-media {
       height: 200px;
       position: relative;
@@ -289,7 +281,7 @@
     .card-media img, .card-media video {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: cover;
       transition: transform 0.5s ease;
     }
     
@@ -391,12 +383,6 @@
       transition: all 0.3s ease;
     }
     
-    .card-description.expanded {
-      display: block;
-      -webkit-line-clamp: unset;
-      overflow: visible;
-    }
-    
     .card-stats {
       display: flex;
       justify-content: space-between;
@@ -426,24 +412,31 @@
     
     .btn-container {
       display: flex;
-      gap: 8px;
+      gap: 4px;
       margin-top: auto;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    
+    .btn-container::-webkit-scrollbar {
+      display: none;
     }
     
     .btn {
-      padding: 8px 12px;
+      padding: 8px 10px;
       border-radius: 8px;
       font-weight: 500;
-      font-size: 13px;
+      font-size: 12px;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
       text-decoration: none;
       cursor: pointer;
       border: none;
       transition: all 0.2s ease;
-      flex: 1;
-      min-width: 90px;
+      flex-shrink: 0;
+      min-width: 60px;
       justify-content: center;
       white-space: nowrap;
     }
@@ -453,41 +446,28 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
     
-    .btn-primary {
+    .btn-order {
       background: var(--primary);
       color: white;
     }
     
-    .btn-primary:hover {
-      background: var(--primary-dark);
-    }
-    
-    .btn-whatsapp {
+    .btn-chat {
       background: var(--whatsapp);
       color: white;
     }
     
-    .btn-whatsapp:hover {
-      background: #128C7E;
+    .btn-link {
+      background: var(--secondary);
+      color: white;
     }
     
-    .btn-secondary {
-      background: #f1f5f9;
-      color: var(--dark);
-      border: 1px solid var(--border);
-    }
-    
-    .btn-secondary:hover {
-      background: #e2e8f0;
-    }
-    
-    .btn-view-all {
+    .btn-view {
       background: var(--accent);
       color: white;
     }
     
-    .btn-view-all:hover {
-      background: #7c3aed;
+    .btn i {
+      font-size: 14px;
     }
     
     /* Bottom Navigation */
@@ -619,9 +599,6 @@
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
       gap: 15px;
-      
-      
-
     }
     
     .category-card {
@@ -719,8 +696,65 @@
         font-size: 20px;
       }
     }
+    
+    /* Loading spinner */
+    .loading-spinner {
+      display: flex;
+      justify-content: center;
+      padding: 40px;
+      grid-column: 1 / -1;
+    }
+    
+    .loading-spinner i {
+      font-size: 40px;
+      color: var(--primary);
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Lightbox styles */
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .lightbox-content {
+      max-width: 90%;
+      max-height: 90%;
+      position: relative;
+    }
+    
+    .lightbox-content img, 
+    .lightbox-content video {
+      max-width: 100%;
+      max-height: 80vh;
+      border-radius: 8px;
+    }
+    
+    .close-lightbox {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+      z-index: 10001;
+    }
   </style>
 </head>
+
 <body>
   <!-- Header -->
   <header>
@@ -757,17 +791,12 @@
   <!-- Carousel Section - Announcements -->
   <div class="carousel-container">
     <div class="carousel-slides">
-      <!-- Slide 1 -->
       <div class="carousel-slide">
         <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80" alt="Business Platform">
       </div>
-      
-      <!-- Slide 2 -->
       <div class="carousel-slide">
         <img src="https://images.unsplash.com/photo-1491336477066-31156b5e4f35?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80" alt="Business Networking">
       </div>
-      
-      <!-- Slide 3 -->
       <div class="carousel-slide">
         <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80" alt="Business Opportunities">
       </div>
@@ -795,334 +824,8 @@
     </div>
     
     <div class="business-cards" id="business-cards-container">
-      <!-- Business Card 1 -->
-      <div class="card" data-category="electronics">
-        <div class="card-media">
-          <div class="media-scroll">
-            <div class="media-item">
-              <img src="https://images.unsplash.com/photo-1550009158-9ebf69173e03?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="Tech Gadgets">
-            </div>
-            <div class="media-item">
-              <img src="https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="Tech Gadgets">
-            </div>
-          </div>
-          <div class="media-indicators">
-            <div class="media-indicator active"></div>
-            <div class="media-indicator"></div>
-          </div>
-        </div>
-        
-        <div class="card-header">
-          <h2 class="card-title">Tech Gadgets Store</h2>
-          <div class="card-meta">
-            <span><i class="far fa-clock"></i> 2 days ago</span>
-            <span><i class="fas fa-eye"></i> 1.2K views</span>
-          </div>
-          <div class="card-country">Uganda</div>
-        </div>
-        
-        <div class="card-body">
-          <p class="card-description">
-            Selling the latest tech gadgets and accessories at competitive prices. We offer free shipping within Kampala and secure payment options.
-          </p>
-          
-          <div class="card-stats">
-            <div class="stat-item">
-              <span class="like-btn"><i class="fas fa-heart"></i> 974</span>
-            </div>
-            <div class="stat-item">
-              <i class="fas fa-comment"></i> 42 comments
-            </div>
-            <div class="stat-item">
-              <i class="fas fa-share"></i> 18 shares
-            </div>
-          </div>
-          
-         <a href="order_form.html" <div class="btn-container">
-            <button class="btn btn-primary">
-              <i class="fas fa-shopping-cart"></i> Order
-            </button></a>
-            <button class="btn btn-whatsapp">
-              <i class="fab fa-whatsapp"></i> Chat
-            </button>
-           <a href="viewall.html" <button class="btn btn-view-all">
-              <i class="fas fa-eye"></i> View All
-            </button> </a>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Business Card 2 -->
-      <div class="card" data-category="food">
-        <div class="card-media">
-          <div class="media-scroll">
-            <div class="media-item">
-              <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="Organic Farm">
-            </div>
-          </div>
-          <div class="media-indicators">
-            <div class="media-indicator active"></div>
-          </div>
-        </div>
-        
-        <div class="card-header">
-          <h2 class="card-title">Organic Farm Products</h2>
-          <div class="card-meta">
-            <span><i class="far fa-clock"></i> 1 week ago</span>
-            <span><i class="fas fa-eye"></i> 2.8K views</span>
-          </div>
-          <div class="card-country">Kenya</div>
-        </div>
-        
-        <div class="card-body">
-          <p class="card-description">
-            Fresh organic fruits and vegetables delivered to your doorstep. We work directly with local farmers to bring you the best produce.
-          </p>
-          
-          <div class="card-stats">
-            <div class="stat-item">
-              <span class="like-btn"><i class="fas fa-heart"></i> 1.2K</span>
-            </div>
-            <div class="stat-item">
-              <i class="fas fa-comment"></i> 87 comments
-            </div>
-            <div class="stat-item">
-              <i class="fas fa-share"></i> 45 shares
-            </div>
-          </div>
-          
-          <div class="btn-container">
-            <a href="orderform"<button class="btn btn-primary">
-              <i class="fas fa-shopping-cart"></i> Order
-            </button> </a>
-            <button class="btn btn-whatsapp">
-              <i class="fab fa-whatsapp"></i> Chat
-            </button>
-           <a href="viewall.html" <button class="btn btn-view-all">
-              <i class="fas fa-eye"></i> View All
-            </button> </a>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Business Card 3 -->
-      <div class="card" data-category="fashion">
-        <div class="card-media">
-          <div class="media-scroll">
-            <div class="media-item">
-              <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="Fashion Boutique">
-            </div>
-            <div class="media-item">
-              <img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="Fashion Boutique">
-            </div>
-          </div>
-          <div class="media-indicators">
-            <div class="media-indicator active"></div>
-            <div class="media-indicator"></div>
-          </div>
-        </div>
-        
-        <div class="card-header">
-          <h2 class="card-title">Fashion Boutique</h2>
-          <div class="card-meta">
-            <span><i class="far fa-clock"></i> 3 days ago</span>
-            <span><i class="fas fa-eye"></i> 890 views</span>
-          </div>
-          <div class="card-country">Uganda</div>
-        </div>
-        
-        <div class="card-body">
-          <p class="card-description">
-            Trendy fashion for men and women. We source high-quality fabrics and work with local designers to create unique pieces.
-          </p>
-          
-          <div class="card-stats">
-            <div class="stat-item">
-              <span class="like-btn"><i class="fas fa-heart"></i> 642</span>
-            </div>
-            <div class="stat-item">
-              <i class="fas fa-comment"></i> 34 comments
-            </div>
-            <div class="stat-item">
-              <i class="fas fa-share"></i> 22 shares
-            </div>
-          </div>
-          
-          <div class="btn-container">
-            <button class="btn btn-primary">
-              <i class="fas fa-shopping-cart"></i> Order
-            </button>
-            <button class="btn btn-whatsapp">
-              <i class="fab fa-whatsapp"></i> Chat
-            </button>
-            <button class="btn btn-view-all">
-              <i class="fas fa-eye"></i> View All
-            </button>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Business Card 4 -->
-      <div class="card" data-category="services">
-        <div class="card-media">
-          <div class="media-scroll">
-            <div class="media-item">
-              <video src="https://assets.mixkit.co/videos/preview/mixkit-man-looking-at-digital-marketing-data-on-multiple-screens-39847-large.mp4" muted playsinline></video>
-            </div>
-          </div>
-          <div class="media-indicators">
-            <div class="media-indicator active"></div>
-          </div>
-        </div>
-        
-        <div class="card-header">
-          <h2 class="card-title">Digital Marketing Agency</h2>
-          <div class="card-meta">
-            <span><i class="far fa-clock"></i> 5 days ago</span>
-            <span><i class="fas fa-eye"></i> 1.5K views</span>
-          </div>
-          <div class="card-country">Nigeria</div>
-        </div>
-        
-        <div class="card-body">
-          <p class="card-description">
-            We help businesses grow through strategic digital marketing campaigns. Our services include SEO, social media management, PPC advertising, and content creation.
-          </p>
-          
-          <div class="card-stats">
-            <div class="stat-item">
-              <span class="like-btn"><i class="fas fa-heart"></i> 823</span>
-            </div>
-            <div class="stat-item">
-              <i class="fas fa-comment"></i> 56 comments
-            </div>
-            <div class="stat-item">
-              <i class="fas fa-share"></i> 31 shares
-            </div>
-          </div>
-          
-          <div class="btn-container">
-            <button class="btn btn-primary">
-              <i class="fas fa-shopping-cart"></i> Order
-            </button>
-            <button class="btn btn-whatsapp">
-              <i class="fab fa-whatsapp"></i> Chat
-            </button>
-            <button class="btn btn-view-all">
-              <i class="fas fa-eye"></i> View All
-            </button>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Business Card 5 -->
-      <div class="card" data-category="home">
-        <div class="card-media">
-          <div class="media-scroll">
-            <div class="media-item">
-              <img src="https://images.unsplash.com/photo-1625772452859-1c03d5bf1137?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="Cleaning Products">
-            </div>
-            <div class="media-item">
-              <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="Cleaning Products">
-            </div>
-          </div>
-          <div class="media-indicators">
-            <div class="media-indicator active"></div>
-            <div class="media-indicator"></div>
-          </div>
-        </div>
-        
-        <div class="card-header">
-          <h2 class="card-title">Eco-Friendly Cleaning Products</h2>
-          <div class="card-meta">
-            <span><i class="far fa-clock"></i> 2 weeks ago</span>
-            <span><i class="fas fa-eye"></i> 3.4K views</span>
-          </div>
-          <div class="card-country">South Africa</div>
-        </div>
-        
-        <div class="card-body">
-          <p class="card-description">
-            Environmentally safe cleaning solutions for homes and businesses. Our products are biodegradable, non-toxic, and cruelty-free.
-          </p>
-          
-          <div class="card-stats">
-            <div class="stat-item">
-              <span class="like-btn"><i class="fas fa-heart"></i> 1.5K</span>
-            </div>
-            <div class="stat-item">
-              <i class="fas fa-comment"></i> 102 comments
-            </div>
-            <div class="stat-item">
-              <i class="fas fa-share"></i> 67 shares
-            </div>
-          </div>
-          
-          <div class="btn-container">
-            <button class="btn btn-primary">
-              <i class="fas fa-shopping-cart"></i> Order
-            </button>
-            <button class="btn btn-whatsapp">
-              <i class="fab fa-whatsapp"></i> Chat
-            </button>
-            <button class="btn btn-view-all">
-              <i class="fas fa-eye"></i> View All
-            </button>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Business Card 6 -->
-      <div class="card" data-category="education">
-        <div class="card-media">
-          <div class="media-scroll">
-            <div class="media-item">
-              <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="Tutoring Platform">
-            </div>
-          </div>
-          <div class="media-indicators">
-            <div class="media-indicator active"></div>
-          </div>
-        </div>
-        
-        <div class="card-header">
-          <h2 class="card-title">Online Tutoring Platform</h2>
-          <div class="card-meta">
-            <span><i class="far fa-clock"></i> 4 days ago</span>
-            <span><i class="fas fa-eye"></i> 1.1K views</span>
-          </div>
-          <div class="card-country">International</div>
-        </div>
-        
-        <div class="card-body">
-          <p class="card-description">
-            Connecting students with expert tutors in various subjects. Our platform offers flexible scheduling and secure payment processing.
-          </p>
-          
-          <div class="card-stats">
-            <div class="stat-item">
-              <span class="like-btn"><i class="fas fa-heart"></i> 756</span>
-            </div>
-            <div class="stat-item">
-              <i class="fas fa-comment"></i> 48 comments
-            </div>
-            <div class="stat-item">
-              <i class="fas fa-share"></i> 29 shares
-            </div>
-          </div>
-          
-          <div class="btn-container">
-            <button class="btn btn-primary">
-              <i class="fas fa-shopping-cart"></i> Order
-            </button>
-            <button class="btn btn-whatsapp">
-              <i class="fab fa-whatsapp"></i> Chat
-            </button>
-            <button class="btn btn-view-all">
-              <i class="fas fa-eye"></i> View All
-            </button>
-          </div>
-        </div>
+      <div class="loading-spinner">
+        <i class="fas fa-spinner"></i>
       </div>
     </div>
   </main>
@@ -1243,167 +946,270 @@
       <i class="fas fa-money-bill-wave"></i>
       <span>Earn</span>
     </a>
-    <a href="my account.html" class="nav-item">
+    <a href="myaccount.html" class="nav-item">
       <i class="fas fa-user"></i>
       <span>Account</span>
     </a>
   </nav>
   
+  <!-- Lightbox for media -->
+  <div class="lightbox" id="lightbox">
+    <div class="close-lightbox" id="close-lightbox">
+      <i class="fas fa-times"></i>
+    </div>
+    <div class="lightbox-content" id="lightbox-content"></div>
+  </div>
+
   <script>
-    // Carousel functionality
-    const carousel = document.querySelector('.carousel-slides');
-    const slides = document.querySelectorAll('.carousel-slide');
-    const prevBtn = document.querySelector('.carousel-prev');
-    const nextBtn = document.querySelector('.carousel-next');
-    const indicators = document.querySelectorAll('.carousel-indicator');
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
+      authDomain: "oblinks-7fdb1.firebaseapp.com",
+      projectId: "oblinks-7fdb1",
+      storageBucket: "oblinks-7fdb1.appspot.com",
+      messagingSenderId: "79327968002",
+      appId: "1:79327968002:web:8c5b0c44e9f9f2e67c04b3",
+      measurementId: "G-HF4PZ4C83N"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
     
-    let currentIndex = 0;
-    const slideCount = slides.length;
-    const slideWidth = slides[0].clientWidth;
+    // DOM elements
+    const container = document.getElementById('business-cards-container');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxContent = document.getElementById('lightbox-content');
+    const closeLightbox = document.getElementById('close-lightbox');
     
-    // Set initial position
-    carousel.style.transform = `translateX(${-currentIndex * slideWidth}px)`;
-    
-    // Next slide function
-    function nextSlide() {
-      currentIndex = (currentIndex + 1) % slideCount;
-      updateCarousel();
-    }
-    
-    // Previous slide function
-    function prevSlide() {
-      currentIndex = (currentIndex - 1 + slideCount) % slideCount;
-      updateCarousel();
-    }
-    
-    // Update carousel position and indicators
-    function updateCarousel() {
-      carousel.style.transform = `translateX(${-currentIndex * slideWidth}px)`;
+    // Load businesses from Firestore
+    function loadBusinesses() {
+      container.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner"></i></div>';
       
-      // Update indicators
-      indicators.forEach((indicator, index) => {
-        if (index === currentIndex) {
-          indicator.classList.add('active');
-        } else {
-          indicator.classList.remove('active');
-        }
-      });
+      db.collection("businesses").get()
+        .then((querySnapshot) => {
+          container.innerHTML = '';
+          
+          if (querySnapshot.empty) {
+            container.innerHTML = '<p class="no-results">No businesses found. Be the first to add one!</p>';
+            return;
+          }
+          
+          querySnapshot.forEach((doc) => {
+            const business = doc.data();
+            createBusinessCard(business, doc.id);
+          });
+          
+          // Initialize carousels after cards are created
+          initCarousels();
+        })
+        .catch((error) => {
+          console.error("Error loading businesses: ", error);
+          container.innerHTML = '<p class="error">Failed to load businesses. Please try again later.</p>';
+        });
     }
     
-    // Add click event listeners
-    prevBtn.addEventListener('click', prevSlide);
-    nextBtn.addEventListener('click', nextSlide);
-    
-    // Add indicator click events
-    indicators.forEach((indicator, index) => {
-      indicator.addEventListener('click', () => {
-        currentIndex = index;
-        updateCarousel();
-      });
-    });
-    
-    // Auto slide every 1 seconds
-    setInterval(nextSlide, 1000);
-    
-    // Video play/pause on click
-    document.querySelectorAll('video').forEach(video => {
-      video.addEventListener('click', () => {
-        if (video.paused) {
-          video.play();
-        } else {
-          video.pause();
-        }
-      });
-    });
-    
-    
-    // Category Panel Functionality
-    const categoryPanel = document.getElementById('category-panel');
-    const categoryOverlay = document.getElementById('category-overlay');
-    const closePanel = document.getElementById('close-panel');
-    const categoryNav = document.getElementById('category-nav');
-    const searchInput = document.getElementById('search-input');
-    const businessCards = document.querySelectorAll('.card');
-    
-    // Open category panel
-    function openCategoryPanel() {
-      categoryOverlay.style.display = 'block';
-      setTimeout(() => {
-        categoryOverlay.style.opacity = '1';
-        categoryPanel.style.bottom = '0';
-      }, 10);
-    }
-    
-    // Close category panel
-    function closeCategoryPanel() {
-      categoryPanel.style.bottom = '-100%';
-      categoryOverlay.style.opacity = '0';
-      setTimeout(() => {
-        categoryOverlay.style.display = 'none';
-      }, 300);
-    }
-    
-    // Filter business cards by category
-    function filterBusinessesByCategory(category) {
-      businessCards.forEach(card => {
-        if (category === 'all' || card.dataset.category === category) {
-          card.style.display = 'flex';
-        } else {
-          card.style.display = 'none';
-        }
-      });
-    }
-    
-    // Event listeners for category panel
-    categoryNav.addEventListener('click', (e) => {
-      e.preventDefault();
-      openCategoryPanel();
-    });
-    
-    closePanel.addEventListener('click', closeCategoryPanel);
-    categoryOverlay.addEventListener('click', closeCategoryPanel);
-    
-    // Category selection
-    document.querySelectorAll('.category-card').forEach(card => {
-      card.addEventListener('click', function() {
-        const category = this.dataset.category;
-        const categoryName = this.querySelector('.category-name').textContent;
-        
-        // Update search input
-        searchInput.value = categoryName;
-        
-        // Filter businesses
-        filterBusinessesByCategory(category);
-        
-        // Close panel
-        closeCategoryPanel();
-        
-        // Scroll to top of business cards
-        document.querySelector('.main-content').scrollIntoView({ behavior: 'smooth' });
-      });
-    });
-    
-    // Search functionality
-    searchInput.addEventListener('keyup', function() {
-      const searchTerm = this.value.toLowerCase().trim();
+    // Create business card element
+    function createBusinessCard(business, docId) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.dataset.category = business.category || 'all';
       
-      if (searchTerm === '') {
-        // Show all businesses if search is empty
-        businessCards.forEach(card => card.style.display = 'flex');
-        return;
+      // Create media HTML
+      let mediaHTML = '';
+      if (business.mediaUrls && business.mediaUrls.length > 0) {
+        mediaHTML = '<div class="media-scroll">';
+        business.mediaUrls.forEach((url, index) => {
+          const isVideo = url.endsWith('.mp4') || url.endsWith('.webm');
+          mediaHTML += `
+            <div class="media-item" data-index="${index}">
+              ${isVideo 
+                ? `<video src="${url}" muted playsinline></video>`
+                : `<img src="${url}" alt="${business.title}">`}
+            </div>
+          `;
+        });
+        mediaHTML += '</div>';
+        
+  // Add media indicators
+        mediaHTML += '<div class="media-indicators">';
+        for (let i = 0; i < business.mediaUrls.length; i++) {
+          mediaHTML += `<div class="media-indicator ${i === 0 ? 'active' : ''}"></div>`;
+        }
+        mediaHTML += '</div>';
+      } else {
+        // Default placeholder if no media
+        mediaHTML = `
+          <div class="media-scroll">
+            <div class="media-item">
+              <img src="https://via.placeholder.com/300x200?text=No+Image" alt="No image">
+            </div>
+          </div>
+          <div class="media-indicators">
+            <div class="media-indicator active"></div>
+          </div>
+        `;
       }
       
-      // Filter businesses based on search term
-      businessCards.forEach(card => {
-        const title = card.querySelector('.card-title').textContent.toLowerCase();
-        const description = card.querySelector('.card-description').textContent.toLowerCase();
-        
-        if (title.includes(searchTerm) || description.includes(searchTerm)) {
-          card.style.display = 'flex';
-        } else {
-          card.style.display = 'none';
+      // Create buttons HTML - 4 buttons in one row
+      const buttonsHTML = `
+        <div class="btn-container">
+          <a href="order_form.html" class="btn btn-order">
+            <i class="fas fa-shopping-cart"></i> Order
+          </a>
+          <a href="https://wa.me/${business.whatsapp || ''}" class="btn btn-chat" target="_blank">
+            <i class="fab fa-whatsapp"></i> Chat
+          </a>
+          ${business.businessLink ? `
+            <a href="${business.businessLink}" class="btn btn-link" target="_blank">
+              <i class="fas fa-link"></i> Link
+            </a>
+          ` : ''}
+          <a href="details.html?id=${docId}" class="btn btn-view">
+            <i class="fas fa-eye"></i> View
+          </a>
+        </div>
+      `;
+      
+      // Card content
+      card.innerHTML = `
+        <div class="card-media">
+          ${mediaHTML}
+        </div>
+        <div class="card-header">
+          <h2 class="card-title">${business.title || 'Untitled Business'}</h2>
+          <div class="card-meta">
+            <span><i class="far fa-clock"></i> ${business.postedDate || 'Just now'}</span>
+            <span><i class="fas fa-eye"></i> ${business.views || '0'} views</span>
+          </div>
+          <div class="card-country">${business.location || 'Location not specified'}</div>
+        </div>
+        <div class="card-body">
+          <p class="card-description">${business.description || 'No description provided'}</p>
+          <div class="card-stats">
+            <div class="stat-item">
+              <span class="like-btn"><i class="fas fa-heart"></i> ${business.likes || '0'}</span>
+            </div>
+            <div class="stat-item">
+              <i class="fas fa-comment"></i> ${business.comments || '0'} comments
+            </div>
+            <div class="stat-item">
+              <i class="fas fa-share"></i> ${business.shares || '0'} shares
+            </div>
+          </div>
+          ${buttonsHTML}
+        </div>
+      `;
+      
+      container.appendChild(card);
+    }
+    
+    // Initialize carousel functionality
+    function initCarousels() {
+      // Auto-scroll carousels every 2 seconds
+      setInterval(() => {
+        document.querySelectorAll('.media-scroll').forEach(carousel => {
+          const scrollWidth = carousel.scrollWidth;
+          const scrollLeft = carousel.scrollLeft;
+          const clientWidth = carousel.clientWidth;
+          
+          // Calculate next position
+          let nextPos = scrollLeft + clientWidth;
+          if (nextPos >= scrollWidth) {
+            nextPos = 0; // Loop back to start
+          }
+          
+          // Update scroll position
+          carousel.scrollTo({
+            left: nextPos,
+            behavior: 'smooth'
+          });
+          
+          // Update indicators
+          const itemCount = carousel.querySelectorAll('.media-item').length;
+          const currentIndex = Math.round(nextPos / clientWidth);
+          const indicators = carousel.nextElementSibling.querySelectorAll('.media-indicator');
+          
+          indicators.forEach((indicator, index) => {
+            if (index === currentIndex % itemCount) {
+              indicator.classList.add('active');
+            } else {
+              indicator.classList.remove('active');
+            }
+          });
+        });
+      }, 2000);
+    }
+    
+    // Lightbox functionality
+    function initLightbox() {
+      // Close lightbox
+      closeLightbox.addEventListener('click', () => {
+        lightbox.style.display = 'none';
+      });
+      
+      // Open lightbox when media is clicked
+      document.addEventListener('click', (e) => {
+        const mediaItem = e.target.closest('.media-item img, .media-item video');
+        if (mediaItem) {
+          const mediaType = mediaItem.tagName.toLowerCase();
+          const mediaSrc = mediaItem.src;
+          
+          lightboxContent.innerHTML = `
+            ${mediaType === 'video' 
+              ? `<video src="${mediaSrc}" controls autoplay></video>` 
+              : `<img src="${mediaSrc}" alt="Business media">`}
+          `;
+          
+          lightbox.style.display = 'flex';
         }
       });
+    }
+    
+    // Initialize everything when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      loadBusinesses();
+      initLightbox();
+      
+      // Carousel functionality for announcements
+      const carousel = document.querySelector('.carousel-slides');
+      const slides = document.querySelectorAll('.carousel-slide');
+      const prevBtn = document.querySelector('.carousel-prev');
+      const nextBtn = document.querySelector('.carousel-next');
+      const indicators = document.querySelectorAll('.carousel-indicator');
+      
+      let currentIndex = 0;
+      const slideCount = slides.length;
+      const slideWidth = slides[0].clientWidth;
+      
+      function updateCarousel() {
+        carousel.style.transform = `translateX(${-currentIndex * slideWidth}px)`;
+        indicators.forEach((indicator, index) => {
+          indicator.classList.toggle('active', index === currentIndex);
+        });
+      }
+      
+      function nextSlide() {
+        currentIndex = (currentIndex + 1) % slideCount;
+        updateCarousel();
+      }
+      
+      function prevSlide() {
+        currentIndex = (currentIndex - 1 + slideCount) % slideCount;
+        updateCarousel();
+      }
+      
+      prevBtn.addEventListener('click', prevSlide);
+      nextBtn.addEventListener('click', nextSlide);
+      
+      indicators.forEach((indicator, index) => {
+        indicator.addEventListener('click', () => {
+          currentIndex = index;
+          updateCarousel();
+        });
+      });
+      
+      setInterval(nextSlide, 5000);
     });
   </script>
 </body>
