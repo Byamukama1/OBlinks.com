@@ -960,7 +960,9 @@
     <div class="lightbox-content" id="lightbox-content"></div>
   </div>
 
-  <script>
+
+  
+    <script>
     // Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
@@ -975,31 +977,31 @@ const firebaseConfig = {
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    
+
     // DOM elements
     const container = document.getElementById('business-cards-container');
     const lightbox = document.getElementById('lightbox');
     const lightboxContent = document.getElementById('lightbox-content');
     const closeLightbox = document.getElementById('close-lightbox');
-    
+
     // Load businesses from Firestore
     function loadBusinesses() {
       container.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner"></i></div>';
-      
+
       db.collection("businesses").get()
         .then((querySnapshot) => {
           container.innerHTML = '';
-          
+
           if (querySnapshot.empty) {
             container.innerHTML = '<p class="no-results">No businesses found. Be the first to add one!</p>';
             return;
           }
-          
+
           querySnapshot.forEach((doc) => {
             const business = doc.data();
             createBusinessCard(business, doc.id);
           });
-          
+
           // Initialize carousels after cards are created
           initCarousels();
         })
@@ -1008,13 +1010,13 @@ const firebaseConfig = {
           container.innerHTML = '<p class="error">Failed to load businesses. Please try again later.</p>';
         });
     }
-    
+
     // Create business card element
     function createBusinessCard(business, docId) {
       const card = document.createElement('div');
       card.className = 'card';
       card.dataset.category = business.category || 'all';
-      
+
       // Create media HTML
       let mediaHTML = '';
       if (business.mediaUrls && business.mediaUrls.length > 0) {
@@ -1030,7 +1032,7 @@ const firebaseConfig = {
           `;
         });
         mediaHTML += '</div>';
-        
+
   // Add media indicators
         mediaHTML += '<div class="media-indicators">';
         for (let i = 0; i < business.mediaUrls.length; i++) {
@@ -1050,9 +1052,8 @@ const firebaseConfig = {
           </div>
         `;
       }
-      
+
       // Create buttons HTML - 4 buttons in one row
-     
 const buttonsHTML = `
   <div class="btn-container">
     <button class="btn btn-order" data-id="${docId}">
@@ -1072,7 +1073,7 @@ const buttonsHTML = `
   </div>
 `;
 
-     
+
       // Card content
       card.innerHTML = `
         <div class="card-media">
@@ -1102,18 +1103,17 @@ const buttonsHTML = `
           ${buttonsHTML}
         </div>
       `;
-      
-      container.appendChild(card);
 
-// ✅ Attach Order button click listener
-const orderBtn = card.querySelector(".btn-order");
+      container.appendChild(card);
+      const orderBtn = card.querySelector(".btn-order");
 if (orderBtn) {
   orderBtn.addEventListener("click", () => {
     const businessId = orderBtn.getAttribute("data-id");
     window.location.href = `order_form.html?id=${businessId}`;
   });
 }
-    
+    }
+
     // Initialize carousel functionality
     function initCarousels() {
       // Auto-scroll carousels every 2 seconds
@@ -1122,24 +1122,24 @@ if (orderBtn) {
           const scrollWidth = carousel.scrollWidth;
           const scrollLeft = carousel.scrollLeft;
           const clientWidth = carousel.clientWidth;
-          
+
           // Calculate next position
           let nextPos = scrollLeft + clientWidth;
           if (nextPos >= scrollWidth) {
             nextPos = 0; // Loop back to start
           }
-          
+
           // Update scroll position
           carousel.scrollTo({
             left: nextPos,
             behavior: 'smooth'
           });
-          
+
           // Update indicators
           const itemCount = carousel.querySelectorAll('.media-item').length;
           const currentIndex = Math.round(nextPos / clientWidth);
           const indicators = carousel.nextElementSibling.querySelectorAll('.media-indicator');
-          
+
           indicators.forEach((indicator, index) => {
             if (index === currentIndex % itemCount) {
               indicator.classList.add('active');
@@ -1150,75 +1150,75 @@ if (orderBtn) {
         });
       }, 2000);
     }
-    
+
     // Lightbox functionality
     function initLightbox() {
       // Close lightbox
       closeLightbox.addEventListener('click', () => {
         lightbox.style.display = 'none';
       });
-      
+
       // Open lightbox when media is clicked
       document.addEventListener('click', (e) => {
         const mediaItem = e.target.closest('.media-item img, .media-item video');
         if (mediaItem) {
           const mediaType = mediaItem.tagName.toLowerCase();
           const mediaSrc = mediaItem.src;
-          
+
           lightboxContent.innerHTML = `
             ${mediaType === 'video' 
               ? `<video src="${mediaSrc}" controls autoplay></video>` 
               : `<img src="${mediaSrc}" alt="Business media">`}
           `;
-          
+
           lightbox.style.display = 'flex';
         }
       });
     }
-    
+
     // Initialize everything when page loads
     document.addEventListener('DOMContentLoaded', () => {
       loadBusinesses();
       initLightbox();
-      
+
       // Carousel functionality for announcements
       const carousel = document.querySelector('.carousel-slides');
       const slides = document.querySelectorAll('.carousel-slide');
       const prevBtn = document.querySelector('.carousel-prev');
       const nextBtn = document.querySelector('.carousel-next');
       const indicators = document.querySelectorAll('.carousel-indicator');
-      
+
       let currentIndex = 0;
       const slideCount = slides.length;
       const slideWidth = slides[0].clientWidth;
-      
+
       function updateCarousel() {
         carousel.style.transform = `translateX(${-currentIndex * slideWidth}px)`;
         indicators.forEach((indicator, index) => {
           indicator.classList.toggle('active', index === currentIndex);
         });
       }
-      
+
       function nextSlide() {
         currentIndex = (currentIndex + 1) % slideCount;
         updateCarousel();
       }
-      
+
       function prevSlide() {
         currentIndex = (currentIndex - 1 + slideCount) % slideCount;
         updateCarousel();
       }
-      
+
       prevBtn.addEventListener('click', prevSlide);
       nextBtn.addEventListener('click', nextSlide);
-      
+
       indicators.forEach((indicator, index) => {
         indicator.addEventListener('click', () => {
           currentIndex = index;
           updateCarousel();
         });
       });
-      
+
       setInterval(nextSlide, 5000);
     });
   </script>
