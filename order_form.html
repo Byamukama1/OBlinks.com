@@ -248,34 +248,73 @@
         </div>
     </div>
     
-    <script>
-        document.getElementById('orderForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Basic validation
-            const requiredFields = document.querySelectorAll('[required]');
-            let valid = true;
-            
-            requiredFields.forEach(field => {
-                if (!field.value.trim()) {
-                    valid = false;
-                    field.style.borderColor = '#e53935';
-                } else {
-                    field.style.borderColor = '#ddd';
-                }
-            });
-            
-            if (!valid) {
-                alert('Please fill in all required fields');
-                return;
-            }
-            
-            // Form validation passed - in a real application, this would send to server
-            alert('Order submitted successfully! Our business manager will contact you shortly.');
-            
-            // Reset form
-            this.reset();
-        });
-    </script>
+   <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
+    authDomain: "oblinks-7fdb1.firebaseapp.com",
+    projectId: "oblinks-7fdb1",
+    storageBucket: "oblinks-7fdb1.appspot.com",
+    messagingSenderId: "587017639779",
+    appId: "1:587017639779:web:d11b60f40f431cfc202556"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const businessId = new URLSearchParams(window.location.search).get("id");
+  console.log("Ordering for business:", businessId);
+
+  const form = document.getElementById("orderForm");
+  form.addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    // 1. Validation
+    const requiredFields = this.querySelectorAll("[required]");
+    let valid = true;
+    requiredFields.forEach(f => {
+      if (!f.value.trim()) {
+        valid = false;
+        f.style.borderColor = "#e53935";
+      } else {
+        f.style.borderColor = "#ddd";
+      }
+    });
+    if (!valid) return alert("Please fill in all required fields");
+    if (!businessId) return alert("Order cannot be placed — no business selected.");
+
+    // 2. Gather form values
+    const name     = this.name.value;
+    const item     = this.item.value;
+    const quantity = this.quantity.value;
+    const phone    = this.phone.value;
+    const location = this.location.value;
+    const notes    = this.notes.value;
+
+    // 3. Save to Firestore
+    try {
+      const orderRef = await addDoc(collection(db, "orders"), {
+        businessId,
+        name,
+        item,
+        quantity,
+        phone,
+        location,
+        notes,
+        status: "pending",
+        seen: false,
+        timestamp: Date.now()
+      });
+      console.log("Order placed:", orderRef.id);
+      alert("Order submitted successfully! Our business manager will contact you shortly.");
+      this.reset();
+    } catch (err) {
+      console.error("Error adding order:", err);
+      alert("Failed to submit order.");
+    }
+  });
+</script>
 </body>
 </html>
