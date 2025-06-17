@@ -1053,26 +1053,24 @@ const firebaseConfig = {
       
       // Create buttons HTML - 4 buttons in one row
      
-const buttonsHTML = `  
-  <div class="btn-container">  
-    <button class="btn btn-order" data-id="${doc.id}">  
-      <i class="fas fa-shopping-cart"></i> Order  
+const buttonsHTML = `
+  <div class="btn-container">
+    <button class="btn btn-order" data-id="${docId}">
+      <i class="fas fa-shopping-cart"></i> Order
     </button>
+    <a href="https://wa.me/${business.whatsapp || ''}" class="btn btn-chat" target="_blank">
+      <i class="fab fa-whatsapp"></i> Chat
+    </a>
+    ${business.businessLink ? `
+      <a href="${business.businessLink}" class="btn btn-link" target="_blank">
+        <i class="fas fa-link"></i> Link
+      </a>
+    ` : ''}
+    <a href="details.html?id=${docId}" class="btn btn-view">
+      <i class="fas fa-eye"></i> View
+    </a>
   </div>
 `;
-          <a href="https://wa.me/${business.whatsapp || ''}" class="btn btn-chat" target="_blank">
-            <i class="fab fa-whatsapp"></i> Chat
-          </a>
-          ${business.businessLink ? `
-            <a href="${business.businessLink}" class="btn btn-link" target="_blank">
-              <i class="fas fa-link"></i> Link
-            </a>
-          ` : ''}
-          <a href="details.html?id=${docId}" class="btn btn-view">
-            <i class="fas fa-eye"></i> View
-          </a>
-        </div>
-      `;
       
       // Card content
       card.innerHTML = `
