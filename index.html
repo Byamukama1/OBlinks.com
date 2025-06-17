@@ -1052,11 +1052,14 @@ const firebaseConfig = {
       }
       
       // Create buttons HTML - 4 buttons in one row
-      const buttonsHTML = `
-        <div class="btn-container">
-          <a href="order_form.html" class="btn btn-order">
-            <i class="fas fa-shopping-cart"></i> Order
-          </a>
+     
+const buttonsHTML = `  
+  <div class="btn-container">  
+    <button class="btn btn-order" data-id="${doc.id}">  
+      <i class="fas fa-shopping-cart"></i> Order  
+    </button>
+  </div>
+`;
           <a href="https://wa.me/${business.whatsapp || ''}" class="btn btn-chat" target="_blank">
             <i class="fab fa-whatsapp"></i> Chat
           </a>
@@ -1102,7 +1105,15 @@ const firebaseConfig = {
       `;
       
       container.appendChild(card);
-    }
+
+// ✅ Attach Order button click listener
+const orderBtn = card.querySelector(".btn-order");
+if (orderBtn) {
+  orderBtn.addEventListener("click", () => {
+    const businessId = orderBtn.getAttribute("data-id");
+    window.location.href = `order_form.html?id=${businessId}`;
+  });
+}
     
     // Initialize carousel functionality
     function initCarousels() {
