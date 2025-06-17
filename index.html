@@ -1064,13 +1064,14 @@ const buttonsHTML = `
     ${business.businessLink ? `
       <a href="${business.businessLink}" class="btn btn-link" target="_blank">
         <i class="fas fa-link"></i> Link
-      </a>
-    ` : ''}
+      </a>` : ''
+    }
     <a href="details.html?id=${docId}" class="btn btn-view">
       <i class="fas fa-eye"></i> View
     </a>
   </div>
 `;
+
       
       // Card content
       card.innerHTML = `
