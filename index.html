@@ -1272,5 +1272,47 @@ if (orderBtn) {
     }
   });
 </script>
+
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
+    authDomain: "oblinks-7fdb1.firebaseapp.com",
+    projectId: "oblinks-7fdb1",
+    storageBucket: "oblinks-7fdb1.appspot.com",
+    messagingSenderId: "587017639779",
+    appId: "1:587017639779:web:d11b60f40f431cfc202556"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      // 🔒 Redirect to login if not signed in
+      window.location.href = "login.html";
+    } else {
+      // ✅ Load user profile image (if any)
+      const navImg = document.getElementById("navUserImage");
+      import("https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js").then(({ getFirestore, doc, getDoc }) => {
+        const db = getFirestore(app);
+        const userRef = doc(db, "users", user.uid);
+        getDoc(userRef).then((snap) => {
+          if (snap.exists()) {
+            const data = snap.data();
+            if (data.profileImage) {
+              navImg.src = data.profileImage;
+            }
+          }
+        }).catch((err) => {
+          console.error("❌ Failed to load profile image:", err);
+        });
+      });
+    }
+  });
+</script>
 </body>
 </html>
