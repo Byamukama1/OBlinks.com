@@ -14,7 +14,7 @@
       box-sizing: border-box;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    
+
     :root {
       --primary: #2563eb;
       --primary-dark: #1d4ed8;
@@ -31,7 +31,7 @@
       --panel-bg: rgba(255, 255, 255, 0.95);
       --overlay: rgba(0, 0, 0, 0.5);
     }
-    
+
     body {
       background-color: #f1f5f9;
       color: var(--dark);
@@ -41,7 +41,7 @@
       flex-direction: column;
       overflow-x: hidden;
     }
-    
+
     /* Header Styles */
     header {
       background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
@@ -52,7 +52,7 @@
       position: sticky;
       top: 0;
     }
-    
+
     .header-content {
       max-width: 1200px;
       margin: 0 auto;
@@ -62,30 +62,30 @@
       justify-content: space-between;
       gap: 15px;
     }
-    
+
     .logo {
       display: flex;
       align-items: center;
       gap: 12px;
     }
-    
+
     .logo-text h1 {
       font-size: 22px;
       font-weight: 700;
       letter-spacing: 1px;
     }
-    
+
     .tagline {
       font-size: 13px;
       opacity: 0.9;
     }
-    
+
     .header-right {
       display: flex;
       align-items: center;
       gap: 15px;
     }
-    
+
     .search-container {
       display: flex;
       align-items: center;
@@ -94,7 +94,7 @@
       padding: 8px 15px;
       width: 250px;
     }
-    
+
     .search-input {
       background: transparent;
       border: none;
@@ -102,15 +102,15 @@
       width: 100%;
       transition: all 0.3s ease;
     }
-    
+
     .search-input::placeholder {
       color: rgba(255, 255, 255, 0.7);
     }
-    
+
     .search-input:focus {
       outline: none;
     }
-    
+
     .icon-btn {
       width: 40px;
       height: 40px;
@@ -124,12 +124,12 @@
       color: white;
       position: relative;
     }
-    
+
     .icon-btn:hover {
       background: rgba(255, 255, 255, 0.25);
       transform: translateY(-2px);
     }
-    
+
     .badge {
       position: absolute;
       top: -5px;
@@ -145,7 +145,7 @@
       font-size: 12px;
       font-weight: 600;
     }
-    
+
     /* Carousel Section */
     .carousel-container {
       max-width: 1200px;
@@ -156,25 +156,25 @@
       height: 300px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
-    
+
     .carousel-slides {
       display: flex;
       transition: transform 0.5s ease-in-out;
       height: 100%;
     }
-    
+
     .carousel-slide {
       min-width: 100%;
       height: 100%;
       position: relative;
     }
-    
+
     .carousel-slide img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
-    
+
     .carousel-indicators {
       position: absolute;
       bottom: 20px;
@@ -184,7 +184,7 @@
       gap: 8px;
       z-index: 10;
     }
-    
+
     .carousel-indicator {
       width: 12px;
       height: 12px;
@@ -192,11 +192,11 @@
       background: rgba(255,255,255,0.5);
       cursor: pointer;
     }
-    
+
     .carousel-indicator.active {
       background: white;
     }
-    
+
     .carousel-btn {
       position: absolute;
       top: 50%;
@@ -214,15 +214,15 @@
       z-index: 10;
       transition: all 0.3s ease;
     }
-    
+
     .carousel-btn:hover {
       background: rgba(255,255,255,0.5);
     }
-    
+
     .carousel-prev {
       left: 20px;
     }
-    
+
     .carousel-next {
       right: 20px;
     }
@@ -234,14 +234,14 @@
       flex-grow: 1;
       padding-bottom: 70px;
     }
-    
+
     .content-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 20px;
     }
-    
+
     .content-header h2 {
       color: var(--dark);
       font-size: 20px;
@@ -249,13 +249,13 @@
       align-items: center;
       gap: 8px;
     }
-    
+
     .business-cards {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 20px;
     }
-    
+
     .card {
       background: white;
       border-radius: 12px;
@@ -266,29 +266,29 @@
       transition: all 0.3s ease;
       overflow: hidden;
     }
-    
+
     .card:hover {
       transform: translateY(-3px);
       box-shadow: 0 6px 15px rgba(0,0,0,0.12);
     }
-    
+
     .card-media {
       height: 200px;
       position: relative;
       overflow: hidden;
     }
-    
+
     .card-media img, .card-media video {
       width: 100%;
       height: 100%;
       object-fit: cover;
       transition: transform 0.5s ease;
     }
-    
+
     .card-media:hover img, .card-media:hover video {
       transform: scale(1.05);
     }
-    
+
     .media-scroll {
       display: flex;
       overflow-x: auto;
@@ -296,18 +296,18 @@
       scrollbar-width: none;
       height: 100%;
     }
-    
+
     .media-scroll::-webkit-scrollbar {
       display: none;
     }
-    
+
     .media-item {
       scroll-snap-align: start;
       min-width: 100%;
       height: 200px;
       position: relative;
     }
-    
+
     .media-indicators {
       position: absolute;
       bottom: 10px;
@@ -317,7 +317,7 @@
       gap: 5px;
       z-index: 10;
     }
-    
+
     .media-indicator {
       width: 8px;
       height: 8px;
@@ -325,17 +325,17 @@
       background: rgba(255, 255, 255, 0.5);
       cursor: pointer;
     }
-    
+
     .media-indicator.active {
       background: white;
     }
-    
+
     .card-header {
       padding: 15px;
       border-bottom: 1px solid var(--border);
       background: linear-gradient(to right, #f8fafc, #f1f5f9);
     }
-    
+
     .card-title {
       font-size: 18px;
       font-weight: 600;
@@ -343,7 +343,7 @@
       color: var(--primary-dark);
       text-align: center;
     }
-    
+
     .card-meta {
       display: flex;
       justify-content: center;
@@ -352,7 +352,7 @@
       color: var(--secondary);
       margin-bottom: 5px;
     }
-    
+
     .card-country {
       font-size: 12px;
       color: var(--dark);
@@ -362,14 +362,14 @@
       display: inline-block;
       margin: 0 auto;
     }
-    
+
     .card-body {
       padding: 15px;
       flex-grow: 1;
       display: flex;
       flex-direction: column;
     }
-    
+
     .card-description {
       color: #475569;
       font-size: 14px;
@@ -382,7 +382,7 @@
       min-height: 66px;
       transition: all 0.3s ease;
     }
-    
+
     .card-stats {
       display: flex;
       justify-content: space-between;
@@ -393,23 +393,23 @@
       border-bottom: 1px solid var(--border);
       margin-bottom: 15px;
     }
-    
+
     .stat-item {
       display: flex;
       align-items: center;
       gap: 5px;
     }
-    
+
     .like-btn {
       color: #ef4444;
       cursor: pointer;
       transition: all 0.2s ease;
     }
-    
+
     .like-btn:hover {
       transform: scale(1.1);
     }
-    
+
     .btn-container {
       display: flex;
       gap: 4px;
@@ -418,11 +418,11 @@
       overflow-x: auto;
       scrollbar-width: none;
     }
-    
-    .btn-container::-webkit-scrollbar {
+
+  .btn-container::-webkit-scrollbar {
       display: none;
     }
-    
+
     .btn {
       padding: 8px 10px;
       border-radius: 8px;
@@ -440,36 +440,36 @@
       justify-content: center;
       white-space: nowrap;
     }
-    
+
     .btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-    
+
     .btn-order {
       background: var(--primary);
       color: white;
     }
-    
+
     .btn-chat {
       background: var(--whatsapp);
       color: white;
     }
-    
+
     .btn-link {
       background: var(--secondary);
       color: white;
     }
-    
+
     .btn-view {
       background: var(--accent);
       color: white;
     }
-    
+
     .btn i {
       font-size: 14px;
     }
-    
+
     /* Bottom Navigation */
     .bottom-nav {
       position: fixed;
@@ -483,7 +483,7 @@
       box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
       z-index: 100;
     }
-    
+
     .nav-item {
       display: flex;
       flex-direction: column;
@@ -496,15 +496,15 @@
       flex: 1;
       position: relative;
     }
-    
+
     .nav-item.active {
       color: var(--primary);
     }
-    
+
     .nav-item i {
       font-size: 20px;
     }
-    
+
     .nav-item.add-btn {
       position: absolute;
       top: -25px;
@@ -521,15 +521,15 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.2);
       z-index: 101;
     }
-    
+
     .nav-item.add-btn i {
       font-size: 24px;
     }
-    
+
     .nav-item.add-btn span {
       display: none;
     }
-    
+
     /* Category Panel */
     .category-overlay {
       position: fixed;
@@ -543,7 +543,7 @@
       opacity: 0;
       transition: opacity 0.3s ease;
     }
-    
+
     .category-panel {
       position: fixed;
       bottom: -100%;
@@ -559,7 +559,7 @@
       max-height: 85vh;
       overflow-y: auto;
     }
-    
+
     .panel-header {
       display: flex;
       justify-content: space-between;
@@ -568,7 +568,7 @@
       margin-bottom: 15px;
       border-bottom: 1px solid var(--border);
     }
-    
+
     .panel-title {
       font-size: 22px;
       color: var(--primary-dark);
@@ -576,7 +576,7 @@
       align-items: center;
       gap: 10px;
     }
-    
+
     .close-panel {
       background: #f1f5f9;
       border: none;
@@ -589,18 +589,18 @@
       cursor: pointer;
       transition: all 0.3s ease;
     }
-    
+
     .close-panel:hover {
       background: #e2e8f0;
       transform: rotate(90deg);
     }
-    
+
     .categories-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
       gap: 15px;
     }
-    
+
     .category-card {
       background: white;
       border-radius: 12px;
@@ -611,13 +611,13 @@
       border: 1px solid var(--border);
       cursor: pointer;
     }
-    
+
     .category-card:hover {
       transform: translateY(-5px);
       box-shadow: 0 6px 15px rgba(0,0,0,0.1);
       border-color: var(--primary);
     }
-    
+
     .category-icon {
       width: 60px;
       height: 60px;
@@ -630,73 +630,73 @@
       color: var(--primary);
       font-size: 24px;
     }
-    
+
     .category-name {
       font-weight: 600;
       font-size: 14px;
       color: var(--dark);
     }
-    
+
     /* Responsive Design */
     @media (max-width: 768px) {
       .header-content {
         flex-wrap: wrap;
       }
-      
+
       .search-container {
         order: 3;
         width: 100%;
         margin-top: 10px;
       }
-      
+
       .business-cards {
         grid-template-columns: 1fr;
       }
-      
+
       .carousel-container {
         height: 250px;
       }
-      
+
       .nav-item.add-btn {
         width: 50px;
         height: 50px;
       }
-      
+
       .categories-grid {
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
       }
     }
-    
+
     @media (max-width: 480px) {
       .carousel-container {
         height: 200px;
       }
-      
+
       .btn-container {
         flex-wrap: wrap;
       }
-      
+
       .btn {
         min-width: auto;
         flex: none;
       }
-      
+
       .nav-item.add-btn {
         width: 45px;
         height: 45px;
       }
-      
+
       .category-card {
         padding: 12px;
       }
-      
+
       .category-icon {
         width: 50px;
         height: 50px;
         font-size: 20px;
       }
     }
-    
+
     /* Loading spinner */
     .loading-spinner {
       display: flex;
@@ -704,18 +704,18 @@
       padding: 40px;
       grid-column: 1 / -1;
     }
-    
+
     .loading-spinner i {
       font-size: 40px;
       color: var(--primary);
       animation: spin 1s linear infinite;
     }
-    
+
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    
+
     /* Lightbox styles */
     .lightbox {
       display: none;
@@ -729,20 +729,37 @@
       justify-content: center;
       align-items: center;
     }
-    
+
     .lightbox-content {
       max-width: 90%;
       max-height: 90%;
       position: relative;
     }
-    
+
     .lightbox-content img, 
     .lightbox-content video {
       max-width: 100%;
       max-height: 80vh;
       border-radius: 8px;
     }
-    
+
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: red;
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 2px 5px;
+  border-radius: 50%;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
     .close-lightbox {
       position: absolute;
       top: 15px;
@@ -765,20 +782,19 @@
           <p class="tagline">Global Business Platform</p>
         </div>
       </div>
-      
+
       <div class="search-container">
         <input type="text" class="search-input" placeholder="🔍 Search item on OBlinks" id="search-input">
         <i class="fas fa-search"></i>
       </div>
-      
-      <div class="header-right">
-        <div class="dropdown" id="notification-dropdown">
-          <div class="icon-btn">
-            <i class="fas fa-bell"></i>
-            <span class="badge">3</span>
-          </div>
-        </div>
-        
+
+<div class="dropdown" id="notification-dropdown" style="position: relative; cursor: pointer;">
+  <a href="notifications.html" class="icon-btn" style="text-decoration: none; color: inherit;">
+    <i class="fas fa-bell"></i>
+    <span id="notification-badge" class="badge" style="display: none;">0</span>
+  </a>
+</div>
+
         <div class="dropdown" id="profile-dropdown">
           <div class="icon-btn">
             <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-4.42 0-8 3.58-8 8h16c0-4.42-3.58-8-8-8z'/%3E%3C/svg%3E" alt="User" style="width: 24px; height: 24px;">
@@ -787,7 +803,7 @@
       </div>
     </div>
   </header>
-  
+
   <!-- Carousel Section - Announcements -->
   <div class="carousel-container">
     <div class="carousel-slides">
@@ -801,38 +817,38 @@
         <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80" alt="Business Opportunities">
       </div>
     </div>
-    
+
     <button class="carousel-btn carousel-prev">
       <i class="fas fa-chevron-left"></i>
     </button>
-    
+
     <button class="carousel-btn carousel-next">
       <i class="fas fa-chevron-right"></i>
     </button>
-    
+
     <div class="carousel-indicators">
       <div class="carousel-indicator active"></div>
       <div class="carousel-indicator"></div>
       <div class="carousel-indicator"></div>
     </div>
   </div>
-  
+
   <!-- Main Content -->
   <main class="main-content">
     <div class="content-header">
       <h2><i class="fas fa-briefcase"></i> Featured Businesses</h2>
     </div>
-    
+
     <div class="business-cards" id="business-cards-container">
       <div class="loading-spinner">
         <i class="fas fa-spinner"></i>
       </div>
     </div>
   </main>
-  
+
   <!-- Category Panel -->
   <div class="category-overlay" id="category-overlay"></div>
-  
+
   <div class="category-panel" id="category-panel">
     <div class="panel-header">
       <h2 class="panel-title"><i class="fas fa-layer-group"></i> Business Categories</h2>
@@ -840,7 +856,7 @@
         <i class="fas fa-times"></i>
       </button>
     </div>
-    
+
     <div class="categories-grid">
       <div class="category-card" data-category="electronics">
         <div class="category-icon">
@@ -848,77 +864,77 @@
         </div>
         <div class="category-name">Electronics</div>
       </div>
-      
+
       <div class="category-card" data-category="fashion">
         <div class="category-icon">
           <i class="fas fa-tshirt"></i>
         </div>
         <div class="category-name">Fashion</div>
       </div>
-      
+
       <div class="category-card" data-category="food">
         <div class="category-icon">
           <i class="fas fa-utensils"></i>
         </div>
         <div class="category-name">Food & Dining</div>
       </div>
-      
+
       <div class="category-card" data-category="services">
         <div class="category-icon">
           <i class="fas fa-concierge-bell"></i>
         </div>
         <div class="category-name">Services</div>
       </div>
-      
+
       <div class="category-card" data-category="home">
         <div class="category-icon">
           <i class="fas fa-home"></i>
         </div>
         <div class="category-name">Home & Garden</div>
       </div>
-      
+
       <div class="category-card" data-category="health">
         <div class="category-icon">
           <i class="fas fa-heartbeat"></i>
         </div>
         <div class="category-name">Health & Beauty</div>
       </div>
-      
+
       <div class="category-card" data-category="auto">
         <div class="category-icon">
           <i class="fas fa-car"></i>
         </div>
         <div class="category-name">Automotive</div>
       </div>
-      
+
       <div class="category-card" data-category="education">
         <div class="category-icon">
           <i class="fas fa-graduation-cap"></i>
         </div>
         <div class="category-name">Education</div>
       </div>
-      
+
       <div class="category-card" data-category="entertainment">
         <div class="category-icon">
           <i class="fas fa-film"></i>
         </div>
         <div class="category-name">Entertainment</div>
       </div>
-      
+
       <div class="category-card" data-category="travel">
         <div class="category-icon">
           <i class="fas fa-plane"></i>
         </div>
         <div class="category-name">Travel</div>
       </div>
-      
+
       <div class="category-card" data-category="sports">
         <div class="category-icon">
           <i class="fas fa-basketball-ball"></i>
         </div>
         <div class="category-name">Sports</div>
       </div>
-      
+
       <div class="category-card" data-category="all">
         <div class="category-icon">
           <i class="fas fa-store"></i>
@@ -927,7 +943,7 @@
       </div>
     </div>
   </div>
-  
+
   <!-- Bottom Navigation -->
   <nav class="bottom-nav">
     <a href="#" class="nav-item active">
@@ -951,7 +967,7 @@
       <span>Account</span>
     </a>
   </nav>
-  
+
   <!-- Lightbox for media -->
   <div class="lightbox" id="lightbox">
     <div class="close-lightbox" id="close-lightbox">
@@ -959,8 +975,6 @@
     </div>
     <div class="lightbox-content" id="lightbox-content"></div>
   </div>
-
-
   
     <script>
     // Firebase configuration
@@ -1067,7 +1081,7 @@ const buttonsHTML = `
         <i class="fas fa-link"></i> Link
       </a>` : ''
     }
-    <a href="details.html?id=${docId}" class="btn btn-view">
+    <a href="viewall.html?id=${docId}" class="btn btn-view">
       <i class="fas fa-eye"></i> View
     </a>
   </div>
@@ -1222,5 +1236,76 @@ if (orderBtn) {
       setInterval(nextSlide, 5000);
     });
   </script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+  import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
+
+  // ✅ Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
+    authDomain: "oblinks-7fdb1.firebaseapp.com",
+    projectId: "oblinks-7fdb1",
+    storageBucket: "oblinks-7fdb1.appspot.com",
+    messagingSenderId: "587017639779",
+    appId: "1:587017639779:web:d11b60f40f431cfc202556"
+  };
+
+  // ✅ Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  // ✅ Notification badge element
+  const badge = document.getElementById("notification-badge");
+
+  // ✅ Check authentication
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) return;
+
+    try {
+      let unseenCount = 0;
+
+      // 🔔 Get unseen orders
+      const ordersSnap = await getDocs(query(
+        collection(db, "orders"),
+        where("businessOwner", "==", user.uid),
+        where("seen", "==", false)
+      ));
+      unseenCount += ordersSnap.size;
+
+      // 🔔 Get unseen referrals
+      const refsSnap = await getDocs(query(
+        collection(db, "referrals"),
+        where("referredBy", "==", user.uid),
+        where("seen", "==", false)
+      ));
+      unseenCount += refsSnap.size;
+
+      // 🔔 Get unseen admin messages
+      const adminSnap = await getDocs(query(
+        collection(db, "adminMessages"),
+        where("to", "==", user.uid),
+        where("seen", "==", false)
+      ));
+      unseenCount += adminSnap.size;
+
+      // ✅ Update badge UI
+      if (unseenCount > 0) {
+        badge.textContent = unseenCount;
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  });
+
+  // ✅ Redirect to notifications page
+  document.getElementById("notification-dropdown").addEventListener("click", () => {
+    window.location.href = "notifications.html";
+  });
+</script>
 </body>
 </html>
