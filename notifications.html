@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Notifications - OBlinks</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+  margin: 0;
+  padding: 20px;
+}
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+#notifications-container {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.notification-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  padding: 15px 20px;
+  font-size: 15px;
+  border-left: 4px solid #1976d2;
+}
+.notification-type {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #1976d2;
+}
+.notification-date {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 10px;
+}
+.notification-card h4 {
+  margin: 5px 0 8px;
+}
+.notification-card p {
+  margin: 3px 0;
+}
+  </style>
+</head>
+<body>
+
+  <h2>All Notifications</h2>
+  <div id="notifications-container">Loading...</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    query,
+    where,
+    getDocs,
+    updateDoc,
+    doc
+  } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+  import {
+    getAuth,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
+
+  // ✅ Firebase Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
+    authDomain: "oblinks-7fdb1.firebaseapp.com",
+    projectId: "oblinks-7fdb1",
+    storageBucket: "oblinks-7fdb1.appspot.com",
+    messagingSenderId: "587017639779",
+    appId: "1:587017639779:web:d11b60f40f431cfc202556"
+  };
+
+  // ✅ Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  // ✅ Wait for DOM
+  document.addEventListener("DOMContentLoaded", () => {
+    const container = document.getElementById("notifications-container");
+
+    if (!container) {
+      console.error("Missing element: #notifications-container");
+      return;
+    }
+
+    // 🔐 Wait for user to log in
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        container.innerHTML = "<p>You must be logged in to view notifications.</p>";
+        return;
+      }
+
+      try {
+        const allNotifications = [];
+
+        // 🛒 Get Orders for this business owner
+        const ordersSnap = await getDocs(
+          query(collection(db, "orders"), where("businessOwner", "==", user.uid))
+        );
+
+        for (const docRef of ordersSnap.docs) {
+          const data = docRef.data();
+
+          allNotifications.push({
+            id: docRef.id,
+            type: "🛒 Order",
+            timestamp: data.timestamp || 0,
+            status: data.status,
+            seen: data.seen,
+            content: `
+              <h4><b>${data.name}</b> ordered <b>${data.item}</b></h4>
+              <p><strong>Qty:</strong> ${data.quantity}</p>
+              <p><strong>Phone:</strong> ${data.phone}</p>
+              <p><strong>Location:</strong> ${data.location}</p>
+              <p><strong>Delivery:</strong> ${data.deliveryMethod || "Not provided"}</p>
+              <p><strong>Payment:</strong> ${data.paymentMethod || "Not provided"}</p>
+              <p><strong>Notes:</strong> ${data.notes || "None"}</p>
+              <p><strong>Status:</strong>
+                <label>
+                  <input type="checkbox" class="status-toggle" data-id="${docRef.id}" ${data.status === 'done' ? 'checked' : ''}>
+                  Done
+                </label>
+              </p>
+            `
+          });
+
+          // 👁️ Mark order as seen
+          if (data.seen === false) {
+            await updateDoc(doc(db, "orders", docRef.id), { seen: true });
+          }
+        }
+
+        // 📅 Sort by time (latest first)
+        allNotifications.sort((a, b) => b.timestamp - a.timestamp);
+
+        // 🖼️ Render
+        container.innerHTML = "";
+        allNotifications.forEach(n => {
+          const card = document.createElement("div");
+          card.className = "notification-card";
+
+          const date = new Date(n.timestamp);
+          const formatted = date.toLocaleString("en-UG", {
+            year: "numeric", month: "short", day: "numeric",
+            hour: "2-digit", minute: "2-digit"
+          });
+
+          card.innerHTML = `
+            <div class="notification-type">${n.type}</div>
+            <div class="notification-date">${formatted}</div>
+            ${n.content}
+          `;
+          container.appendChild(card);
+        });
+
+        if (allNotifications.length === 0) {
+          container.innerHTML = "<p>No notifications found yet.</p>";
+        }
+
+        // ✅ Listen for status checkbox updates
+        document.querySelectorAll(".status-toggle").forEach(checkbox => {
+          checkbox.addEventListener("change", async (e) => {
+            const orderId = e.target.getAttribute("data-id");
+            const newStatus = e.target.checked ? "done" : "pending";
+
+            try {
+              await updateDoc(doc(db, "orders", orderId), { status: newStatus });
+              alert("Order marked as " + newStatus);
+            } catch (err) {
+              console.error("Failed to update status", err);
+              alert("Failed to update order status.");
+            }
+          });
+        });
+
+      } catch (err) {
+        console.error("Error loading notifications:", err);
+        container.innerHTML = "<p>Failed to load notifications.</p>";
+      }
+    });
+  });
+</script>
+</body>
+</html>
