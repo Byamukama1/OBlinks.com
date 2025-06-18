@@ -654,6 +654,108 @@ body { background-color: var(--bg); color: var(--dark); line-height: 1.6; min-he
   rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
 />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+<!-- ✅ Firebase Profile Upload Script -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
+    authDomain: "oblinks-7fdb1.firebaseapp.com",
+    projectId: "oblinks-7fdb1",
+    storageBucket: "oblinks-7fdb1.appspot.com",
+    messagingSenderId: "587017639779",
+    appId: "1:587017639779:web:d11b60f40f431cfc202556"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  const profileInput = document.getElementById("profileImageUpload");
+  const cropModal = document.getElementById("cropModal");
+  const cropperImage = document.getElementById("cropperImage");
+  const cropAndUploadBtn = document.getElementById("cropAndUploadBtn");
+
+  let cropper;
+  let currentUserId;
+
+  // 🔄 Load User Profile
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      currentUserId = user.uid;
+      const userRef = doc(db, "users", currentUserId);
+      const userSnap = await getDoc(userRef);
+      if (userSnap.exists()) {
+        const data = userSnap.data();
+        document.getElementById("userImage").src = data.profileImage || "https://via.placeholder.com/100";
+        document.getElementById("userName").innerText = data.name || "User";
+        document.getElementById("userEmail").innerText = user.email || "";
+      }
+    }
+  });
+
+  // 📸 Cropper Modal
+  profileInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      cropperImage.src = URL.createObjectURL(file);
+      cropModal.style.display = "flex";
+      if (cropper) cropper.destroy();
+      cropper = new Cropper(cropperImage, {
+        aspectRatio: 1,
+        viewMode: 1,
+        background: false,
+      });
+    }
+  });
+
+  // ☁️ Upload to Cloudinary
+  cropAndUploadBtn.addEventListener("click", async () => {
+    if (!cropper) {
+      alert("Please select and crop an image first.");
+      return;
+    }
+
+    const canvas = cropper.getCroppedCanvas({ width: 300, height: 300 });
+    canvas.toBlob(async (blob) => {
+      const formData = new FormData();
+      formData.append("file", blob);
+      formData.append("upload_preset", "Unsigned upload");
+
+      try {
+        const res = await fetch("https://api.cloudinary.com/v1_1/dp81zzxlh/image/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await res.json();
+        const imageUrl = data.secure_url;
+
+        if (!imageUrl) {
+          alert("Upload failed. No image URL returned.");
+          return;
+        }
+
+        if (currentUserId) {
+          const userRef = doc(db, "users", currentUserId);
+          await setDoc(userRef, { profileImage: imageUrl }, { merge: true });
+
+          document.getElementById("userImage").src = imageUrl;
+          cropModal.style.display = "none";
+          alert("✅ Profile picture updated!");
+        } else {
+          alert("User not logged in.");
+        }
+      } catch (err) {
+        console.error("Upload error:", err);
+        alert("❌ Something went wrong during upload.");
+      }
+    }, "image/jpeg");
+  });
 </script>
 </body>
 </html>
