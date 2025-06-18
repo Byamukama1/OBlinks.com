@@ -187,7 +187,7 @@
                 <p>Please fill in all required fields. Our team will contact you to confirm your order.</p>
             </div>
             
-            <form id="orderForm">
+            <form id="order_form">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="name" class="required">Your Full Name</label>
@@ -248,9 +248,16 @@
         </div>
     </div>
     
-   <script type="module">
+    
+<script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
-  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+  import {
+    getFirestore,
+    doc,
+    getDoc,
+    collection,
+    addDoc
+  } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
@@ -264,56 +271,87 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  const businessId = new URLSearchParams(window.location.search).get("id");
-  console.log("Ordering for business:", businessId);
+  document.addEventListener("DOMContentLoaded", async () => {
+    const form = document.getElementById("order_form");
 
-  const form = document.getElementById("orderForm");
-  form.addEventListener("submit", async function(e) {
-    e.preventDefault();
+    if (!form) {
+      console.error("Form element with ID 'order_form' is missing.");
+      return;
+    }
 
-    // 1. Validation
-    const requiredFields = this.querySelectorAll("[required]");
-    let valid = true;
-    requiredFields.forEach(f => {
-      if (!f.value.trim()) {
-        valid = false;
-        f.style.borderColor = "#e53935";
-      } else {
-        f.style.borderColor = "#ddd";
+    const urlParams = new URLSearchParams(window.location.search);
+    const businessId = urlParams.get("id");
+
+    if (!businessId) {
+      alert("Order cannot be placed — no business selected.");
+      return;
+    }
+
+    let businessOwner = "";
+    try {
+      const businessRef = doc(db, "businesses", businessId);
+      const businessSnap = await getDoc(businessRef);
+
+      if (!businessSnap.exists()) {
+        alert("This business no longer exists.");
+        return;
+      }
+
+      const businessData = businessSnap.data();
+      businessOwner = businessData.createdBy;
+
+      if (!businessOwner) {
+        alert("This business has no owner information.");
+        return;
+      }
+
+    } catch (err) {
+      console.error("Error fetching business:", err);
+      alert("Could not verify business. Try again.");
+      return;
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const name = form["name"].value.trim();
+      const phone = form["phone"].value.trim();
+      const item = form["item"].value.trim();
+      const quantity = form["quantity"].value.trim();
+      const location = form["location"].value.trim();
+      const deliveryMethod = form["deliveryMethod"].value.trim();
+      const paymentMethod = form["paymentMethod"].value.trim();
+      const notes = form["notes"].value.trim();
+
+      if (!name || !phone || !item || !quantity || !location || !deliveryMethod || !paymentMethod) {
+        alert("Please fill in all required fields.");
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "orders"), {
+          businessId,
+          businessOwner,
+          name,
+          phone,
+          item,
+          quantity,
+          location,
+          deliveryMethod,
+          paymentMethod,
+          notes,
+          seen: false,
+          status: "pending",
+          timestamp: Date.now()
+        });
+
+        alert("Order submitted successfully!");
+        form.reset();
+      } catch (err) {
+        console.error("Failed to submit order:", err);
+        alert("An error occurred. Please try again.");
       }
     });
-    if (!valid) return alert("Please fill in all required fields");
-    if (!businessId) return alert("Order cannot be placed — no business selected.");
-
-    // 2. Gather form values
-    const name     = this.name.value;
-    const item     = this.item.value;
-    const quantity = this.quantity.value;
-    const phone    = this.phone.value;
-    const location = this.location.value;
-    const notes    = this.notes.value;
-
-    // 3. Save to Firestore
-    try {
-      const orderRef = await addDoc(collection(db, "orders"), {
-        businessId,
-        name,
-        item,
-        quantity,
-        phone,
-        location,
-        notes,
-        status: "pending",
-        seen: false,
-        timestamp: Date.now()
-      });
-      console.log("Order placed:", orderRef.id);
-      alert("Order submitted successfully! Our business manager will contact you shortly.");
-      this.reset();
-    } catch (err) {
-      console.error("Error adding order:", err);
-      alert("Failed to submit order.");
-    }
   });
 </script>
 </body>
