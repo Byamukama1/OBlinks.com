@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business Listing Payment</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --light: #f8fafc;
+      --dark: #1e293b;
+      --border: #e2e8f0;
+      --shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: var(--dark);
+    }
+    
+    .container {
+      max-width: 900px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+    
+    @media (min-width: 768px) {
+      .container {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      grid-column: 1 / -1;
+    }
+    
+    .header h1 {
+      font-size: 2.2rem;
+      color: var(--primary-dark);
+      margin-bottom: 10px;
+    }
+    
+    .header p {
+      color: var(--dark);
+      opacity: 0.8;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      padding: 30px;
+      transition: transform 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .card-title {
+      font-size: 1.4rem;
+      margin-bottom: 25px;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .card-title i {
+      background: rgba(37, 99, 235, 0.1);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--dark);
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    }
+    
+    .readonly {
+      background-color: #f8fafc;
+      color: #64748b;
+    }
+    
+    .payment-instructions {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      border-radius: 16px;
+      padding: 25px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .payment-instructions::before {
+      content: "";
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 150px;
+      height: 150px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+    }
+    
+    .payment-instructions::after {
+      content: "";
+      position: absolute;
+      bottom: -80px;
+      left: -80px;
+      width: 200px;
+      height: 200px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+    }
+    
+    .instructions-content {
+      position: relative;
+      z-index: 2;
+    }
+    
+    .instructions-title {
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .instructions-detail {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 25px;
+    }
+    
+    .instructions-detail p {
+      margin-bottom: 15px;
+      line-height: 1.6;
+    }
+    
+    .payment-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: white;
+      color: var(--dark);
+      padding: 12px 15px;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+    
+    .copy-btn {
+      background: var(--success);
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.3s ease;
+    }
+    
+    .copy-btn:hover {
+      background: #0da271;
+    }
+    
+    .submit-btn {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: background 0.3s ease;
+      margin-top: 20px;
+    }
+    
+    .submit-btn:hover {
+      background: var(--primary-dark);
+    }
+    
+    .submit-btn:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+    
+    .status-message {
+      text-align: center;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 20px;
+      display: none;
+    }
+    
+    .status-success {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+    
+    .status-error {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--error);
+    }
+    
+    .package-highlight {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 15px;
+      text-align: center;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Business Listing Payment</h1>
+      <p>Complete your payment to activate your business listing</p>
+    </div>
+    
+    <!-- Payment Instructions First -->
+    <div class="payment-instructions">
+      <div class="instructions-content">
+        <h2 class="instructions-title"><i class="fas fa-money-bill-wave"></i> Payment Instructions</h2>
+        
+        <div class="instructions-detail">
+          <p>To complete your business listing payment, please follow these steps:</p>
+          
+          <ol style="padding-left: 20px; margin-top: 15px;">
+            <li style="margin-bottom: 10px;">Select your desired business listing package</li>
+            <li style="margin-bottom: 10px;">Send the payment amount to:</li>
+          </ol>
+          
+          <div class="payment-info">
+            <div>
+              <strong>0761828694</strong>
+              <div style="font-size: 0.9rem; opacity: 0.9;">Barakira Tumusherure</div>
+            </div>
+            <button class="copy-btn" id="copyBtn">
+              <i class="fas fa-copy"></i> Copy
+            </button>
+          </div>
+          
+          <p style="margin-top: 20px;">After payment, fill out the business information form and click "Complete Payment" to activate your listing.</p>
+        </div>
+        
+        <div class="instructions-detail">
+          <h4 style="margin-bottom: 10px;">Package Options:</h4>
+          <p>Choose from our annual packages to feature your business:</p>
+          
+          <div class="package-highlight">
+            <div>Starter: <strong>0 UGX</strong></div>
+            <div>Basic: <strong>10,000 UGX</strong></div>
+            <div>Standard: <strong>30,000 UGX</strong></div>
+            <div>Advanced: <strong>50,000 UGX</strong></div>
+            <div>Professional: <strong>100,000 UGX</strong></div>
+            <div>Premium: <strong>150,000 UGX</strong></div>
+            <div>Enterprise: <strong>200,000 UGX</strong></div>
+          </div>
+        </div>
+        
+        <div class="instructions-detail">
+          <h4 style="margin-bottom: 10px;">Important Notes:</h4>
+          <ul style="padding-left: 20px;">
+            <li style="margin-bottom: 8px;">Use the same phone number for payment as entered in the form</li>
+            <li style="margin-bottom: 8px;">Your listing will be activated within 24 hours of payment confirmation</li>
+            <li style="margin-bottom: 8px;">Contact support@oblinks.com for any issues</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Business Information Second -->
+    <div class="card">
+      <h2 class="card-title"><i class="fas fa-building"></i> Business Information</h2>
+      
+      <form id="paymentForm">
+        <div class="form-group">
+          <label for="businessTitle">Business Title</label>
+          <input type="text" id="businessTitle" placeholder="Enter your business name" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="whatsappNumber">WhatsApp Number</label>
+          <input type="text" id="whatsappNumber" placeholder="Enter WhatsApp number for business" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="packageName">Package Name</label>
+          <select id="packageName" required>
+            <option value="" disabled selected>Select your package</option>
+            <option value="Starter">Starter</option>
+            <option value="Basic">Basic</option>
+            <option value="Standard">Standard</option>
+            <option value="Advanced">Advanced</option>
+            <option value="Professional">Professional</option>
+            <option value="Premium">Premium</option>
+            <option value="Enterprise">Enterprise</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="paymentPhone">Phone Number Used to Pay</label>
+          <input type="text" id="paymentPhone" placeholder="Enter phone number used for payment" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="amountPaid">Amount Paid (UGX)</label>
+          <input type="text" id="amountPaid" placeholder="Amount will auto-fill based on package" readonly class="readonly">
+          <p style="margin-top: 8px; font-size: 14px; color: #64748b;">
+            Note: Amount is fixed for each package
+          </p>
+        </div>
+        
+        <button type="submit" class="submit-btn" id="submitBtn">
+          <i class="fas fa-lock"></i> Complete Payment
+        </button>
+        
+        <div id="statusMessage" class="status-message"></div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const paymentForm = document.getElementById('paymentForm');
+      const copyBtn = document.getElementById('copyBtn');
+      const statusMessage = document.getElementById('statusMessage');
+      const packageSelect = document.getElementById('packageName');
+      const amountPaid = document.getElementById('amountPaid');
+      
+      // Package prices (UGX per year)
+      const packagePrices = {
+        "Starter": 0,
+        "Basic": 10000,
+        "Standard": 30000,
+        "Advanced": 50000,
+        "Professional": 100000,
+        "Premium": 150000,
+        "Enterprise": 200000
+      };
+      
+      // Copy payment number to clipboard
+      copyBtn.addEventListener('click', function() {
+        const textToCopy = '0761828694';
+        navigator.clipboard.writeText(textToCopy)
+          .then(() => {
+            showStatus('Payment number copied to clipboard!', 'success');
+          })
+          .catch(err => {
+            showStatus('Failed to copy text: ' + err, 'error');
+          });
+      });
+      
+      // Package selection change handler
+      packageSelect.addEventListener('change', function() {
+        const packageValue = packageSelect.value;
+        if (packageValue in packagePrices) {
+          amountPaid.value = packagePrices[packageValue].toLocaleString();
+        } else {
+          amountPaid.value = '';
+        }
+      });
+      
+      // Form submission
+      paymentForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const title = document.getElementById('businessTitle').value;
+        const whatsapp = document.getElementById('whatsappNumber').value;
+        const phone = document.getElementById('paymentPhone').value;
+        const packageSelected = document.getElementById('packageName').value;
+        const amount = document.getElementById('amountPaid').value;
+ // Basic validation
+        if (!title || !whatsapp || !phone || !packageSelected || !amount) {
+          showStatus('Please fill all required fields', 'error');
+          return;
+        }
+        
+        // Simulate form submission
+        showStatus('Processing payment information...', 'success');
+        
+        setTimeout(() => {
+          showStatus('Payment submitted successfully! Your listing will be activated within 24 hours.', 'success');
+          paymentForm.reset();
+          amountPaid.value = '';
+        }, 2000);
+      });
+      
+      function showStatus(message, type) {
+        statusMessage.textContent = message;
+        statusMessage.className = 'status-message';
+        statusMessage.classList.add(`status-${type}`);
+        statusMessage.style.display = 'block';
+        
+        // Hide message after 5 seconds
+        setTimeout(() => {
+          statusMessage.style.display = 'none';
+        }, 5000);
+      }
+    });
+  </script>
+  <!-- Firebase SDKs (add this before your closing </body>) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
+    authDomain: "oblinks-7fdb1.firebaseapp.com",
+    projectId: "oblinks-7fdb1",
+    storageBucket: "oblinks-7fdb1.appspot.com",
+    messagingSenderId: "587017639779",
+    appId: "1:587017639779:web:d11b60f40f431cfc202556"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const paymentForm = document.getElementById('paymentForm');
+    const copyBtn = document.getElementById('copyBtn');
+    const statusMessage = document.getElementById('statusMessage');
+    const packageSelect = document.getElementById('packageName');
+    const amountPaid = document.getElementById('amountPaid');
+
+    const packagePrices = {
+      "Starter": 0,
+      "Basic": 10000,
+      "Standard": 30000,
+      "Advanced": 50000,
+      "Professional": 100000,
+      "Premium": 150000,
+      "Enterprise": 200000
+    };
+
+    // Auto-fill amount
+    packageSelect.addEventListener('change', () => {
+      const selected = packageSelect.value;
+      amountPaid.value = selected in packagePrices ? packagePrices[selected].toLocaleString() : '';
+    });
+
+    // Copy number
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText('0761828694')
+        .then(() => showStatus('Copied!', 'success'))
+        .catch(() => showStatus('Copy failed.', 'error'));
+    });
+
+    // Submit form
+    paymentForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const title = document.getElementById('businessTitle').value.trim();
+      const whatsapp = document.getElementById('whatsappNumber').value.trim();
+      const phone = document.getElementById('paymentPhone').value.trim();
+      const packageName = packageSelect.value;
+      const amount = amountPaid.value.trim();
+
+      if (!title || !whatsapp || !phone || !packageName || !amount) {
+        return showStatus("Fill in all fields!", "error");
+      }
+
+      try {
+        await addDoc(collection(db, "payments"), {
+          businessTitle: title,
+          whatsappNumber: whatsapp,
+          paymentPhone: phone,
+          packageName: packageName,
+          amountPaid: parseInt(amount.replace(/,/g, '')),
+          status: "pending",
+          timestamp: serverTimestamp()
+        });
+
+        showStatus("Payment submitted! You’ll be listed after review.", "success");
+        paymentForm.reset();
+        amountPaid.value = '';
+      } catch (error) {
+        console.error("Firestore error:", error);
+        showStatus("Failed to submit payment. Try again.", "error");
+      }
+    });
+
+    function showStatus(message, type) {
+      statusMessage.textContent = message;
+      statusMessage.className = `status-message status-${type}`;
+      statusMessage.style.display = 'block';
+      setTimeout(() => statusMessage.style.display = 'none', 5000);
+    }
+  });
+</script>
+</body>
+</html>
