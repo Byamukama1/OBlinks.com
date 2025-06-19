@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OBlinks - Business Solutions</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  
   <style>
     * {
       margin: 0;
@@ -20,6 +27,7 @@
       --light: #f8fafc;
       --dark: #1e293b;
       --success: #10b981;
+      --error: #ef4444;
       --warning: #f59e0b;
       --accent: #8b5cf6;
       --border: #e2e8f0;
@@ -62,6 +70,19 @@
       gap: 12px;
     }
     
+    .zoom-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #ffffffdd;
+  border: none;
+  border-radius: 50%;
+  padding: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 999;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
     .logo-text h1 {
       font-size: 22px;
       font-weight: 700;
@@ -99,6 +120,7 @@
       box-shadow: var(--card-shadow);
       overflow: hidden;
       margin-bottom: 40px;
+      display: none; /* Initially hidden until authenticated */
     }
     
     /* Rent Packages Styles */
@@ -580,7 +602,7 @@
     /* Form Footer */
     .form-footer {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
       padding: 25px 30px;
       border-top: 1px solid var(--border);
       background: #f8fafc;
@@ -687,8 +709,7 @@
     .modal-body {
       padding: 25px;
     }
-    
-    .payment-option {
+  .payment-option {
       background: #f8fafc;
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -727,6 +748,25 @@
       background: #f8fafc;
       display: flex;
       justify-content: center;
+    }
+    
+    /* Upload States */
+    .upload-progress {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--primary);
+      font-size: 16px;
+      gap: 10px;
+      flex-direction: column;
+    }
+    
+    .upload-error {
+      color: var(--error);
+      text-align: center;
+      padding: 20px;
+      font-size: 14px;
     }
     
     /* Responsive Design */
@@ -917,7 +957,73 @@
       height: 100%;
       object-fit: contain;
     }
+    
+    /* Notification */
+    .notification {
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-weight: 500;
+    }
+    
+    .notification-error {
+      background: #fef2f2
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+    
+    .notification-success {
+      background: #f0fdf4;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+    
+    .notification i {
+      font-size: 1.2rem;
+    }
   </style>
+  <script>
+  // Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
+    authDomain: "oblinks-7fdb1.firebaseapp.com",
+    projectId: "oblinks-7fdb1",
+    storageBucket: "oblinks-7fdb1.appspot.com",
+    messagingSenderId: "587017639779",
+    appId: "1:587017639779:web:d11b60f40f431cfc202556"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const auth = firebase.auth();
+
+  // Cloudinary configuration
+  const cloudinaryConfig = {
+    cloudName: 'dp81zzxlh',
+    uploadPreset: 'unsignedpreset' // Using your unsigned preset
+  };
+
+  // Package selection
+  let selectedPackage = null;
+  let paymentComplete = false;
+  let maxItems = 2;
+  let currentItems = 1;
+  let currentUser = null;
+
+  // Check authentication
+  auth.onAuthStateChanged(user => {
+    currentUser = user;
+    if (!user) {
+      window.location.href = "login.html";
+    } else {
+      document.querySelector('.form-container').style.display = 'block';
+    }
+  });
+  </script>
 </head>
 <body>
   <!-- Header -->
@@ -958,7 +1064,7 @@
           </thead>
           <tbody>
             <tr>
-                <td><button class="package-btn" data-package="Starter" data-price="0" data-items="2">Starter</button></td>
+              <td><button class="package-btn" data-package="Starter" data-price="0" data-items="2">Starter</button></td>
               <td>0</td>
               <td>2</td>
               <td>20%</td>
@@ -1066,7 +1172,7 @@
     </div>
     
     <!-- Business Form -->
-    <div class="form-container">
+    <div class="form-container" style="display: none;">
       <div class="form-header">
         <h2><i class="fas fa-store"></i> Add Your Business to OBlinks</h2>
         <p>Showcase your business to a global audience. Fill in your business details and list your products or services to start connecting with customers.</p>
@@ -1102,37 +1208,55 @@
           <div class="form-row">
             <div class="form-group">
               <label class="required">Business Title</label>
-              <input type="text" class="form-control" placeholder="Enter your business name">
+              <input type="text" id="business-title" class="form-control" placeholder="Enter your business name">
             </div>
             
             <div class="form-group">
               <label class="required">Business Location</label>
-              <input type="text" class="form-control" placeholder="Country, District, City etc.">
+              <input type="text" id="business-location" class="form-control" placeholder="Country, District, City etc.">
             </div>
+            
+           <div class="form-group">
+  <label for="business-category">Business Category</label>
+  <select id="business-category" required>
+    <option value="" disabled selected>Select a category</option>
+    <option value="electronics">Electronics</option>
+    <option value="fashion">Fashion</option>
+    <option value="food">Food & Dining</option>
+    <option value="services">Services</option>
+    <option value="home">Home & Garden</option>
+    <option value="health">Health & Beauty</option>
+    <option value="auto">Automotive</option>
+    <option value="education">Education</option>
+    <option value="entertainment">Entertainment</option>
+    <option value="travel">Travel</option>
+    <option value="sports">Sports</option>
+    <option value="all">All Businesses</option>
+  </select>
+</div>
           </div>
           
           <div class="form-group">
             <label class="required">Business Description</label>
-            <textarea class="form-control" placeholder="Describe your business, products/services, and what makes it unique..."></textarea>
+            <textarea id="business-description" class="form-control" placeholder="Describe your business, products/services, and what makes it unique..."></textarea>
             <div class="form-note">Minimum 100 characters. Describe what your business offers and why customers should choose you.</div>
           </div>
           
           <div class="form-row">
             <div class="form-group">
               <label>Business Link (Optional)</label>
-              <input type="url" class="form-control" placeholder="https://yourbusiness.com">
+              <input type="url" id="business-link" class="form-control" placeholder="https://yourbusiness.com">
               <div class="form-note">Your website, social media page, or online store</div>
             </div>
             
             <div class="form-group">
               <label class="required">WhatsApp Number</label>
-              <input type="tel" class="form-control" placeholder="256712345678">
+              <input type="tel" id="whatsapp-number" class="form-control" placeholder="256712345678">
               <div class="form-note">Customers will contact you via WhatsApp using this number</div>
             </div>
           </div>
         </div>
-        
-        <!-- Scroll targets -->
+                <!-- Scroll targets -->
         <div class="scroll-target" id="items-services"></div>
         
         <!-- Section 2: Items & Services -->
@@ -1158,41 +1282,11 @@
                     <p>Click to upload image or video</p>
                   </div>
                 </div>
-                <div class="edit-controls">
-                  <button class="edit-btn" title="Edit item">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                </div>
               </div>
               <div class="item-body">
-                <input type="text" class="form-control" placeholder="Item Title" style="margin-bottom: 10px;">
-                <input type="text" class="form-control" placeholder="Price (UGX)" style="margin-bottom: 15px;">
-                <button class="btn-submit" style="padding: 8px 12px; font-size: 13px;">
-                  <i class="fas fa-save"></i> Save Changes
-                </button>
-              </div>
-            </div>
-            
-            <!-- Item 2 -->
-            <div class="item-card">
-              <div class="item-media">
-                <div class="file-input-wrapper">
-                  <input type="file" class="media-input" accept="image/*,video/*">
-                  <div class="placeholder">
-                    <i class="fas fa-image fa-2x"></i>
-                    <p>Click to upload image or video</p>
-                  </div>
-                </div>
-                <div class="edit-controls">
-                  <button class="edit-btn" title="Edit item">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="item-body">
-                <input type="text" class="form-control" placeholder="Item Title" style="margin-bottom: 10px;">
-                <input type="text" class="form-control" placeholder="Price (UGX)" style="margin-bottom: 15px;">
-                <button class="btn-submit" style="padding: 8px 12px; font-size: 13px;">
+                <input type="text" class="form-control item-title" placeholder="Item Title" style="margin-bottom: 10px;">
+                <input type="text" class="form-control item-price" placeholder="Price (UGX)" style="margin-bottom: 15px;">
+                <button class="btn-submit save-item" style="padding: 8px 12px; font-size: 13px;">
                   <i class="fas fa-save"></i> Save Changes
                 </button>
               </div>
@@ -1211,9 +1305,9 @@
       <!-- Form Footer -->
       <div class="form-footer">
         <div>
-          <button class="payment-btn hidden" id="payment-btn" onclick="window.location.href='paynow.html'">
-  <i class="fas fa-credit-card"></i> Pay Now
-</button>
+          <button class="payment-btn hidden" id="payment-btn">
+            <i class="fas fa-credit-card"></i> Pay Now
+          </button>
           <button class="btn-submit" id="submit-btn" disabled>
             <i class="fas fa-paper-plane"></i> Submit Business
           </button>
@@ -1282,12 +1376,6 @@
   
   <script>
     // Package selection
-    let selectedPackage = null;
-    let paymentComplete = false;
-    let maxItems = 2;
-    let currentItems = 2;
-    
-    // Package buttons
     document.querySelectorAll('.package-btn').forEach(button => {
       button.addEventListener('click', function() {
         // Get package data
@@ -1375,16 +1463,11 @@
                 <p>Click to upload image or video</p>
               </div>
             </div>
-            <div class="edit-controls">
-              <button class="edit-btn" title="Edit item">
-                <i class="fas fa-edit"></i>
-              </button>
-            </div>
           </div>
           <div class="item-body">
-            <input type="text" class="form-control" placeholder="Item Title" style="margin-bottom: 10px;">
-            <input type="text" class="form-control" placeholder="Price (UGX)" style="margin-bottom: 15px;">
-            <button class="btn-submit" style="padding: 8px 12px; font-size: 13px;">
+            <input type="text" class="form-control item-title" placeholder="Item Title" style="margin-bottom: 10px;">
+            <input type="text" class="form-control item-price" placeholder="Price (UGX)" style="margin-bottom: 15px;">
+            <button class="btn-submit save-item" style="padding: 8px 12px; font-size: 13px;">
               <i class="fas fa-save"></i> Save Changes
             </button>
           </div>
@@ -1398,104 +1481,111 @@
         mediaInput.addEventListener('change', handleMediaUpload);
         
         // Add save button event
-        const saveBtn = newItem.querySelector('.btn-submit');
+        const saveBtn = newItem.querySelector('.save-item');
         saveBtn.addEventListener('click', function(e) {
           e.preventDefault();
-          alert('Item changes saved successfully!');
-        });
-        
-        // Add edit button event
-        const editBtn = newItem.querySelector('.edit-btn');
-        editBtn.addEventListener('click', function() {
-          alert('Edit mode activated. Make your changes and click "Save Changes".');
+          const title = newItem.querySelector('.item-title').value;
+          const price = newItem.querySelector('.item-price').value;
+          
+          if(!title || !price) {
+            alert('Please fill in both title and price');
+            return;
+          }
+          
+          alert('Item saved successfully!');
         });
       }
     });
-    
-    // Handle media upload
-    function handleMediaUpload(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      
-      const wrapper = e.target.parentElement;
-      const placeholder = wrapper.querySelector('.placeholder');
-      const mediaContainer = document.createElement('div');
-      mediaContainer.className = 'media-preview';
-      
-      if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          const img = document.createElement('img');
-          img.src = event.target.result;
-          img.alt = "Product image";
-          img.style.cursor = 'zoom-in';
-          img.addEventListener('click', function() {
-            openLightbox(img.src, 'image');
-          });
-          
-          // Create zoom button
-          const zoomBtn = document.createElement('button');
-          zoomBtn.className = 'media-btn';
-          zoomBtn.title = "Zoom image";
-          zoomBtn.innerHTML = '<i class="fas fa-search-plus"></i>';
-          zoomBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            openLightbox(img.src, 'image');
-          });
-          
-          mediaContainer.appendChild(img);
-          
-          // Create media controls container
-          const controls = document.createElement('div');
-          controls.className = 'media-controls';
-          controls.appendChild(zoomBtn);
-          
-          // Replace placeholder with media
-          wrapper.innerHTML = '';
-          wrapper.appendChild(mediaContainer);
-          wrapper.appendChild(controls);
-        };
-        reader.readAsDataURL(file);
-      } 
-      else if (file.type.startsWith('video/')) {
-        const video = document.createElement('video');
-        video.src = URL.createObjectURL(file);
-        video.controls = true;
-        video.autoplay = true;
-        video.muted = true;
-        video.style.cursor = 'pointer';
-        
-        // Create fullscreen button
-        const fullscreenBtn = document.createElement('button');
-        fullscreenBtn.className = 'media-btn';
-        fullscreenBtn.title = "Fullscreen";
-        fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
-        fullscreenBtn.addEventListener('click', function() {
-          if (video.requestFullscreen) {
-            video.requestFullscreen();
-          } else if (video.mozRequestFullScreen) {
-            video.mozRequestFullScreen();
-          } else if (video.webkitRequestFullscreen) {
-            video.webkitRequestFullscreen();
-          } else if (video.msRequestFullscreen) {
-            video.msRequestFullscreen();
-          }
-        });
-        
-        mediaContainer.appendChild(video);
-        
-        // Create media controls container
-        const controls = document.createElement('div');
-        controls.className = 'media-controls';
-        controls.appendChild(fullscreenBtn);
-        
-        // Replace placeholder with media
-        wrapper.innerHTML = '';
-        wrapper.appendChild(mediaContainer);
-        wrapper.appendChild(controls);
+
+
+// Connect all media inputs to this function
+document.querySelectorAll('.media-input').forEach(input => {
+  input.addEventListener('change', handleMediaUpload);
+});
+
+// Handle media upload to Cloudinary
+async function handleMediaUpload(e) {
+  alert("Upload started"); // For phones with no console
+
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const wrapper = e.target.parentElement;
+  wrapper.innerHTML = `<div style="color:blue">Uploading...</div>`;
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", "Unsigned upload");
+
+  try {
+    const response = await fetch(
+      "https://api.cloudinary.com/v1_1/dp81zzxlh/auto/upload", // 🔁 auto handles both image/video
+      {
+        method: "POST",
+        body: formData
       }
+    );
+    const data = await response.json();
+
+    wrapper.innerHTML = ""; // Clear old content
+
+    const isVideo = data.resource_type === "video";
+
+    // Create preview container
+    const controlsDiv = document.createElement("div");
+    controlsDiv.style.position = "relative";
+    controlsDiv.style.width = "100%";
+    controlsDiv.style.borderRadius = "10px";
+    controlsDiv.style.overflow = "hidden";
+
+    // Create media element
+    let mediaElement;
+    if (isVideo) {
+      mediaElement = document.createElement("video");
+mediaElement.src = data.secure_url;
+mediaElement.controls = true;
+mediaElement.muted = true;
+
+// Optional: generate thumbnail using Cloudinary's transformation
+const videoId = data.public_id;
+const posterUrl = `https://res.cloudinary.com/dp81zzxlh/video/upload/so_2/${videoId}.jpg`;
+mediaElement.poster = posterUrl;
+      mediaElement.style.width = "100%";
+      mediaElement.style.maxHeight = "200px";
+      mediaElement.style.borderRadius = "10px";
+      mediaElement.style.objectFit = "cover";
+    } else {
+      mediaElement = document.createElement("img");
+      mediaElement.src = data.secure_url;
+      mediaElement.alt = "Uploaded image";
+      mediaElement.style.width = "100%";
+      mediaElement.style.maxHeight = "200px";
+      mediaElement.style.borderRadius = "10px";
+      mediaElement.style.objectFit = "contain";
     }
-    
+
+    // Zoom button
+    const zoomBtn = document.createElement("button");
+    zoomBtn.innerHTML = `<i class="fas fa-search-plus"></i>`;
+    zoomBtn.className = "zoom-btn";
+    zoomBtn.onclick = () => openLightbox(data.secure_url, isVideo ? 'video' : 'image');
+
+    // Hidden input to store URL
+    const urlInput = document.createElement("input");
+    urlInput.type = "hidden";
+    urlInput.className = "media-url";
+    urlInput.value = data.secure_url;
+
+    // Assemble
+    controlsDiv.appendChild(mediaElement);
+    controlsDiv.appendChild(zoomBtn);
+    wrapper.appendChild(controlsDiv);
+    wrapper.appendChild(urlInput);
+
+  } catch (error) {
+    wrapper.innerHTML = `<p style="color:red">Upload failed: ${error.message}</p>`;
+  }
+}
     // Open lightbox for zooming
     function openLightbox(src, type) {
       const lightbox = document.getElementById('lightbox');
@@ -1520,26 +1610,6 @@
       if (e.target === this) {
         this.style.display = 'none';
       }
-    });
-    
-    // Add media input events to initial items
-    document.querySelectorAll('.media-input').forEach(input => {
-      input.addEventListener('change', handleMediaUpload);
-    });
-    
-    // Add save button events to initial items
-    document.querySelectorAll('.item-card .btn-submit').forEach(btn => {
-      btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        alert('Item changes saved successfully!');
-      });
-    });
-    
-    // Add edit button events to initial items
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        alert('Edit mode activated. Make your changes and click "Save Changes".');
-      });
     });
     
     // Payment button
@@ -1567,20 +1637,128 @@
     });
     
     // Form submission
-    document.getElementById('submit-btn').addEventListener('click', function() {
+    document.getElementById('submit-btn').addEventListener('click', async function() {
       // For paid packages, ensure payment is complete
       if (selectedPackage && selectedPackage.name !== 'Starter' && !paymentComplete) {
         alert('Please complete payment before submitting your business.');
         return;
       }
       
+      // Get form data
+      const businessTitle = document.getElementById('business-title').value;
+      const businessLocation = document.getElementById('business-location').value;
+      const businessDescription = document.getElementById('business-description').value;
+      const businessLink = document.getElementById('business-link').value;
+      const whatsappNumber = document.getElementById('whatsapp-number').value;
+      
+      // Validation
+      if(!businessTitle || !businessLocation || !businessDescription || !whatsappNumber) {
+        alert('Please fill in all required fields');
+        return;
+      }
+      
+      if (businessDescription.length < 100) {
+        alert('Business description must be at least 100 characters');
+        return;
+      }
+      
+      // Collect media URLs
+      const mediaUrls = [];
+      const mediaInputs = document.querySelectorAll('.media-url');
+      mediaInputs.forEach(input => {
+        if(input.value) mediaUrls.push(input.value);
+      });
+      // Collect media types
+const mediaTypes = mediaUrls.map(url => url.endsWith('.mp4') ? 'video' : 'image');
+      // Get first media URL for the business
+      const businessMediaUrl = mediaUrls.length > 0 ? mediaUrls[0] : null;
+      
+      // Prepare business data
+      const businessData = {
+        title: businessTitle,
+        location: businessLocation,
+        description: businessDescription,
+        whatsapp: whatsappNumber,
+        businessLink: businessLink || null,
+        mediaUrls: mediaUrls,
+mediaTypes: mediaUrls.map(url => url.endsWith('.mp4') ? 'video' : 'image'),
+        package: selectedPackage ? selectedPackage.name : 'Starter',
+        createdBy: currentUser.uid,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        status: 'pending' // For admin review
+      };
+      
       this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-      setTimeout(() => {
-        alert('Business submitted successfully! Your listing will be reviewed and published soon.');
-        this.innerHTML = '<i class="fas fa-check"></i> Submitted!';
-        this.disabled = true;
-      }, 1500);
+      this.disabled = true;
+      
+      try {
+        // Save to Firestore
+   await db.collection('pendingBusinesses').add({
+  ...businessData,
+  paymentStatus: "unpaid",
+  createdAt: firebase.firestore.FieldValue.serverTimestamp()
+});
+alert('Business saved! Please complete payment to continue. Your listing will be reviewed.');
+resetForm();
+      } catch (error) {
+        console.error('Error adding business: ', error);
+        alert('Error adding business: ' + error.message);
+        this.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Business';
+        this.disabled = false;
+      }
     });
+    
+    // Reset form after submission
+    function resetForm() {
+      document.getElementById('business-title').value = '';
+      document.getElementById('business-location').value = '';
+      document.getElementById('business-description').value = '';
+      document.getElementById('whatsapp-number').value = '';
+      document.getElementById('business-link').value = '';
+      
+      // Reset items to one
+      document.getElementById('items-container').innerHTML = `
+        <div class="item-card">
+          <div class="item-media">
+            <div class="file-input-wrapper">
+              <input type="file" class="media-input" accept="image/*,video/*">
+              <div class="placeholder">
+                <i class="fas fa-image fa-2x"></i>
+                <p>Click to upload image or video</p>
+              </div>
+            </div>
+          </div>
+          <div class="item-body">
+            <input type="text" class="form-control item-title" placeholder="Item Title" style="margin-bottom: 10px;">
+            <input type="text" class="form-control item-price" placeholder="Price (UGX)" style="margin-bottom: 15px;">
+            <button class="btn-submit save-item" style="padding: 8px 12px; font-size: 13px;">
+              <i class="fas fa-save"></i> Save Changes
+            </button>
+          </div>
+        </div>
+      `;
+      
+      // Reattach event listeners
+      document.querySelector('.media-input').addEventListener('change', handleMediaUpload);
+      document.querySelector('.save-item').addEventListener('click', function(e) {
+        e.preventDefault();
+        alert('Item saved successfully!');
+      });
+      
+      // Reset package selection
+      selectedPackage = null;
+      paymentComplete = false;
+      currentItems = 1;
+      maxItems = 2;
+      updateItemCounter();
+      
+      // Hide package info
+      document.getElementById('package-info').style.display = 'none';
+      
+      // Reset buttons
+      document.getElementById('submit-btn').innerHTML = '<i class="fas fa-paper-plane"></i> Submit Business';
+      document.getElementById('submit-btn').disabled = false;
+    }
     
     // Scroll to section function
     function scrollToSection(sectionId) {
@@ -1607,7 +1785,7 @@
       }
     }
     
-    // Set up section scrolling
+    // Initialize on load
     document.addEventListener('DOMContentLoaded', function() {
       // Set up click handlers for progress steps
       document.querySelectorAll('.progress-step').forEach((step, index) => {
@@ -1624,7 +1802,50 @@
       
       // Initialize item counter
       updateItemCounter();
+      
+      // Initialize media input events
+      document.querySelectorAll('.media-input').forEach(input => {
+        input.addEventListener('change', handleMediaUpload);
+      });
+      
+      // Initialize save button events
+      document.querySelectorAll('.save-item').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          alert('Item saved successfully!');
+        });
+      });
     });
   </script>
+  <script>
+  // Link "Pay Now" button to paynow.html
+  document.getElementById("payment-btn").addEventListener("click", function () {
+    window.location.href = "paynow.html";
+  });
+</script>
+
+<script>
+  document.getElementById("payment-btn").addEventListener("click", () => {
+  const formData = {
+    title: document.getElementById("business-title").value,
+    location: document.getElementById("business-location").value,
+    description: document.getElementById("business-description").value,
+    category: document.getElementById("business-category").value,
+    whatsapp: document.getElementById("whatsapp-number").value,
+    
+    businessLink: document.getElementById("business-link").value || null,
+    mediaUrls: Array.from(document.querySelectorAll('.media-url')).map(i => i.value),
+    mediaTypes: Array.from(document.querySelectorAll('.media-url')).map(i => i.value.endsWith('.mp4') ? 'video' : 'image'),
+    package: selectedPackage.name,
+    createdBy: firebase.auth().currentUser?.uid || "anonymous",
+    timestamp: new Date().toISOString(),
+    status: "pending",
+    paymentStatus: "unpaid"
+  };
+
+  sessionStorage.setItem("pendingBusinessData", JSON.stringify(formData));
+  window.location.href = "paynow.html";
+});
+</script>
 </body>
 </html>
