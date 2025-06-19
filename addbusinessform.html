@@ -1211,9 +1211,9 @@
       <!-- Form Footer -->
       <div class="form-footer">
         <div>
-          <button class="payment-btn hidden" id="payment-btn">
-            <i class="fas fa-credit-card"></i> Pay Now
-          </button>
+          <button class="payment-btn hidden" id="payment-btn" onclick="window.location.href='paynow.html'">
+  <i class="fas fa-credit-card"></i> Pay Now
+</button>
           <button class="btn-submit" id="submit-btn" disabled>
             <i class="fas fa-paper-plane"></i> Submit Business
           </button>
@@ -1626,11 +1626,5 @@
       updateItemCounter();
     });
   </script>
- <script>
-  // Link "Pay Now" button to paynow.html
-  document.getElementById("payment-btn").addEventListener("click", function () {
-    window.location.href = "paynow.html";
-  });
-</script>
 </body>
 </html>
