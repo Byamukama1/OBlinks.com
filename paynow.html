@@ -316,7 +316,6 @@
             <div>Enterprise: <strong>200,000 UGX</strong></div>
           </div>
         </div>
-        
         <div class="instructions-detail">
           <h4 style="margin-bottom: 10px;">Important Notes:</h4>
           <ul style="padding-left: 20px;">
@@ -429,7 +428,8 @@
         const phone = document.getElementById('paymentPhone').value;
         const packageSelected = document.getElementById('packageName').value;
         const amount = document.getElementById('amountPaid').value;
- // Basic validation
+        
+        // Basic validation
         if (!title || !whatsapp || !phone || !packageSelected || !amount) {
           showStatus('Please fill all required fields', 'error');
           return;
@@ -545,6 +545,82 @@
       statusMessage.style.display = 'block';
       setTimeout(() => statusMessage.style.display = 'none', 5000);
     }
+  });
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
+    authDomain: "oblinks-7fdb1.firebaseapp.com",
+    projectId: "oblinks-7fdb1",
+    storageBucket: "oblinks-7fdb1.appspot.com",
+    messagingSenderId: "587017639779",
+    appId: "1:587017639779:web:d11b60f40f431cfc202556"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    const form = document.getElementById("paymentForm");
+    const amountField = document.getElementById("amountPaid");
+    const packageField = document.getElementById("packageName");
+
+    const packagePrices = {
+      Starter: 0,
+      Basic: 10000,
+      Standard: 30000,
+      Advanced: 50000,
+      Professional: 100000,
+      Premium: 150000,
+      Enterprise: 200000
+    };
+
+    packageField.addEventListener("change", () => {
+      const price = packagePrices[packageField.value];
+      amountField.value = price ? price.toLocaleString() : '';
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      // Get business data from sessionStorage
+      const raw = sessionStorage.getItem("pendingBusinessData");
+      if (!raw) {
+        alert("No business data found. Please go back and submit the form.");
+        return;
+      }
+
+      const businessData = JSON.parse(raw);
+
+      // Get payment form data
+      const paymentPhone = document.getElementById("paymentPhone").value;
+      const packageName = document.getElementById("packageName").value;
+      const amountPaid = document.getElementById("amountPaid").value;
+
+      // Merge into business data
+const fullBusinessData = {
+  ...businessData,
+  category: businessData.category || "uncategorized",
+  paymentPhone,
+  package: packageName,
+  paymentStatus: "paid",
+  timestamp: serverTimestamp()
+};
+
+      try {
+        await addDoc(collection(db, "pendingBusinesses"), fullBusinessData);
+        alert("Business submitted for review!");
+        sessionStorage.removeItem("pendingBusinessData");
+        form.reset();
+      } catch (err) {
+        console.error("Failed to save:", err);
+        alert("Submission failed. Try again.");
+      }
+    });
   });
 </script>
 </body>
