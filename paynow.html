@@ -275,7 +275,6 @@
       <h1>Business Listing Payment</h1>
       <p>Complete your payment to activate your business listing</p>
     </div>
-    
     <!-- Payment Instructions First -->
     <div class="payment-instructions">
       <div class="instructions-content">
@@ -316,6 +315,7 @@
             <div>Enterprise: <strong>200,000 UGX</strong></div>
           </div>
         </div>
+        
         <div class="instructions-detail">
           <h4 style="margin-bottom: 10px;">Important Notes:</h4>
           <ul style="padding-left: 20px;">
@@ -378,91 +378,19 @@
     </div>
   </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const paymentForm = document.getElementById('paymentForm');
-      const copyBtn = document.getElementById('copyBtn');
-      const statusMessage = document.getElementById('statusMessage');
-      const packageSelect = document.getElementById('packageName');
-      const amountPaid = document.getElementById('amountPaid');
-      
-      // Package prices (UGX per year)
-      const packagePrices = {
-        "Starter": 0,
-        "Basic": 10000,
-        "Standard": 30000,
-        "Advanced": 50000,
-        "Professional": 100000,
-        "Premium": 150000,
-        "Enterprise": 200000
-      };
-      
-      // Copy payment number to clipboard
-      copyBtn.addEventListener('click', function() {
-        const textToCopy = '0761828694';
-        navigator.clipboard.writeText(textToCopy)
-          .then(() => {
-            showStatus('Payment number copied to clipboard!', 'success');
-          })
-          .catch(err => {
-            showStatus('Failed to copy text: ' + err, 'error');
-          });
-      });
-      
-      // Package selection change handler
-      packageSelect.addEventListener('change', function() {
-        const packageValue = packageSelect.value;
-        if (packageValue in packagePrices) {
-          amountPaid.value = packagePrices[packageValue].toLocaleString();
-        } else {
-          amountPaid.value = '';
-        }
-      });
-      
-      // Form submission
-      paymentForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const title = document.getElementById('businessTitle').value;
-        const whatsapp = document.getElementById('whatsappNumber').value;
-        const phone = document.getElementById('paymentPhone').value;
-        const packageSelected = document.getElementById('packageName').value;
-        const amount = document.getElementById('amountPaid').value;
-        
-        // Basic validation
-        if (!title || !whatsapp || !phone || !packageSelected || !amount) {
-          showStatus('Please fill all required fields', 'error');
-          return;
-        }
-        
-        // Simulate form submission
-        showStatus('Processing payment information...', 'success');
-        
-        setTimeout(() => {
-          showStatus('Payment submitted successfully! Your listing will be activated within 24 hours.', 'success');
-          paymentForm.reset();
-          amountPaid.value = '';
-        }, 2000);
-      });
-      
-      function showStatus(message, type) {
-        statusMessage.textContent = message;
-        statusMessage.className = 'status-message';
-        statusMessage.classList.add(`status-${type}`);
-        statusMessage.style.display = 'block';
-        
-        // Hide message after 5 seconds
-        setTimeout(() => {
-          statusMessage.style.display = 'none';
-        }, 5000);
-      }
-    });
-  </script>
-  <!-- Firebase SDKs (add this before your closing </body>) -->
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+  import {
+    getFirestore,
+    collection,
+    doc,
+    setDoc,
+    addDoc,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
 
+  // Firebase configuration
   const firebaseConfig = {
     apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
     authDomain: "oblinks-7fdb1.firebaseapp.com",
@@ -475,99 +403,12 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const paymentForm = document.getElementById('paymentForm');
-    const copyBtn = document.getElementById('copyBtn');
-    const statusMessage = document.getElementById('statusMessage');
-    const packageSelect = document.getElementById('packageName');
-    const amountPaid = document.getElementById('amountPaid');
-
-    const packagePrices = {
-      "Starter": 0,
-      "Basic": 10000,
-      "Standard": 30000,
-      "Advanced": 50000,
-      "Professional": 100000,
-      "Premium": 150000,
-      "Enterprise": 200000
-    };
-
-    // Auto-fill amount
-    packageSelect.addEventListener('change', () => {
-      const selected = packageSelect.value;
-      amountPaid.value = selected in packagePrices ? packagePrices[selected].toLocaleString() : '';
-    });
-
-    // Copy number
-    copyBtn.addEventListener('click', () => {
-      navigator.clipboard.writeText('0761828694')
-        .then(() => showStatus('Copied!', 'success'))
-        .catch(() => showStatus('Copy failed.', 'error'));
-    });
-
-    // Submit form
-    paymentForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const title = document.getElementById('businessTitle').value.trim();
-      const whatsapp = document.getElementById('whatsappNumber').value.trim();
-      const phone = document.getElementById('paymentPhone').value.trim();
-      const packageName = packageSelect.value;
-      const amount = amountPaid.value.trim();
-
-      if (!title || !whatsapp || !phone || !packageName || !amount) {
-        return showStatus("Fill in all fields!", "error");
-      }
-
-      try {
-        await addDoc(collection(db, "payments"), {
-          businessTitle: title,
-          whatsappNumber: whatsapp,
-          paymentPhone: phone,
-          packageName: packageName,
-          amountPaid: parseInt(amount.replace(/,/g, '')),
-          status: "pending",
-          timestamp: serverTimestamp()
-        });
-
-        showStatus("Payment submitted! You’ll be listed after review.", "success");
-        paymentForm.reset();
-        amountPaid.value = '';
-      } catch (error) {
-        console.error("Firestore error:", error);
-        showStatus("Failed to submit payment. Try again.", "error");
-      }
-    });
-
-    function showStatus(message, type) {
-      statusMessage.textContent = message;
-      statusMessage.className = `status-message status-${type}`;
-      statusMessage.style.display = 'block';
-      setTimeout(() => statusMessage.style.display = 'none', 5000);
-    }
-  });
-</script>
-
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
-    authDomain: "oblinks-7fdb1.firebaseapp.com",
-    projectId: "oblinks-7fdb1",
-    storageBucket: "oblinks-7fdb1.appspot.com",
-    messagingSenderId: "587017639779",
-    appId: "1:587017639779:web:d11b60f40f431cfc202556"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  document.addEventListener("DOMContentLoaded", async () => {
+  document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("paymentForm");
-    const amountField = document.getElementById("amountPaid");
     const packageField = document.getElementById("packageName");
+    const amountField = document.getElementById("amountPaid");
+    const copyBtn = document.getElementById("copyBtn");
+    const statusMessage = document.getElementById("statusMessage");
 
     const packagePrices = {
       Starter: 0,
@@ -579,48 +420,93 @@
       Enterprise: 200000
     };
 
+    // Auto-fill package price
     packageField.addEventListener("change", () => {
       const price = packagePrices[packageField.value];
-      amountField.value = price ? price.toLocaleString() : '';
+      amountField.value = price ? price.toLocaleString() : "";
+    });
+
+    // Copy payment number
+    copyBtn.addEventListener("click", () => {
+      navigator.clipboard.writeText("0761828694")
+        .then(() => showStatus("Payment number copied!", "success"))
+        .catch(() => showStatus("Copy failed!", "error"));
     });
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      // Get business data from sessionStorage
-      const raw = sessionStorage.getItem("pendingBusinessData");
-      if (!raw) {
-        alert("No business data found. Please go back and submit the form.");
+      const phone = document.getElementById("paymentPhone").value.trim();
+      const packageName = packageField.value;
+      const amount = amountField.value.trim();
+
+      if (!phone || !packageName || !amount) {
+        showStatus("Please fill in all fields.", "error");
         return;
       }
 
-      const businessData = JSON.parse(raw);
+      const businessRaw = sessionStorage.getItem("businessData");
+      const itemsRaw = sessionStorage.getItem("itemsData");
 
-      // Get payment form data
-      const paymentPhone = document.getElementById("paymentPhone").value;
-      const packageName = document.getElementById("packageName").value;
-      const amountPaid = document.getElementById("amountPaid").value;
+      if (!businessRaw || !itemsRaw) {
+        showStatus("Missing data. Please go back to the form.", "error");
+        return;
+      }
 
-      // Merge into business data
-const fullBusinessData = {
-  ...businessData,
-  category: businessData.category || "uncategorized",
-  paymentPhone,
-  package: packageName,
-  paymentStatus: "paid",
-  timestamp: serverTimestamp()
-};
+      const businessData = JSON.parse(businessRaw);
+      const itemsData = JSON.parse(itemsRaw);
 
       try {
-        await addDoc(collection(db, "pendingBusinesses"), fullBusinessData);
-        alert("Business submitted for review!");
-        sessionStorage.removeItem("pendingBusinessData");
+        // ✅ 1. Save payment info
+        await addDoc(collection(db, "payments"), {
+          businessTitle: businessData.title || "Untitled",
+          whatsappNumber: businessData.whatsapp || "",
+          paymentPhone: phone,
+          packageName: packageName,
+          amountPaid: parseInt(amount.replace(/,/g, "")),
+          status: "pending",
+          timestamp: serverTimestamp()
+        });
+
+        // ✅ 2. Save business to pendingBusinesses with custom businessId field
+        const businessRef = doc(collection(db, "pendingBusinesses"));
+        const businessId = businessRef.id;
+
+        await setDoc(businessRef, {
+          ...businessData,
+          businessId: businessId, // Important: businessId field for linking items
+          paymentPhone: phone,
+          package: packageName,
+          paymentStatus: "paid",
+          timestamp: serverTimestamp()
+        });
+
+        // ✅ 3. Save each item separately to items collection
+        for (let item of itemsData) {
+          await addDoc(collection(db, "items"), {
+            ...item,
+            businessId: businessId, // Link each item to the business
+            timestamp: serverTimestamp()
+          });
+        }
+showStatus("✅ Business submitted! Awaiting approval.", "success");
+        sessionStorage.removeItem("businessData");
+        sessionStorage.removeItem("itemsData");
         form.reset();
+        amountField.value = "";
+
       } catch (err) {
-        console.error("Failed to save:", err);
-        alert("Submission failed. Try again.");
+        console.error("Firestore error:", err);
+        showStatus("❌ Failed to submit. Try again.", "error");
       }
     });
+
+    function showStatus(msg, type) {
+      statusMessage.textContent = msg;
+      statusMessage.className = `status-message status-${type}`;
+      statusMessage.style.display = "block";
+      setTimeout(() => statusMessage.style.display = "none", 5000);
+    }
   });
 </script>
 </body>
