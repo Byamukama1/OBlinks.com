@@ -208,7 +208,7 @@
                     
                     <div class="form-group">
                         <label for="phone" class="required">Telephone Contact</label>
-                        <input type="tel" id="phone" name="phone" required placeholder="+1 (555) 123-4567">
+                        <input type="tel" id="phone" name="phone" required placeholder="eg +2567612345">
                     </div>
                 </div>
                 
@@ -223,8 +223,7 @@
                     <label for="deliveryMethod" class="required">Delivery Method</label>
                     <textarea id="deliveryMethod" name="deliveryMethod" required placeholder="Describe your preferred delivery method (e.g., home delivery, pickup, express shipping)"></textarea>
                 </div>
-                
-                <div class="form-group">
+                                <div class="form-group">
                     <label for="paymentMethod" class="required">Payment Method</label>
                     <textarea id="paymentMethod" name="paymentMethod" required placeholder="Describe your preferred payment method (e.g., cash, bank transfer, mobile money)"></textarea>
                 </div>
@@ -274,17 +273,18 @@
   document.addEventListener("DOMContentLoaded", async () => {
     const form = document.getElementById("order_form");
 
-    if (!form) {
-      console.error("Form element with ID 'order_form' is missing.");
-      return;
-    }
-
     const urlParams = new URLSearchParams(window.location.search);
-    const businessId = urlParams.get("id");
+    const businessId = urlParams.get("businessId") || urlParams.get("id");
+    const itemName = urlParams.get("itemName");
 
     if (!businessId) {
       alert("Order cannot be placed — no business selected.");
       return;
+    }
+
+    // Auto-fill item if provided
+    if (itemName) {
+      document.getElementById("item").value = decodeURIComponent(itemName);
     }
 
     let businessOwner = "";
