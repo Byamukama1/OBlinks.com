@@ -709,7 +709,8 @@
     .modal-body {
       padding: 25px;
     }
-  .payment-option {
+    
+    .payment-option {
       background: #f8fafc;
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -952,7 +953,7 @@
     }
     
     /* Video Controls */
-    video {
+video {
       width: 100%;
       height: 100%;
       object-fit: contain;
@@ -1256,7 +1257,7 @@
             </div>
           </div>
         </div>
-                <!-- Scroll targets -->
+         <!-- Scroll targets -->
         <div class="scroll-target" id="items-services"></div>
         
         <!-- Section 2: Items & Services -->
@@ -1611,8 +1612,7 @@ mediaElement.poster = posterUrl;
         this.style.display = 'none';
       }
     });
-    
-    // Payment button
+ // Payment button
     document.getElementById('payment-btn').addEventListener('click', function() {
       if (selectedPackage) {
         document.getElementById('modal-package').textContent = selectedPackage.name;
@@ -1846,6 +1846,57 @@ resetForm();
   sessionStorage.setItem("pendingBusinessData", JSON.stringify(formData));
   window.location.href = "paynow.html";
 });
+</script>
+
+<script>
+  document.getElementById("payment-btn").addEventListener("click", function () {
+    const title = document.getElementById("business-title").value.trim();
+    const location = document.getElementById("business-location").value.trim();
+    const description = document.getElementById("business-description").value.trim();
+    const whatsapp = document.getElementById("whatsapp-number").value.trim();
+    const category = document.getElementById("business-category").value;
+    const businessLink = document.getElementById("business-link").value.trim();
+    
+    const mediaUrls = Array.from(document.querySelectorAll('.media-url')).map(i => i.value);
+    const mediaTypes = mediaUrls.map(url => url.endsWith('.mp4') ? 'video' : 'image');
+    
+    const businessData = {
+      title,
+      location,
+      description,
+      category,
+      whatsapp,
+      businessLink,
+      mediaUrls,
+      mediaTypes,
+      package: selectedPackage.name,
+      createdBy: firebase.auth().currentUser?.uid || "anonymous",
+      timestamp: new Date().toISOString(),
+      status: "pending",
+      paymentStatus: "unpaid"
+    };
+
+    const items = [];
+    document.querySelectorAll(".item-card").forEach(card => {
+      const name = card.querySelector(".item-title").value.trim();
+      const price = parseInt(card.querySelector(".item-price").value);
+      const media = Array.from(card.querySelectorAll(".media-url")).map(input => input.value);
+      if (name && price && media.length > 0) {
+        items.push({ name, price, media });
+      }
+    });
+
+    // Save to sessionStorage
+    sessionStorage.setItem("businessData", JSON.stringify(businessData));
+    sessionStorage.setItem("itemsData", JSON.stringify(items));
+
+    // ✅ Log to verify
+    console.log("✅ Saved businessData:", businessData);
+    console.log("✅ Saved itemsData:", items);
+
+    // Redirect to paynow
+    window.location.href = "paynow.html";
+  });
 </script>
 </body>
 </html>
