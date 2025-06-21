@@ -327,7 +327,7 @@
 
     // Check for referral parameter in URL
     const urlParams = new URLSearchParams(window.location.search);
-    const refParam = urlParams.get('ref');
+    const refParam = urlParams.get('referrer');
     
     if (refParam) {
       // Store referral in sessionStorage
