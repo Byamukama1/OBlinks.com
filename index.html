@@ -1002,7 +1002,8 @@ const firebaseConfig = {
     function loadBusinesses() {
       container.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner"></i></div>';
 
-      db.collection("businesses").get()
+     const q = db.collection("businesses").orderBy("timestamp", "desc");
+q.get()
         .then((querySnapshot) => {
           container.innerHTML = '';
 
