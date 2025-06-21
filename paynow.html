@@ -275,6 +275,7 @@
       <h1>Business Listing Payment</h1>
       <p>Complete your payment to activate your business listing</p>
     </div>
+    
     <!-- Payment Instructions First -->
     <div class="payment-instructions">
       <div class="instructions-content">
@@ -483,15 +484,21 @@
 
         // ✅ 3. Save each item separately to items collection
         for (let item of itemsData) {
+          // Fix: Make sure each item has the correct businessId
           await addDoc(collection(db, "items"), {
             ...item,
             businessId: businessId, // Link each item to the business
             timestamp: serverTimestamp()
           });
         }
-showStatus("✅ Business submitted! Awaiting approval.", "success");
+
+        showStatus("✅ Business submitted! Awaiting approval.", "success");
+        
+        // Clear session storage after successful submission
         sessionStorage.removeItem("businessData");
         sessionStorage.removeItem("itemsData");
+        
+        // Reset form
         form.reset();
         amountField.value = "";
 
