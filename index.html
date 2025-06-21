@@ -1094,11 +1094,15 @@ card.innerHTML = `
     ${mediaHTML}
   </div>
   <div class="card-header">
-    <h2 class="card-title">${business.title || 'Untitled Business'}</h2>
+    <h2 class="card-title" onclick="window.location.href='viewall.html?id=${docId}'" style="cursor: pointer;">
+      ${business.title || 'Untitled Business'}
+    </h2>
     <div class="card-country">${business.location || 'Location not specified'}</div>
   </div>
   <div class="card-body">
-    <p class="card-description">${business.description || 'No description provided'}</p>
+    <p class="card-description" onclick="window.location.href='viewall.html?id=${docId}'" style="cursor: pointer;">
+      ${business.description || 'No description provided'}
+    </p>
     ${buttonsHTML}
   </div>
 `;
