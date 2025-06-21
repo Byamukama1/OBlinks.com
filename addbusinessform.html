@@ -476,8 +476,7 @@
       background: var(--primary);
       color: white;
     }
-    
-    /* Payment Button */
+ /* Payment Button */
     .payment-btn {
       background: var(--success);
       color: white;
@@ -953,7 +952,7 @@
     }
     
     /* Video Controls */
-video {
+    video {
       width: 100%;
       height: 100%;
       object-fit: contain;
@@ -987,7 +986,7 @@ video {
     }
   </style>
   <script>
-  // Firebase configuration
+ // Firebase configuration
   const firebaseConfig = {
     apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
     authDomain: "oblinks-7fdb1.firebaseapp.com",
@@ -1257,7 +1256,8 @@ video {
             </div>
           </div>
         </div>
-         <!-- Scroll targets -->
+        
+        <!-- Scroll targets -->
         <div class="scroll-target" id="items-services"></div>
         
         <!-- Section 2: Items & Services -->
@@ -1416,8 +1416,8 @@ video {
           document.getElementById('submit-btn').disabled = true;
           paymentComplete = false;
         }
-        
-        // Scroll to form
+
+// Scroll to form
         document.querySelector('.form-container').scrollIntoView({ 
           behavior: 'smooth' 
         });
@@ -1612,7 +1612,8 @@ mediaElement.poster = posterUrl;
         this.style.display = 'none';
       }
     });
- // Payment button
+    
+    // Payment button
     document.getElementById('payment-btn').addEventListener('click', function() {
       if (selectedPackage) {
         document.getElementById('modal-package').textContent = selectedPackage.name;
