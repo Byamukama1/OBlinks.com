@@ -7,52 +7,122 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary: #8b5cf6;
+      --light: #f8fafc;
+      --dark: #1e293b;
+      --gray: #cbd5e1;
+      --danger: #ef4444;
+      --success: #10b981;
+      --card-bg: #fff;
+      --shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
     body {
       margin: 0;
       font-family: 'Inter', sans-serif;
-      background: #f8fafc;
+      background: var(--light);
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       padding: 20px;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.05) 0%, rgba(99, 102, 241, 0) 20%),
+        radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.05) 0%, rgba(139, 92, 246, 0) 25%);
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
     }
+    
     .signup-container {
-      background: #fff;
+      background: var(--card-bg);
       padding: 40px;
       border-radius: 16px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      box-shadow: var(--shadow);
       width: 100%;
       max-width: 450px;
+      position: relative;
+      overflow: hidden;
     }
+    
+    .signup-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+    
     h2 {
       text-align: center;
       margin-bottom: 24px;
-      color: #1e293b;
+      color: var(--dark);
+      font-size: 28px;
     }
+    
     .form-group {
       margin-bottom: 20px;
+      position: relative;
     }
+    
     label {
       display: block;
       font-weight: 600;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+      color: var(--dark);
+      font-size: 14px;
     }
+    
     input {
       width: 100%;
-      padding: 14px;
-      border: 1px solid #cbd5e1;
+      padding: 14px 14px 14px 44px;
+      border: 1px solid var(--gray);
       border-radius: 10px;
       font-size: 15px;
+      transition: all 0.3s ease;
     }
+    
     input:focus {
-      border-color: #6366f1;
+      border-color: var(--primary);
       outline: none;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
     }
+    
+    .input-icon {
+      position: absolute;
+      left: 16px;
+      top: 40px;
+      color: var(--primary);
+      font-size: 18px;
+    }
+    
+    .password-toggle {
+      position: absolute;
+      right: 16px;
+      top: 40px;
+      color: var(--gray);
+      cursor: pointer;
+      font-size: 18px;
+    }
+    
+    .password-toggle:hover {
+      color: var(--primary);
+    }
+    
     .btn {
       width: 100%;
       padding: 14px;
-      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
       border: none;
       color: white;
       font-weight: 600;
@@ -60,62 +130,176 @@
       border-radius: 10px;
       cursor: pointer;
       transition: 0.3s;
+      margin-top: 10px;
+      position: relative;
+      overflow: hidden;
     }
+    
+    .btn::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 20px;
+      height: 200%;
+      background: rgba(255,255,255,0.2);
+      transform: rotate(25deg);
+      transition: all 0.4s;
+    }
+    
+    .btn:hover::after {
+      left: 120%;
+    }
+    
     .btn:hover {
-      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      background: linear-gradient(135deg, var(--primary-dark), #7c3aed);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
     }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
     .error {
-      color: #ef4444;
+      color: var(--danger);
       font-size: 14px;
       margin-top: 8px;
       display: none;
     }
+    
     .login-link {
       text-align: center;
-      margin-top: 18px;
-      font-size: 14px;
+      margin-top: 24px;
+      font-size: 15px;
+      color: #64748b;
     }
+    
     .login-link a {
-      color: #6366f1;
+      color: var(--primary);
       font-weight: 600;
       text-decoration: none;
+      transition: 0.3s;
+    }
+    
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+    
+    .referral-notice {
+      background-color: rgba(99, 102, 241, 0.1);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--primary);
+      display: none;
+    }
+    
+    .referral-notice i {
+      margin-right: 8px;
+    }
+    
+    .logo {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .logo-text {
+      font-weight: 700;
+      font-size: 28px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
+    
+    .password-strength {
+      height: 4px;
+      border-radius: 2px;
+      background-color: #e2e8f0;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    
+    .strength-meter {
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    
+    @media (max-width: 480px) {
+      .signup-container {
+        padding: 30px 20px;
+      }
+      
+      h2 {
+        font-size: 24px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="signup-container">
-    <h2>Create Your OBlinks Account</h2>
+    <div class="logo">
+      <span class="logo-text">OBlinks</span>
+    </div>
+    <h2>Create Your Account</h2>
+    
+    <div class="referral-notice" id="referralNotice">
+      <i class="fas fa-gift"></i> <span id="referralMessage">Signing up with referral: </span>
+    </div>
+    
     <form id="signupForm">
       <div class="form-group">
         <label for="email">Email Address</label>
-        <input type="email" id="email" required />
+        <i class="fas fa-envelope input-icon"></i>
+        <input type="email" id="email" placeholder="your@email.com" required />
       </div>
+      
       <div class="form-group">
         <label for="phone">WhatsApp Number</label>
-        <input type="text" id="phone" required />
+        <i class="fas fa-phone input-icon"></i>
+        <input type="text" id="phone" placeholder="256700000000" required />
       </div>
-     
+
       <div class="form-group">
         <label for="password">Password</label>
-        <input type="password" id="password" required />
+        <i class="fas fa-lock input-icon"></i>
+        <input type="password" id="password" placeholder="••••••••" required />
+        <span class="password-toggle" id="passwordToggle">
+          <i class="far fa-eye"></i>
+        </span>
+        <div class="password-strength">
+          <div class="strength-meter" id="strengthMeter"></div>
+        </div>
       </div>
+      
       <div class="form-group">
         <label for="confirm">Confirm Password</label>
-        <input type="password" id="confirm" required />
+        <i class="fas fa-lock input-icon"></i>
+        <input type="password" id="confirm" placeholder="••••••••" required />
+        <span class="password-toggle" id="confirmToggle">
+          <i class="far fa-eye"></i>
+        </span>
       </div>
+      
       <div class="error" id="errorMsg">Error message</div>
       <button type="submit" class="btn">Sign Up</button>
     </form>
+    
     <div class="login-link">
       Already have an account? <a href="login.html">Log In</a>
     </div>
   </div>
-
   <script type="module">
+    // Import Firebase modules
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
     import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
+    // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
       authDomain: "oblinks-7fdb1.firebaseapp.com",
@@ -125,45 +309,149 @@
       appId: "1:587017639779:web:d11b60f40f431cfc202556"
     };
 
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // DOM elements
     const form = document.getElementById('signupForm');
     const errorMsg = document.getElementById('errorMsg');
+    const passwordInput = document.getElementById('password');
+    const confirmInput = document.getElementById('confirm');
+    const passwordToggle = document.getElementById('passwordToggle');
+    const confirmToggle = document.getElementById('confirmToggle');
+    const strengthMeter = document.getElementById('strengthMeter');
+    const referralNotice = document.getElementById('referralNotice');
+    const referralMessage = document.getElementById('referralMessage');
 
+    // Check for referral parameter in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const refParam = urlParams.get('ref');
+    
+    if (refParam) {
+      // Store referral in sessionStorage
+      sessionStorage.setItem('referrer', refParam);
+      
+      // Show referral notice
+      referralMessage.textContent += refParam;
+      referralNotice.style.display = 'block';
+    }
+
+    // Password toggle functionality
+    passwordToggle.addEventListener('click', () => {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      passwordToggle.innerHTML = type === 'password' ? '<i class="far fa-eye"></i>' : '<i class="far fa-eye-slash"></i>';
+    });
+
+    confirmToggle.addEventListener('click', () => {
+      const type = confirmInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      confirmInput.setAttribute('type', type);
+      confirmToggle.innerHTML = type === 'password' ? '<i class="far fa-eye"></i>' : '<i class="far fa-eye-slash"></i>';
+    });
+
+    // Password strength indicator
+    passwordInput.addEventListener('input', () => {
+      const password = passwordInput.value;
+      let strength = 0;
+      
+      if (password.length > 5) strength += 25;
+      if (password.length > 7) strength += 25;
+      if (/[A-Z]/.test(password)) strength += 25;
+      if (/[0-9]/.test(password) || /[^A-Za-z0-9]/.test(password)) strength += 25;
+      
+      strengthMeter.style.width = strength + '%';
+      strengthMeter.style.backgroundColor = 
+        strength < 50 ? '#ef4444' : 
+        strength < 75 ? '#f59e0b' : '#10b981';
+    });
+
+    // Form submission
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
+      // Get form values
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value.trim();
       const confirm = document.getElementById('confirm').value.trim();
       const phone = document.getElementById('phone').value.trim();
-      const referrer = document.getElementById('referrer').value.trim();
+      
+      // Get referrer from sessionStorage
+      const referrer = sessionStorage.getItem('referrer') || null;
 
+      // Validate inputs
+      if (!email || !phone || !password || !confirm) {
+        errorMsg.textContent = 'Please fill in all fields';
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      // Validate WhatsApp number format
+      if (!/^[0-9]{10,15}$/.test(phone)) {
+        errorMsg.textContent = 'Please enter a valid WhatsApp number';
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      // Validate password match
       if (password !== confirm) {
         errorMsg.textContent = 'Passwords do not match';
         errorMsg.style.display = 'block';
         return;
       }
 
+      // Validate password strength
+      if (password.length < 6) {
+        errorMsg.textContent = 'Password must be at least 6 characters';
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      // Hide error message
       errorMsg.style.display = 'none';
 
       try {
+        // Create user with Firebase Authentication
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
+        // Save additional user data to Firestore
         await setDoc(doc(db, "users", user.uid), {
+          email: email,
           whatsapp: phone,
           package: "Starter",
-          referrerWhatsapp: referrer || null
+          referrerWhatsapp: referrer,
+          createdAt: new Date()
         });
 
-        alert("Account created successfully!");
-        window.location.href = "index.html";
+        // Clear sessionStorage after successful signup
+        sessionStorage.removeItem('referrer');
+        
+        // Show success message
+        errorMsg.textContent = 'Account created successfully! Redirecting...';
+        errorMsg.style.color = '#10b981';
+        errorMsg.style.display = 'block';
+        
+        // Redirect after a short delay
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 1500);
 
       } catch (error) {
-        errorMsg.textContent = error.message;
+        // Handle errors
+        let errorMessage = 'An error occurred during signup';
+        
+        if (error.code === 'auth/email-already-in-use') {
+          errorMessage = 'This email is already registered';
+        } else if (error.code === 'auth/invalid-email') {
+          errorMessage = 'Please enter a valid email address';
+        } else if (error.code === 'auth/weak-password') {
+          errorMessage = 'Password should be at least 6 characters';
+        }
+        
+        errorMsg.textContent = errorMessage;
+        errorMsg.style.color = '#ef4444';
         errorMsg.style.display = 'block';
       }
     });
