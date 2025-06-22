@@ -341,184 +341,167 @@
     </div>
 
    
-<script>
-  // Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
-    authDomain: "oblinks-7fdb1.firebaseapp.com",
-    projectId: "oblinks-7fdb1",
-    storageBucket: "oblinks-7fdb1.appspot.com",
-    messagingSenderId: "79327968002",
-    appId: "1:79327968002:web:8c5b0c44e9f9f2e67c04b3",
-    measurementId: "G-HF4PZ4C83N"
-  };
+<script type="module">  
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";  
+  import {  
+    getFirestore,  
+    doc,  
+    getDoc,  
+    collection,  
+    query,  
+    where,  
+    orderBy,  
+    getDocs  
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";  
 
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+  const firebaseConfig = {  
+    apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",  
+    authDomain: "oblinks-7fdb1.firebaseapp.com",  
+    projectId: "oblinks-7fdb1",  
+    storageBucket: "oblinks-7fdb1.appspot.com",  
+    messagingSenderId: "79327968002",  
+    appId: "1:79327968002:web:8c5b0c44e9f9f2e67c04b3",  
+    measurementId: "G-HF4PZ4C83N"  
+  };  
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const businessDocId = urlParams.get('id'); // Document ID from the URL
+  const app = initializeApp(firebaseConfig);  
+  const db = getFirestore(app);  
 
-  const productGrid = document.getElementById('productGrid');
-  const businessDescription = document.getElementById('businessDescription');
-  const actionBar = document.getElementById('actionBar');
-  const searchBar = document.querySelector('.search-bar');
+  const urlParams = new URLSearchParams(window.location.search);  
+  const businessDocId = urlParams.get('id');  
 
-  let currentBusiness = null;
+  const productGrid = document.getElementById('productGrid');  
+  const businessDescription = document.getElementById('businessDescription');  
+  const actionBar = document.getElementById('actionBar');  
+  const searchBar = document.querySelector('.search-bar');  
 
-  async function loadBusiness() {
-    if (!businessDocId) {
-      showError('Business ID not provided in URL');
-      return;
-    }
+  let currentBusiness = null;  
 
-    try {
-      const businessDoc = await db.collection('businesses').doc(businessDocId).get();
+  async function loadBusiness() {  
+    if (!businessDocId) return showError('❌ No business ID provided.');  
 
-      if (!businessDoc.exists) {
-        showError('Business not found');
-        return;
-      }
+    try {  
+      const businessSnap = await getDoc(doc(db, "businesses", businessDocId));  
+      if (!businessSnap.exists()) return showError("❌ Business not found.");  
 
-      currentBusiness = businessDoc.data();
-      const customBusinessId = currentBusiness.businessId;
+      currentBusiness = businessSnap.data();  
 
-      if (!customBusinessId) {
-        showError('Business data missing businessId field');
-        return;
-      }
+      const customBusinessId = currentBusiness.businessId;  
+      if (!customBusinessId) return showError("❌ Business ID missing.");  
 
-      console.log("✅ Loaded Business ID:", businessDocId);
-      console.log("✅ Custom Business ID:", customBusinessId);
+      console.log("✅ Business:", currentBusiness.title, "ID:", customBusinessId);  
 
-      renderBusinessDescription(currentBusiness);
-      renderActionButtons(currentBusiness);
+      renderBusinessDescription(currentBusiness);  
+      renderActionButtons(currentBusiness);  
 
-      const itemsSnapshot = await db.collection("items")
-        .where("businessId", "==", customBusinessId)
-        .orderBy("timestamp", "desc")
-        .get();
+      // Load items
+      const itemsQuery = query(  
+        collection(db, "items"),  
+        where("businessId", "==", customBusinessId),  
+        orderBy("timestamp", "desc")  
+      );  
 
-      const items = itemsSnapshot.docs.map(doc => doc.data());
+      const itemsSnap = await getDocs(itemsQuery);  
+      const items = itemsSnap.docs.map(doc => doc.data());  
 
-      console.log("✅ Items found:", items.length);
-      renderItems(items);
-      setupSearch(items);
+      console.log("✅ Items loaded:", items.length);  
+      renderItems(items);  
+      setupSearch(items);  
 
-    } catch (error) {
-      console.error('❌ Error loading business or items:', error);
-      showError('Failed to load business data');
-    }
-  }
+    } catch (err) {  
+      console.error("❌ Error:", err);  
+      showError("❌ Failed to load data.");  
+    }  
+  }  
 
-  function renderBusinessDescription(business) {
-    if (business.description) {
-      businessDescription.innerHTML = `
-        <hr style="margin: 20px 0;">
-        <h2>About ${business.title || 'the Business'}</h2>
-        <p>${business.description}</p>
-      `;
-    } else {
-      businessDescription.style.display = 'none';
-    }
-  }
+  function renderBusinessDescription(business) {  
+    if (!business.description) {  
+      businessDescription.style.display = 'none';  
+      return;  
+    }  
 
-  function renderActionButtons(business) {
-    if (!business.whatsapp && !business.businessLink) return;
+    businessDescription.innerHTML = `  
+      <hr style="margin: 20px 0;">  
+      <h2>About ${business.title || "the Business"}</h2>  
+      <p>${business.description}</p>  
+    `;  
+  }  
 
-    let buttonsHTML = '';
+  function renderActionButtons(business) {  
+    if (!business.whatsapp && !business.businessLink) return;  
 
-    if (business.whatsapp) {
-      buttonsHTML += `
-        <a href="https://wa.me/${business.whatsapp}" class="action-button chat-button" target="_blank">
-          <i class="fab fa-whatsapp"></i> Chat via WhatsApp
-        </a>`;
-    }
+    let buttons = "";  
 
-    if (business.businessLink) {
-      const link = /^https?:\/\//i.test(business.businessLink)
-        ? business.businessLink
-        : 'https://' + business.businessLink;
+    if (business.whatsapp) {  
+      buttons += `<a href="https://wa.me/${business.whatsapp}" class="action-button chat-button" target="_blank">  
+        <i class="fab fa-whatsapp"></i> Chat via WhatsApp</a>`;  
+    }  
 
-      buttonsHTML += `
-        <a href="${link}" class="action-button link-button" target="_blank">
-          <i class="fas fa-external-link-alt"></i> Visit Business
-        </a>`;
-    }
+    if (business.businessLink) {  
+      const link = business.businessLink.startsWith("http")  
+        ? business.businessLink  
+        : "https://" + business.businessLink;  
 
-    actionBar.innerHTML = buttonsHTML;
-    actionBar.style.display = 'flex';
-  }
+      buttons += `<a href="${link}" class="action-button link-button" target="_blank">  
+        <i class="fas fa-external-link-alt"></i> Visit Business</a>`;  
+    }  
 
-  function renderItems(items) {
-    if (items.length === 0) {
-      productGrid.innerHTML = '<div class="no-results">No items available for this business</div>';
-      return;
-    }
+    actionBar.innerHTML = buttons;  
+    actionBar.style.display = 'flex';  
+  }  
 
-    let itemsHTML = '';
+  function renderItems(items) {  
+    if (!items.length) {  
+      productGrid.innerHTML = '<div class="no-results">No items available for this business</div>';  
+      return;  
+    }  
 
-    items.forEach(item => {
-      const mediaUrl = Array.isArray(item.media) ? item.media[0] : item.media || null;
-      const formattedPrice = formatPrice(item.price);
+    productGrid.innerHTML = items.map(item => {  
+      const url = item.mediaUrl || "";  
+      const formattedPrice = 'UGX ' + parseInt(item.price || 0).toLocaleString();  
+      const isVideo = url.endsWith('.mp4');  
 
-      itemsHTML += `
-        <div class="product-card" data-name="${item.name.toLowerCase()}">
-          <div class="product-image">${renderMedia(mediaUrl)}</div>
-          <div class="product-info">
-            <div class="product-name">${item.name}</div>
-            <div class="product-price">${formattedPrice}</div>
-            <a href="order_form.html?businessId=${businessDocId}&itemName=${encodeURIComponent(item.name)}" class="order-button">ORDER NOW</a>
-          </div>
-        </div>`;
-    });
+      return `  
+        <div class="product-card" data-name="${(item.title || '').toLowerCase()}">  
+          <div class="product-image">  
+            ${isVideo  
+              ? `<video controls style="width: 100%; border-radius: 8px;"><source src="${url}" type="video/mp4"></video>`  
+              : `<img src="${url}" alt="${item.title || 'Item'}" style="width: 100%; border-radius: 8px;">`}  
+          </div>  
+          <div class="product-info">  
+            <div class="product-name">${item.title || 'No title'}</div>  
+            <div class="product-price">${formattedPrice}</div>  
+            <a href="order_form.html?businessId=${businessDocId}&itemName=${encodeURIComponent(item.title || '')}" class="order-button">ORDER NOW</a>  
+          </div>  
+        </div>  
+      `;  
+    }).join('');  
+  }  
 
-    productGrid.innerHTML = itemsHTML;
-  }
+  function setupSearch(items) {  
+    searchBar.addEventListener("input", function (e) {  
+      const term = e.target.value.toLowerCase();  
+      const cards = document.querySelectorAll(".product-card");  
+      let count = 0;  
 
-  function renderMedia(url) {
-    if (!url) return '<i class="fas fa-image"></i>';
+      cards.forEach(card => {  
+        const name = card.dataset.name;  
+        const show = name.includes(term);  
+        card.style.display = show ? "block" : "none";  
+        if (show) count++;  
+      });  
 
-    const extension = url.substring(url.lastIndexOf('.')).toLowerCase();
-    const isVideo = ['.mp4', '.webm', '.ogg'].includes(extension);
+      if (count === 0) {  
+        productGrid.innerHTML = '<div class="no-results">No items match your search</div>';  
+      }  
+    });  
+  }  
 
-    return isVideo
-      ? `<video controls style="width: 100%; border-radius: 8px;"><source src="${url}" type="video/${extension.slice(1)}"></video>`
-      : `<img src="${url}" alt="Product image" style="width: 100%; border-radius: 8px;">`;
-  }
+  function showError(message) {  
+    productGrid.innerHTML = `<div class="no-results">${message}</div>`;  
+  }  
 
-  function formatPrice(price) {
-    return 'UGX ' + parseInt(price || 0).toLocaleString();
-  }
-
-  function setupSearch(items) {
-    searchBar.addEventListener('input', function (e) {
-      const searchTerm = e.target.value.toLowerCase().trim();
-      const productCards = document.querySelectorAll('.product-card');
-      let visibleCount = 0;
-
-      productCards.forEach(card => {
-        const productName = card.getAttribute('data-name');
-        if (productName.includes(searchTerm)) {
-          card.style.display = 'block';
-          visibleCount++;
-        } else {
-          card.style.display = 'none';
-        }
-      });
-
-      if (visibleCount === 0) {
-        productGrid.innerHTML = '<div class="no-results">No items match your search</div>';
-      }
-    });
-  }
-
-  function showError(message) {
-    productGrid.innerHTML = `<div class="no-results">${message}</div>`;
-  }
-
-  document.addEventListener('DOMContentLoaded', loadBusiness);
+  document.addEventListener('DOMContentLoaded', loadBusiness);  
 </script>
 </body>
 </html>
