@@ -71,18 +71,19 @@
     }
     
     .zoom-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: #ffffffdd;
-  border: none;
-  border-radius: 50%;
-  padding: 8px;
-  font-size: 16px;
-  cursor: pointer;
-  z-index: 999;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-}
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ffffffdd;
+      border: none;
+      border-radius: 50%;
+      padding: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      z-index: 999;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+    
     .logo-text h1 {
       font-size: 22px;
       font-weight: 700;
@@ -347,8 +348,7 @@
     .form-content {
       padding: 30px;
     }
-    
-    .form-section {
+ .form-section {
       margin-bottom: 40px;
       padding: 20px;
       border-radius: 10px;
@@ -379,8 +379,7 @@
       align-items: center;
       justify-content: center;
     }
-    
-    .form-row {
+        .form-row {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 25px;
@@ -404,8 +403,7 @@
       color: #ef4444;
       margin-left: 4px;
     }
-    
-    .form-control {
+        .form-control {
       width: 100%;
       padding: 12px;
       border: 1px solid var(--border);
@@ -476,7 +474,8 @@
       background: var(--primary);
       color: white;
     }
- /* Payment Button */
+    
+    /* Payment Button */
     .payment-btn {
       background: var(--success);
       color: white;
@@ -605,6 +604,7 @@
       padding: 25px 30px;
       border-top: 1px solid var(--border);
       background: #f8fafc;
+      flex-direction: column;
     }
     
     .btn {
@@ -657,246 +657,6 @@
     
     .btn-back:hover {
       background: #f1f5f9;
-    }
-    
-    /* Payment Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-    }
-    
-    .modal-content {
-      background: white;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 450px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-      overflow: hidden;
-    }
-    
-    .modal-header {
-      background: var(--primary);
-      color: white;
-      padding: 18px;
-      text-align: center;
-      position: relative;
-    }
-    
-    .modal-header h3 {
-      font-size: 20px;
-    }
-    
-    .close-modal {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: none;
-      border: none;
-      color: white;
-      font-size: 22px;
-      cursor: pointer;
-    }
-    
-    .modal-body {
-      padding: 25px;
-    }
-    
-    .payment-option {
-      background: #f8fafc;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 12px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-size: 14px;
-    }
-    
-    .payment-option:hover {
-      background: #eef2ff;
-      border-color: var(--primary);
-    }
-    
-    .payment-option.active {
-      background: #dbeafe;
-      border-color: var(--primary);
-    }
-    
-    .payment-option .details {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .payment-option .name {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 600;
-    }
-    
-    .modal-footer {
-      padding: 18px;
-      background: #f8fafc;
-      display: flex;
-      justify-content: center;
-    }
-    
-    /* Upload States */
-    .upload-progress {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      color: var(--primary);
-      font-size: 16px;
-      gap: 10px;
-      flex-direction: column;
-    }
-    
-    .upload-error {
-      color: var(--error);
-      text-align: center;
-      padding: 20px;
-      font-size: 14px;
-    }
-    
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .form-row, .items-container {
-        grid-template-columns: 1fr;
-      }
-      
-      .form-progress {
-        flex-direction: column;
-      }
-      
-      .form-footer {
-        flex-direction: column;
-        gap: 15px;
-      }
-      
-      .package-info {
-        flex-direction: column;
-        gap: 15px;
-        align-items: flex-start;
-      }
-      
-      .payment-btn {
-        margin-right: 0;
-        margin-bottom: 10px;
-      }
-      
-      .packages-table {
-        font-size: 12px;
-      }
-      
-      .packages-table th, .packages-table td {
-        padding: 6px 8px;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      .form-content {
-        padding: 20px;
-      }
-      
-      .form-header, .rent-container {
-        padding: 20px;
-      }
-      
-      .progress-step {
-        padding: 10px;
-        font-size: 12px;
-      }
-      
-      .choose-plan {
-        font-size: 14px;
-      }
-    }
-    
-    /* Scroll target styling */
-    .scroll-target {
-      position: relative;
-      top: -80px;
-      visibility: hidden;
-    }
-    
-    /* Item Counter */
-    .item-counter {
-      background: var(--primary);
-      color: white;
-      padding: 4px 8px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-      display: inline-block;
-      margin-left: 10px;
-    }
-    
-    /* Media Controls */
-    .media-controls {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
-      display: flex;
-      gap: 8px;
-    }
-    
-    .media-btn {
-      background: rgba(0, 0, 0, 0.5);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    
-    .media-btn:hover {
-      background: rgba(0, 0, 0, 0.7);
-      transform: scale(1.1);
-    }
-    
-    /* Edit Controls */
-    .edit-controls {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      display: flex;
-      gap: 8px;
-      z-index: 10;
-    }
-    
-    .edit-btn {
-      background: rgba(255, 255, 255, 0.8);
-      color: var(--dark);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 4px 8px;
-      font-size: 12px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    
-    .edit-btn:hover {
-      background: var(--primary);
-      color: white;
     }
     
     /* Lightbox for zooming */
@@ -967,10 +727,12 @@
       align-items: center;
       gap: 15px;
       font-weight: 500;
+      background: #f8fafc;
+      border: 1px solid var(--border);
     }
     
     .notification-error {
-      background: #fef2f2
+      background: #fef2f2;
       color: #b91c1c;
       border: 1px solid #fecaca;
     }
@@ -984,46 +746,108 @@
     .notification i {
       font-size: 1.2rem;
     }
-  </style>
-  <script>
- // Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
-    authDomain: "oblinks-7fdb1.firebaseapp.com",
-    projectId: "oblinks-7fdb1",
-    storageBucket: "oblinks-7fdb1.appspot.com",
-    messagingSenderId: "587017639779",
-    appId: "1:587017639779:web:d11b60f40f431cfc202556"
-  };
-
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const auth = firebase.auth();
-
-  // Cloudinary configuration
-  const cloudinaryConfig = {
-    cloudName: 'dp81zzxlh',
-    uploadPreset: 'unsignedpreset' // Using your unsigned preset
-  };
-
-  // Package selection
-  let selectedPackage = null;
-  let paymentComplete = false;
-  let maxItems = 2;
-  let currentItems = 1;
-  let currentUser = null;
-
-  // Check authentication
-  auth.onAuthStateChanged(user => {
-    currentUser = user;
-    if (!user) {
-      window.location.href = "login.html";
-    } else {
-      document.querySelector('.form-container').style.display = 'block';
+    
+    .package-reminder {
+      margin-bottom: 15px;
+      padding: 15px;
+      background: #eef2ff;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-left: 4px solid var(--warning);
     }
-  });
-  </script>
+    
+    .package-reminder i {
+      color: var(--warning);
+      font-size: 20px;
+    }
+    
+    .package-reminder p {
+      font-size: 14px;
+    }
+    
+    .package-reminder strong {
+      color: var(--primary-dark);
+    }
+    
+    .package-reminder.hidden {
+      display: none;
+    }
+    
+    .buttons-container {
+      display: flex;
+      justify-content: flex-end;
+      gap: 15px;
+    }
+    
+    .item-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .edit-btn {
+      background: var(--primary);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      transition: all 0.2s ease;
+    }
+    
+    .edit-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+    
+    .delete-btn {
+      background: var(--error);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      transition: all 0.2s ease;
+    }
+    
+    .delete-btn:hover {
+      background: #dc2626;
+      transform: translateY(-2px);
+    }
+    
+    .saving-notice {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--success);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 2000;
+      animation: fadeInOut 3s forwards;
+    }
+ @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateX(20px); }
+      20% { opacity: 1; transform: translateX(0); }
+      80% { opacity: 1; transform: translateX(0); }
+      100% { opacity: 0; transform: translateX(20px); }
+    }
+  </style>
 </head>
 <body>
   <!-- Header -->
@@ -1216,24 +1040,24 @@
               <input type="text" id="business-location" class="form-control" placeholder="Country, District, City etc.">
             </div>
             
-           <div class="form-group">
-  <label for="business-category">Business Category</label>
-  <select id="business-category" required>
-    <option value="" disabled selected>Select a category</option>
-    <option value="electronics">Electronics</option>
-    <option value="fashion">Fashion</option>
-    <option value="food">Food & Dining</option>
-    <option value="services">Services</option>
-    <option value="home">Home & Garden</option>
-    <option value="health">Health & Beauty</option>
-    <option value="auto">Automotive</option>
-    <option value="education">Education</option>
-    <option value="entertainment">Entertainment</option>
-    <option value="travel">Travel</option>
-    <option value="sports">Sports</option>
-    <option value="all">All Businesses</option>
-  </select>
-</div>
+            <div class="form-group">
+              <label for="business-category" class="required">Business Category</label>
+              <select id="business-category" class="form-control" required>
+                <option value="" disabled selected>Select a category</option>
+                <option value="electronics">Electronics</option>
+                <option value="fashion">Fashion</option>
+                <option value="food">Food & Dining</option>
+                <option value="services">Services</option>
+                <option value="home">Home & Garden</option>
+                <option value="health">Health & Beauty</option>
+                <option value="auto">Automotive</option>
+                <option value="education">Education</option>
+                <option value="entertainment">Entertainment</option>
+                <option value="travel">Travel</option>
+                <option value="sports">Sports</option>
+                <option value="all">All Businesses</option>
+              </select>
+            </div>
           </div>
           
           <div class="form-group">
@@ -1256,8 +1080,7 @@
             </div>
           </div>
         </div>
-        
-        <!-- Scroll targets -->
+  <!-- Scroll targets -->
         <div class="scroll-target" id="items-services"></div>
         
         <!-- Section 2: Items & Services -->
@@ -1273,25 +1096,7 @@
           </div>
           
           <div class="items-container" id="items-container">
-            <!-- Item 1 -->
-            <div class="item-card">
-              <div class="item-media">
-                <div class="file-input-wrapper">
-                  <input type="file" class="media-input" accept="image/*,video/*">
-                  <div class="placeholder">
-                    <i class="fas fa-image fa-2x"></i>
-                    <p>Click to upload image or video</p>
-                  </div>
-                </div>
-              </div>
-              <div class="item-body">
-                <input type="text" class="form-control item-title" placeholder="Item Title" style="margin-bottom: 10px;">
-                <input type="text" class="form-control item-price" placeholder="Price (UGX)" style="margin-bottom: 15px;">
-                <button class="btn-submit save-item" style="padding: 8px 12px; font-size: 13px;">
-                  <i class="fas fa-save"></i> Save Changes
-                </button>
-              </div>
-            </div>
+            <!-- Items will be added here dynamically -->
           </div>
           
           <button class="add-item-btn" id="add-item-btn">
@@ -1305,7 +1110,13 @@
       
       <!-- Form Footer -->
       <div class="form-footer">
-        <div>
+        <!-- Package Selection Reminder -->
+        <div id="package-reminder" class="package-reminder">
+          <i class="fas fa-exclamation-triangle"></i>
+          <p><strong>Important:</strong> You must select a package from the table at the top of this page to proceed.</p>
+        </div>
+        
+        <div class="buttons-container">
           <button class="payment-btn hidden" id="payment-btn">
             <i class="fas fa-credit-card"></i> Pay Now
           </button>
@@ -1317,68 +1128,282 @@
     </div>
   </div>
   
-  <!-- Payment Modal -->
-  <div class="modal" id="payment-modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Complete Payment</h3>
-        <button class="close-modal" id="close-modal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="payment-summary" style="margin-bottom: 20px; font-size: 15px;">
-          <p>Package: <strong id="modal-package">Starter</strong></p>
-          <p>Amount: <strong id="modal-amount">0 UGX</strong></p>
-          <p style="margin-top: 15px;">Payment Method:</p>
-        </div>
-        
-        <div class="payment-option active">
-          <div class="details">
-            <div class="name">
-              <i class="fas fa-mobile-alt"></i>
-              Mobile Money
-            </div>
-            <div class="info">
-              <i class="fas fa-check-circle"></i>
-            </div>
-          </div>
-        </div>
-        
-        <div class="payment-option">
-          <div class="details">
-            <div class="name">
-              <i class="fas fa-university"></i>
-              Bank Transfer
-            </div>
-          </div>
-        </div>
-        
-        <div class="payment-option">
-          <div class="details">
-            <div class="name">
-              <i class="fas fa-credit-card"></i>
-              Credit/Debit Card
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn-submit" id="confirm-payment">
-          <i class="fas fa-check-circle"></i> Confirm Payment
-        </button>
-      </div>
-    </div>
-  </div>
-  
   <!-- Lightbox for zooming -->
   <div class="lightbox" id="lightbox">
     <span class="close-lightbox">&times;</span>
     <div class="lightbox-content" id="lightbox-content"></div>
   </div>
   
-  <script>
+    <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
+      authDomain: "oblinks-7fdb1.firebaseapp.com",
+      projectId: "oblinks-7fdb1",
+      storageBucket: "oblinks-7fdb1.appspot.com",
+      messagingSenderId: "587017639779",
+      appId: "1:587017639779:web:d11b60f40f431cfc202556"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    // Cloudinary configuration
+    const cloudinaryConfig = {
+      cloudName: 'dp81zzxlh',
+      uploadPreset: 'Unsigned upload'
+    };
+
+    // Global state
+    let selectedPackage = null;
+    let paymentComplete = false;
+    let maxItems = 2;
+    let currentItems = 0;
+    let currentUser = null;
+    let isEditMode = false;
+    let editingBusinessId = null;
+    let editingItems = [];
+    let deletedItems = [];
+
+    // Check authentication
+    auth.onAuthStateChanged(user => {
+      currentUser = user;
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        document.querySelector('.form-container').style.display = 'block';
+        checkStarterUsage();
+        checkEditMode();
+      }
+    });
+
+    // Check if we're in edit mode
+    function checkEditMode() {
+      const urlParams = new URLSearchParams(window.location.search);
+      editingBusinessId = urlParams.get('edit');
+      
+      if (editingBusinessId) {
+        isEditMode = true;
+        loadExistingBusiness(editingBusinessId);
+      } else {
+        loadFormState();
+      }
+    }
+
+    // Check if user has already used Starter package
+    function checkStarterUsage() {
+      if (!currentUser) return;
+      
+      db.collection("businesses")
+        .where("createdBy", "==", currentUser.uid)
+        .where("package", "==", "Starter")
+        .get()
+        .then(querySnapshot => {
+          if (!querySnapshot.empty) {
+            document.querySelectorAll('.package-btn[data-package="Starter"]').forEach(btn => {
+              btn.disabled = true;
+              btn.innerHTML = 'Starter (Used)';
+              btn.style.opacity = '0.6';
+              btn.style.cursor = 'not-allowed';
+            });
+          }
+        });
+    }
+
+    // Load existing business for editing
+    async function loadExistingBusiness(businessId) {
+      try {
+        // Get business data
+        const businessDoc = await db.collection("businesses").doc(businessId).get();
+        if (!businessDoc.exists) throw new Error("Business not found");
+        
+        const businessData = businessDoc.data();
+        
+        // Get items data
+        const itemsSnapshot = await db.collection("items")
+          .where("businessId", "==", businessId)
+          .get();
+        
+        editingItems = itemsSnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+        
+        // Populate form fields
+        document.getElementById('business-title').value = businessData.title || '';
+        document.getElementById('business-location').value = businessData.location || '';
+        document.getElementById('business-category').value = businessData.category || '';
+        document.getElementById('business-description').value = businessData.description || '';
+        document.getElementById('business-link').value = businessData.businessLink || '';
+        document.getElementById('whatsapp-number').value = businessData.whatsapp || '';
+        
+        // Handle package selection
+        if (businessData.package) {
+          selectedPackage = {
+            name: businessData.package,
+            price: 0, // Price isn't stored in business data
+            items: maxItems // Will be updated below
+          };
+          
+          // Find package details from UI
+          const packageBtn = [...document.querySelectorAll('.package-btn')]
+            .find(btn => btn.dataset.package === businessData.package);
+          
+          if (packageBtn) {
+            selectedPackage.price = parseInt(packageBtn.dataset.price);
+            selectedPackage.items = parseInt(packageBtn.dataset.items);
+            maxItems = selectedPackage.items;
+          }
+          
+          // Update UI
+          document.getElementById('selected-package').textContent = selectedPackage.name;
+          document.getElementById('selected-price').textContent = selectedPackage.price.toLocaleString();
+          document.getElementById('selected-items').textContent = selectedPackage.items;
+          document.getElementById('package-info').style.display = 'flex';
+          document.getElementById('package-reminder').classList.add('hidden');
+        }
+        
+        // Add items to form
+        document.getElementById('items-container').innerHTML = '';
+        currentItems = 0;
+        
+        editingItems.forEach(item => {
+          addItemToForm(item.title, item.price, item.mediaUrl, item.id);
+        });
+        
+   // Update UI
+        updateItemCounter();
+        document.getElementById('submit-btn').disabled = false;
+        document.getElementById('submit-btn').innerHTML = '<i class="fas fa-sync-alt"></i> Update Business';
+        
+        // Handle payment status
+        if (businessData.paymentStatus === 'paid') {
+          paymentComplete = true;
+          document.getElementById('payment-btn').classList.add('hidden');
+        } else if (selectedPackage && selectedPackage.name !== 'Starter') {
+          document.getElementById('payment-btn').classList.remove('hidden');
+        }
+        
+      } catch (error) {
+        console.error("Error loading business:", error);
+        alert("Could not load business data: " + error.message);
+      }
+    }
+
+    // Save form state to sessionStorage
+    function saveFormState() {
+      const formData = {
+        title: document.getElementById('business-title').value,
+        location: document.getElementById('business-location').value,
+        category: document.getElementById('business-category').value,
+        description: document.getElementById('business-description').value,
+        link: document.getElementById('business-link').value,
+        whatsapp: document.getElementById('whatsapp-number').value,
+        items: [],
+        selectedPackage: selectedPackage,
+        isEditMode: isEditMode,
+        editingBusinessId: editingBusinessId
+      };
+
+      // Save items
+      document.querySelectorAll('.item-card').forEach(card => {
+        const title = card.querySelector('.item-title').value;
+        const price = card.querySelector('.item-price').value;
+        const mediaUrl = card.querySelector('.media-url')?.value;
+        const itemId = card.dataset.itemId;
+        
+        if (title && price) {
+          formData.items.push({
+            title: title,
+            price: price,
+            mediaUrl: mediaUrl || "",
+            itemId: itemId || ""
+          });
+        }
+      });
+
+      sessionStorage.setItem('businessFormData', JSON.stringify(formData));
+    }
+
+    // Load form state from sessionStorage
+    function loadFormState() {
+      const savedData = sessionStorage.getItem('businessFormData');
+      if (!savedData) {
+        // Add default item if not editing and no saved data
+        if (!isEditMode) {
+          addItemToForm();
+        }
+        return;
+      }
+      
+      const formData = JSON.parse(savedData);
+      
+      // Fill form fields
+      document.getElementById('business-title').value = formData.title || '';
+      document.getElementById('business-location').value = formData.location || '';
+      document.getElementById('business-category').value = formData.category || '';
+      document.getElementById('business-description').value = formData.description || '';
+      document.getElementById('business-link').value = formData.link || '';
+      document.getElementById('whatsapp-number').value = formData.whatsapp || '';
+      
+      // Restore edit mode state
+      isEditMode = formData.isEditMode || false;
+      editingBusinessId = formData.editingBusinessId || null;
+      
+      if (isEditMode && editingBusinessId) {
+        document.getElementById('submit-btn').innerHTML = '<i class="fas fa-sync-alt"></i> Update Business';
+      }
+      
+      // Handle selected package
+      if (formData.selectedPackage) {
+        selectedPackage = formData.selectedPackage;
+        
+        // Update UI for selected package
+        document.getElementById('selected-package').textContent = selectedPackage.name;
+        document.getElementById('selected-price').textContent = selectedPackage.price.toLocaleString();
+        document.getElementById('selected-items').textContent = selectedPackage.items;
+        document.getElementById('package-info').style.display = 'flex';
+        
+        maxItems = selectedPackage.items;
+        document.getElementById('package-reminder').classList.add('hidden');
+        
+        // Update payment button
+        const paymentBtn = document.getElementById('payment-btn');
+        paymentBtn.classList.remove('hidden');
+        if (selectedPackage.name === 'Starter') {
+          paymentBtn.classList.add('hidden');
+          document.getElementById('submit-btn').disabled = false;
+          paymentComplete = true;
+        }
+      }
+      
+      // Clear existing items
+      document.getElementById('items-container').innerHTML = '';
+      currentItems = 0;
+      
+      // Add saved items
+      if (formData.items && formData.items.length > 0) {
+        formData.items.forEach(item => {
+          addItemToForm(item.title, item.price, item.mediaUrl, item.itemId);
+        });
+      } else if (!isEditMode) {
+        // Add default item if none
+        addItemToForm();
+      }
+      
+      updateItemCounter();
+    }
+
+    // Clear form state
+    function clearFormState() {
+      sessionStorage.removeItem('businessFormData');
+    }
+
     // Package selection
     document.querySelectorAll('.package-btn').forEach(button => {
       button.addEventListener('click', function() {
+        // Skip if disabled
+        if (this.disabled) return;
+        
         // Get package data
         const packageName = this.dataset.package;
         const packagePrice = parseInt(this.dataset.price);
@@ -1391,7 +1416,7 @@
           items: packageItems
         };
         
-        // Update UI
+           // Update UI
         document.getElementById('selected-package').textContent = packageName;
         document.getElementById('selected-price').textContent = packagePrice.toLocaleString();
         document.getElementById('selected-items').textContent = packageItems;
@@ -1416,11 +1441,12 @@
           document.getElementById('submit-btn').disabled = true;
           paymentComplete = false;
         }
-
-// Scroll to form
-        document.querySelector('.form-container').scrollIntoView({ 
-          behavior: 'smooth' 
-        });
+        
+        // Hide the package reminder
+        document.getElementById('package-reminder').classList.add('hidden');
+        
+        // Save form state
+        saveFormState();
       });
     });
     
@@ -1449,12 +1475,14 @@
       }
     }
     
-    // Add item functionality
-    document.getElementById('add-item-btn').addEventListener('click', function() {
+    // Add item to form with optional data
+    function addItemToForm(title = '', price = '', mediaUrl = '', itemId = '') {
       if (currentItems < maxItems) {
         const itemsContainer = document.getElementById('items-container');
         const newItem = document.createElement('div');
         newItem.className = 'item-card';
+        if (itemId) newItem.dataset.itemId = itemId;
+        
         newItem.innerHTML = `
           <div class="item-media">
             <div class="file-input-wrapper">
@@ -1466,127 +1494,230 @@
             </div>
           </div>
           <div class="item-body">
-            <input type="text" class="form-control item-title" placeholder="Item Title" style="margin-bottom: 10px;">
-            <input type="text" class="form-control item-price" placeholder="Price (UGX)" style="margin-bottom: 15px;">
-            <button class="btn-submit save-item" style="padding: 8px 12px; font-size: 13px;">
-              <i class="fas fa-save"></i> Save Changes
-            </button>
+            <input type="text" class="form-control item-title" placeholder="Item Title" 
+                   value="${title}" style="margin-bottom: 10px;">
+            <input type="text" class="form-control item-price" placeholder="Price (UGX)" 
+                   value="${price}" style="margin-bottom: 15px;">
+            <div class="item-actions">
+              <button class="edit-btn edit-item">
+                <i class="fas fa-edit"></i> Edit
+              </button>
+              <button class="delete-btn delete-item">
+                <i class="fas fa-trash"></i> Delete
+              </button>
+            </div>
           </div>
         `;
+        
         itemsContainer.appendChild(newItem);
         currentItems++;
-        updateItemCounter();
         
         // Add media input event
         const mediaInput = newItem.querySelector('.media-input');
         mediaInput.addEventListener('change', handleMediaUpload);
         
-        // Add save button event
-        const saveBtn = newItem.querySelector('.save-item');
-        saveBtn.addEventListener('click', function(e) {
+        // Add edit button event
+        const editBtn = newItem.querySelector('.edit-item');
+        editBtn.addEventListener('click', function(e) {
           e.preventDefault();
-          const title = newItem.querySelector('.item-title').value;
-          const price = newItem.querySelector('.item-price').value;
+          toggleItemEditMode(newItem);
+        });
+        
+        // Add delete button event
+        const deleteBtn = newItem.querySelector('.delete-item');
+        deleteBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (confirm('Are you sure you want to delete this item?')) {
+            // If this is an existing item, mark for deletion
+            if (itemId) {
+              newItem.dataset.delete = "true";
+              newItem.style.opacity = "0.6";
+              deleteBtn.disabled = true;
+              editBtn.disabled = true;
+            } 
+            // If it's a new item, just remove it
+            else {
+              newItem.remove();
+              currentItems--;
+              updateItemCounter();
+            }
+            saveFormState();
+          }
+        });
+        
+   // If we have a media URL, create preview
+        if (mediaUrl) {
+          const wrapper = newItem.querySelector('.file-input-wrapper');
+          wrapper.innerHTML = '';
           
-          if(!title || !price) {
-            alert('Please fill in both title and price');
-            return;
+          const isVideo = mediaUrl.endsWith('.mp4');
+          const controlsDiv = document.createElement("div");
+          controlsDiv.style.position = "relative";
+          controlsDiv.style.width = "100%";
+          controlsDiv.style.borderRadius = "10px";
+          controlsDiv.style.overflow = "hidden";
+          
+          // Create media element
+          let mediaElement;
+          if (isVideo) {
+            mediaElement = document.createElement("video");
+            mediaElement.src = mediaUrl;
+            mediaElement.controls = true;
+            mediaElement.muted = true;
+            mediaElement.style.width = "100%";
+            mediaElement.style.maxHeight = "200px";
+            mediaElement.style.borderRadius = "10px";
+            mediaElement.style.objectFit = "cover";
+          } else {
+            mediaElement = document.createElement("img");
+            mediaElement.src = mediaUrl;
+            mediaElement.alt = "Uploaded image";
+            mediaElement.style.width = "100%";
+            mediaElement.style.maxHeight = "200px";
+            mediaElement.style.borderRadius = "10px";
+            mediaElement.style.objectFit = "contain";
           }
           
-          alert('Item saved successfully!');
-        });
+          // Zoom button
+          const zoomBtn = document.createElement("button");
+          zoomBtn.innerHTML = `<i class="fas fa-search-plus"></i>`;
+          zoomBtn.className = "zoom-btn";
+          zoomBtn.onclick = () => openLightbox(mediaUrl, isVideo ? 'video' : 'image');
+          
+          // Hidden input to store URL
+          const urlInput = document.createElement("input");
+          urlInput.type = "hidden";
+          urlInput.className = "media-url";
+          urlInput.value = mediaUrl;
+          
+          // Assemble
+          controlsDiv.appendChild(mediaElement);
+          controlsDiv.appendChild(zoomBtn);
+          wrapper.appendChild(controlsDiv);
+          wrapper.appendChild(urlInput);
+        }
+        
+        updateItemCounter();
+        saveFormState();
       }
+    }
+    
+    // Toggle item edit mode
+    function toggleItemEditMode(itemCard) {
+      const titleInput = itemCard.querySelector('.item-title');
+      const priceInput = itemCard.querySelector('.item-price');
+      const editBtn = itemCard.querySelector('.edit-item');
+      
+      if (titleInput.readOnly) {
+        // Enable editing
+        titleInput.readOnly = false;
+        priceInput.readOnly = false;
+        editBtn.innerHTML = '<i class="fas fa-save"></i> Save';
+      } else {
+        // Save changes
+        titleInput.readOnly = true;
+        priceInput.readOnly = true;
+        editBtn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+        saveFormState();
+        showSavingNotice();
+      }
+    }
+    
+    // Add item functionality
+    document.getElementById('add-item-btn').addEventListener('click', function() {
+      addItemToForm();
     });
 
-
-// Connect all media inputs to this function
-document.querySelectorAll('.media-input').forEach(input => {
-  input.addEventListener('change', handleMediaUpload);
-});
-
-// Handle media upload to Cloudinary
-async function handleMediaUpload(e) {
-  alert("Upload started"); // For phones with no console
-
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const wrapper = e.target.parentElement;
-  wrapper.innerHTML = `<div style="color:blue">Uploading...</div>`;
-
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", "Unsigned upload");
-
-  try {
-    const response = await fetch(
-      "https://api.cloudinary.com/v1_1/dp81zzxlh/auto/upload", // 🔁 auto handles both image/video
-      {
-        method: "POST",
-        body: formData
+    // Handle media upload to Cloudinary
+    async function handleMediaUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      // Validate file
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'video/webm'];
+      if (!validTypes.includes(file.type)) {
+        alert('Only images (JPEG, PNG, GIF) and videos (MP4, WebM) are allowed');
+        return;
       }
-    );
-    const data = await response.json();
+      
+      if (file.size > 10 * 1024 * 1024) {
+        alert('File size must be less than 10MB');
+        return;
+      }
 
-    wrapper.innerHTML = ""; // Clear old content
+      const wrapper = e.target.parentElement;
+      wrapper.innerHTML = `<div class="upload-progress"><i class="fas fa-spinner fa-spin"></i> Uploading...</div>`;
 
-    const isVideo = data.resource_type === "video";
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "Unsigned upload");
 
-    // Create preview container
-    const controlsDiv = document.createElement("div");
-    controlsDiv.style.position = "relative";
-    controlsDiv.style.width = "100%";
-    controlsDiv.style.borderRadius = "10px";
-    controlsDiv.style.overflow = "hidden";
+      try {
+        const response = await fetch(
+          "https://api.cloudinary.com/v1_1/dp81zzxlh/auto/upload",
+          {
+            method: "POST",
+            body: formData
+          }
+        );
+        const data = await response.json();
 
-    // Create media element
-    let mediaElement;
-    if (isVideo) {
-      mediaElement = document.createElement("video");
-mediaElement.src = data.secure_url;
-mediaElement.controls = true;
-mediaElement.muted = true;
+        wrapper.innerHTML = "";
 
-// Optional: generate thumbnail using Cloudinary's transformation
-const videoId = data.public_id;
-const posterUrl = `https://res.cloudinary.com/dp81zzxlh/video/upload/so_2/${videoId}.jpg`;
-mediaElement.poster = posterUrl;
-      mediaElement.style.width = "100%";
-      mediaElement.style.maxHeight = "200px";
-      mediaElement.style.borderRadius = "10px";
-      mediaElement.style.objectFit = "cover";
-    } else {
-      mediaElement = document.createElement("img");
-      mediaElement.src = data.secure_url;
-      mediaElement.alt = "Uploaded image";
-      mediaElement.style.width = "100%";
-      mediaElement.style.maxHeight = "200px";
-      mediaElement.style.borderRadius = "10px";
-      mediaElement.style.objectFit = "contain";
+        const isVideo = data.resource_type === "video";
+
+        // Create preview container
+        const controlsDiv = document.createElement("div");
+        controlsDiv.style.position = "relative";
+        controlsDiv.style.width = "100%";
+        controlsDiv.style.borderRadius = "10px";
+        controlsDiv.style.overflow = "hidden";
+
+        // Create media element
+        let mediaElement;
+        if (isVideo) {
+          mediaElement = document.createElement("video");
+          mediaElement.src = data.secure_url;
+          mediaElement.controls = true;
+          mediaElement.muted = true;
+          mediaElement.style.width = "100%";
+          mediaElement.style.maxHeight = "200px";
+          mediaElement.style.borderRadius = "10px";
+          mediaElement.style.objectFit = "cover";
+        } else {
+          mediaElement = document.createElement("img");
+          mediaElement.src = data.secure_url;
+          mediaElement.alt = "Uploaded image";
+          mediaElement.style.width = "100%";
+          mediaElement.style.maxHeight = "200px";
+          mediaElement.style.borderRadius = "10px";
+          mediaElement.style.objectFit = "contain";
+        }
+
+        // Zoom button
+        const zoomBtn = document.createElement("button");
+        zoomBtn.innerHTML = `<i class="fas fa-search-plus"></i>`;
+        zoomBtn.className = "zoom-btn";
+        zoomBtn.onclick = () => openLightbox(data.secure_url, isVideo ? 'video' : 'image');
+
+        // Hidden input to store URL
+        const urlInput = document.createElement("input");
+        urlInput.type = "hidden";
+        urlInput.className = "media-url";
+        urlInput.value = data.secure_url;
+
+        // Assemble
+        controlsDiv.appendChild(mediaElement);
+        controlsDiv.appendChild(zoomBtn);
+        wrapper.appendChild(controlsDiv);
+        wrapper.appendChild(urlInput);
+
+        saveFormState();
+      } catch (error) {
+        wrapper.innerHTML = `<div class="upload-error"><i class="fas fa-exclamation-triangle"></i> Upload failed: ${error.message}</div>`;
+      }
     }
-
-    // Zoom button
-    const zoomBtn = document.createElement("button");
-    zoomBtn.innerHTML = `<i class="fas fa-search-plus"></i>`;
-    zoomBtn.className = "zoom-btn";
-    zoomBtn.onclick = () => openLightbox(data.secure_url, isVideo ? 'video' : 'image');
-
-    // Hidden input to store URL
-    const urlInput = document.createElement("input");
-    urlInput.type = "hidden";
-    urlInput.className = "media-url";
-    urlInput.value = data.secure_url;
-
-    // Assemble
-    controlsDiv.appendChild(mediaElement);
-    controlsDiv.appendChild(zoomBtn);
-    wrapper.appendChild(controlsDiv);
-    wrapper.appendChild(urlInput);
-
-  } catch (error) {
-    wrapper.innerHTML = `<p style="color:red">Upload failed: ${error.message}</p>`;
-  }
-}
+    
     // Open lightbox for zooming
     function openLightbox(src, type) {
       const lightbox = document.getElementById('lightbox');
@@ -1616,25 +1747,77 @@ mediaElement.poster = posterUrl;
     // Payment button
     document.getElementById('payment-btn').addEventListener('click', function() {
       if (selectedPackage) {
-        document.getElementById('modal-package').textContent = selectedPackage.name;
-        document.getElementById('modal-amount').textContent = selectedPackage.price.toLocaleString() + ' UGX';
-        document.getElementById('payment-modal').style.display = 'flex';
+        // Validate form
+        const businessTitle = document.getElementById('business-title').value;
+        const businessLocation = document.getElementById('business-location').value;
+        const businessCategory = document.getElementById('business-category').value;
+        const businessDescription = document.getElementById('business-description').value;
+        const whatsappNumber = document.getElementById('whatsapp-number').value;
+        
+        if(!businessTitle || !businessLocation || !businessCategory || !businessDescription || !whatsappNumber) {
+          alert('Please fill in all required fields');
+          return;
+        }
+        
+        if (businessDescription.length < 100) {
+          alert('Business description must be at least 100 characters');
+          return;
+        }
+        
+        // Collect items data
+        const items = [];
+        document.querySelectorAll(".item-card").forEach(card => {
+          const title = card.querySelector(".item-title").value;
+          const price = card.querySelector(".item-price").value;
+          const mediaInput = card.querySelector(".media-url");
+          const mediaUrl = mediaInput ? mediaInput.value : null;
+          
+          if (title && price) {
+            items.push({
+              title,
+              price: parseInt(price),
+              mediaUrl
+            });
+          }
+        });
+        
+        if (items.length === 0) {
+          alert('Please add at least one item');
+          return;
+        }
+        
+        // Prepare business data
+        const businessData = {
+          title: businessTitle,
+          location: businessLocation,
+          category: businessCategory,
+          description: businessDescription,
+          whatsapp: whatsappNumber,
+          businessLink: document.getElementById('business-link').value || null,
+          package: selectedPackage.name,
+          createdBy: currentUser.uid,
+          paymentStatus: 'unpaid',
+          status: 'pending'
+        };
+        
+     // Collect mediaUrls from items
+const mediaUrls = items.map(item => item.mediaUrl).filter(url => !!url);
+
+// Attach mediaUrls to business data
+businessData.mediaUrls = mediaUrls;
+businessData.mediaTypes = mediaUrls.map(url => url.endsWith('.mp4') ? 'video' : 'image');
+
+// Save original keys for paynow.html compatibility
+sessionStorage.setItem("businessData", JSON.stringify(businessData));
+sessionStorage.setItem("itemsData", JSON.stringify(items));
+
+// Optional: also store under simpler keys (if paynow.html also reads these)
+sessionStorage.setItem("business", JSON.stringify(businessData));
+sessionStorage.setItem("items", JSON.stringify(items));
+
+// Redirect to payment page
+window.location.href = "paynow.html";
       }
-    });
-    
-    // Close modal
-    document.getElementById('close-modal').addEventListener('click', function() {
-      document.getElementById('payment-modal').style.display = 'none';
-    });
-    
-    // Confirm payment
-    document.getElementById('confirm-payment').addEventListener('click', function() {
-      paymentComplete = true;
-      document.getElementById('payment-modal').style.display = 'none';
-      document.getElementById('submit-btn').disabled = false;
-      
-      // Show success message
-      alert(`Payment of ${selectedPackage.price.toLocaleString()} UGX for ${selectedPackage.name} package confirmed!`);
     });
     
     // Form submission
@@ -1648,12 +1831,13 @@ mediaElement.poster = posterUrl;
       // Get form data
       const businessTitle = document.getElementById('business-title').value;
       const businessLocation = document.getElementById('business-location').value;
+      const businessCategory = document.getElementById('business-category').value;
       const businessDescription = document.getElementById('business-description').value;
       const businessLink = document.getElementById('business-link').value;
       const whatsappNumber = document.getElementById('whatsapp-number').value;
       
       // Validation
-      if(!businessTitle || !businessLocation || !businessDescription || !whatsappNumber) {
+      if(!businessTitle || !businessLocation || !businessCategory || !businessDescription || !whatsappNumber) {
         alert('Please fill in all required fields');
         return;
       }
@@ -1663,102 +1847,168 @@ mediaElement.poster = posterUrl;
         return;
       }
       
-      // Collect media URLs
-      const mediaUrls = [];
-      const mediaInputs = document.querySelectorAll('.media-url');
-      mediaInputs.forEach(input => {
-        if(input.value) mediaUrls.push(input.value);
+      // Collect items data
+      const items = [];
+      document.querySelectorAll(".item-card").forEach(card => {
+        const title = card.querySelector(".item-title").value;
+        const price = card.querySelector(".item-price").value;
+        const mediaInput = card.querySelector(".media-url");
+        const mediaUrl = mediaInput ? mediaInput.value : null;
+        const itemId = card.dataset.itemId;
+        
+        if (title && price && !card.dataset.delete) {
+          items.push({
+            title,
+            price: parseInt(price),
+            mediaUrl,
+            itemId
+          });
+        }
       });
-      // Collect media types
-const mediaTypes = mediaUrls.map(url => url.endsWith('.mp4') ? 'video' : 'image');
-      // Get first media URL for the business
-      const businessMediaUrl = mediaUrls.length > 0 ? mediaUrls[0] : null;
       
-      // Prepare business data
-      const businessData = {
-        title: businessTitle,
-        location: businessLocation,
-        description: businessDescription,
-        whatsapp: whatsappNumber,
-        businessLink: businessLink || null,
-        mediaUrls: mediaUrls,
-mediaTypes: mediaUrls.map(url => url.endsWith('.mp4') ? 'video' : 'image'),
-        package: selectedPackage ? selectedPackage.name : 'Starter',
-        createdBy: currentUser.uid,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        status: 'pending' // For admin review
-      };
-      
-      this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+      if (items.length === 0) {
+        alert('Please add at least one item');
+        return;
+      }
+
+      this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + 
+                       (isEditMode ? 'Updating...' : 'Submitting...');
       this.disabled = true;
       
       try {
-        // Save to Firestore
-   await db.collection('pendingBusinesses').add({
-  ...businessData,
-  paymentStatus: "unpaid",
-  createdAt: firebase.firestore.FieldValue.serverTimestamp()
-});
-alert('Business saved! Please complete payment to continue. Your listing will be reviewed.');
-resetForm();
+        let businessId = editingBusinessId;
+        
+        // Prepare business data
+        const businessData = {
+          title: businessTitle,
+          location: businessLocation,
+          category: businessCategory,
+          description: businessDescription,
+          whatsapp: whatsappNumber,
+          businessLink: businessLink || null,
+          package: selectedPackage.name,
+          createdBy: currentUser.uid,
+          paymentStatus: selectedPackage.name === 'Starter' ? 'free' : 'unpaid',
+          status: selectedPackage.name === 'Starter' ? 'active' : 'pending',
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        
+        // Add timestamp for new businesses
+        if (!isEditMode) {
+          businessData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+        }
+        
+        // STARTER PACKAGE OR EDIT MODE FLOW
+        if (selectedPackage.name === 'Starter' || isEditMode) {
+          // For new businesses, create a new document
+          if (!isEditMode) {
+            const businessRef = await db.collection('businesses').add(businessData);
+            businessId = businessRef.id;
+          } 
+          // For existing businesses, update the document
+          else {
+            await db.collection('businesses').doc(businessId).update(businessData);
+          }
+          
+          // Save/update items
+          const batch = db.batch();
+          
+          // Process existing items
+          document.querySelectorAll('.item-card').forEach(card => {
+            const cardItemId = card.dataset.itemId;
+            const title = card.querySelector('.item-title').value;
+            const price = card.querySelector('.item-price').value;
+            const mediaInput = card.querySelector('.media-url');
+            const mediaUrl = mediaInput ? mediaInput.value : null;
+            const isDeleted = card.dataset.delete === "true";
+            
+            if (cardItemId) {
+              // Update existing item
+              if (!isDeleted) {
+                const itemRef = db.collection('items').doc(cardItemId);
+                batch.update(itemRef, {
+                  title,
+                  price: parseInt(price),
+                  mediaUrl,
+                  lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                });
+              } 
+              // Delete marked items
+              else {
+                const itemRef = db.collection('items').doc(cardItemId);
+                batch.delete(itemRef);
+              }
+            }
+            // Add new items
+            else if (!isDeleted) {
+              const itemRef = db.collection('items').doc();
+              batch.set(itemRef, {
+                title,
+                price: parseInt(price),
+                mediaUrl,
+                businessId,
+                userId: currentUser.uid,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+              });
+            }
+          });
+          
+          await batch.commit();
+          
+          showSuccessNotice(isEditMode ? 'Business updated successfully!' : 'Business created successfully!');
+          
+          // Update UI for edit mode
+          if (!isEditMode) {
+            editingBusinessId = businessId;
+            isEditMode = true;
+            document.getElementById('submit-btn').innerHTML = '<i class="fas fa-sync-alt"></i> Update Business';
+          }
+        } 
+        // PAID PACKAGES FLOW (new businesses)
+        else {
+          // Save to sessionStorage for payment page
+          sessionStorage.setItem("businessData", JSON.stringify(businessData));
+          sessionStorage.setItem("itemsData", JSON.stringify(items));
+          
+          // Redirect to payment page
+          window.location.href = "paynow.html";
+        }
+        
+        // Save form state
+        saveFormState();
       } catch (error) {
         console.error('Error adding business: ', error);
         alert('Error adding business: ' + error.message);
-        this.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Business';
+      } finally {
+        this.innerHTML = isEditMode ? 
+          '<i class="fas fa-sync-alt"></i> Update Business' : 
+          '<i class="fas fa-paper-plane"></i> Submit Business';
         this.disabled = false;
       }
     });
+
+ // Show saving notice
+    function showSavingNotice() {
+      const notice = document.createElement('div');
+      notice.className = 'saving-notice';
+      notice.innerHTML = '<i class="fas fa-check-circle"></i> Changes saved successfully!';
+      document.body.appendChild(notice);
+      
+      setTimeout(() => {
+        notice.remove();
+      }, 3000);
+    }
     
-    // Reset form after submission
-    function resetForm() {
-      document.getElementById('business-title').value = '';
-      document.getElementById('business-location').value = '';
-      document.getElementById('business-description').value = '';
-      document.getElementById('whatsapp-number').value = '';
-      document.getElementById('business-link').value = '';
+    // Show success notice
+    function showSuccessNotice(message) {
+      const notice = document.createElement('div');
+      notice.className = 'saving-notice';
+      notice.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+      document.body.appendChild(notice);
       
-      // Reset items to one
-      document.getElementById('items-container').innerHTML = `
-        <div class="item-card">
-          <div class="item-media">
-            <div class="file-input-wrapper">
-              <input type="file" class="media-input" accept="image/*,video/*">
-              <div class="placeholder">
-                <i class="fas fa-image fa-2x"></i>
-                <p>Click to upload image or video</p>
-              </div>
-            </div>
-          </div>
-          <div class="item-body">
-            <input type="text" class="form-control item-title" placeholder="Item Title" style="margin-bottom: 10px;">
-            <input type="text" class="form-control item-price" placeholder="Price (UGX)" style="margin-bottom: 15px;">
-            <button class="btn-submit save-item" style="padding: 8px 12px; font-size: 13px;">
-              <i class="fas fa-save"></i> Save Changes
-            </button>
-          </div>
-        </div>
-      `;
-      
-      // Reattach event listeners
-      document.querySelector('.media-input').addEventListener('change', handleMediaUpload);
-      document.querySelector('.save-item').addEventListener('click', function(e) {
-        e.preventDefault();
-        alert('Item saved successfully!');
-      });
-      
-      // Reset package selection
-      selectedPackage = null;
-      paymentComplete = false;
-      currentItems = 1;
-      maxItems = 2;
-      updateItemCounter();
-      
-      // Hide package info
-      document.getElementById('package-info').style.display = 'none';
-      
-      // Reset buttons
-      document.getElementById('submit-btn').innerHTML = '<i class="fas fa-paper-plane"></i> Submit Business';
-      document.getElementById('submit-btn').disabled = false;
+      setTimeout(() => {
+        notice.remove();
+      }, 3000);
     }
     
     // Scroll to section function
@@ -1801,103 +2051,24 @@ resetForm();
         });
       });
       
-      // Initialize item counter
-      updateItemCounter();
+      // Add input listeners to save form state
+      const formFields = [
+        'business-title', 'business-location', 'business-category',
+        'business-description', 'business-link', 'whatsapp-number'
+      ];
       
-      // Initialize media input events
-      document.querySelectorAll('.media-input').forEach(input => {
-        input.addEventListener('change', handleMediaUpload);
+      formFields.forEach(field => {
+        const element = document.getElementById(field);
+        if (element) {
+          element.addEventListener('input', saveFormState);
+        }
       });
       
-      // Initialize save button events
-      document.querySelectorAll('.save-item').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-          e.preventDefault();
-          alert('Item saved successfully!');
-        });
+      // Add package selection listener
+      document.querySelectorAll('.package-btn').forEach(btn => {
+        btn.addEventListener('click', saveFormState);
       });
     });
   </script>
-  <script>
-  // Link "Pay Now" button to paynow.html
-  document.getElementById("payment-btn").addEventListener("click", function () {
-    window.location.href = "paynow.html";
-  });
-</script>
-
-<script>
-  document.getElementById("payment-btn").addEventListener("click", () => {
-  const formData = {
-    title: document.getElementById("business-title").value,
-    location: document.getElementById("business-location").value,
-    description: document.getElementById("business-description").value,
-    category: document.getElementById("business-category").value,
-    whatsapp: document.getElementById("whatsapp-number").value,
-    
-    businessLink: document.getElementById("business-link").value || null,
-    mediaUrls: Array.from(document.querySelectorAll('.media-url')).map(i => i.value),
-    mediaTypes: Array.from(document.querySelectorAll('.media-url')).map(i => i.value.endsWith('.mp4') ? 'video' : 'image'),
-    package: selectedPackage.name,
-    createdBy: firebase.auth().currentUser?.uid || "anonymous",
-    timestamp: new Date().toISOString(),
-    status: "pending",
-    paymentStatus: "unpaid"
-  };
-
-  sessionStorage.setItem("pendingBusinessData", JSON.stringify(formData));
-  window.location.href = "paynow.html";
-});
-</script>
-
-<script>
-  document.getElementById("payment-btn").addEventListener("click", function () {
-    const title = document.getElementById("business-title").value.trim();
-    const location = document.getElementById("business-location").value.trim();
-    const description = document.getElementById("business-description").value.trim();
-    const whatsapp = document.getElementById("whatsapp-number").value.trim();
-    const category = document.getElementById("business-category").value;
-    const businessLink = document.getElementById("business-link").value.trim();
-    
-    const mediaUrls = Array.from(document.querySelectorAll('.media-url')).map(i => i.value);
-    const mediaTypes = mediaUrls.map(url => url.endsWith('.mp4') ? 'video' : 'image');
-    
-    const businessData = {
-      title,
-      location,
-      description,
-      category,
-      whatsapp,
-      businessLink,
-      mediaUrls,
-      mediaTypes,
-      package: selectedPackage.name,
-      createdBy: firebase.auth().currentUser?.uid || "anonymous",
-      timestamp: new Date().toISOString(),
-      status: "pending",
-      paymentStatus: "unpaid"
-    };
-
-    const items = [];
-    document.querySelectorAll(".item-card").forEach(card => {
-      const name = card.querySelector(".item-title").value.trim();
-      const price = parseInt(card.querySelector(".item-price").value);
-      const media = Array.from(card.querySelectorAll(".media-url")).map(input => input.value);
-      if (name && price && media.length > 0) {
-        items.push({ name, price, media });
-      }
-    });
-
-    // Save to sessionStorage
-    sessionStorage.setItem("businessData", JSON.stringify(businessData));
-    sessionStorage.setItem("itemsData", JSON.stringify(items));
-
-    // ✅ Log to verify
-    console.log("✅ Saved businessData:", businessData);
-    console.log("✅ Saved itemsData:", items);
-
-    // Redirect to paynow
-    window.location.href = "paynow.html";
-  });
-</script>
 </body>
 </html>
