@@ -187,6 +187,18 @@
       font-size: 12px;
     }
     
+  
+/* Add to existing styles */
+.package-btn.selected {
+  background: var(--success) !important;
+  box-shadow: 0 0 0 2px var(--success) inset;
+  transform: scale(1.05);
+}
+
+.package-btn.selected:hover {
+  background: var(--success) !important;
+}
+
     .packages-table tr:nth-child(even) {
       background-color: #f8fafc;
     }
@@ -348,7 +360,8 @@
     .form-content {
       padding: 30px;
     }
- .form-section {
+    
+    .form-section {
       margin-bottom: 40px;
       padding: 20px;
       border-radius: 10px;
@@ -596,8 +609,8 @@
       transform: translateY(-2px);
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
-    
-    /* Form Footer */
+
+ /* Form Footer */
     .form-footer {
       display: flex;
       justify-content: flex-end;
@@ -841,7 +854,8 @@
       z-index: 2000;
       animation: fadeInOut 3s forwards;
     }
- @keyframes fadeInOut {
+    
+    @keyframes fadeInOut {
       0% { opacity: 0; transform: translateX(20px); }
       20% { opacity: 1; transform: translateX(0); }
       80% { opacity: 1; transform: translateX(0); }
@@ -1018,8 +1032,7 @@
           </div>
           <button class="change-btn" onclick="changePackage()">Change Package</button>
         </div>
-        
-        <!-- Scroll targets -->
+ <!-- Scroll targets -->
         <div class="scroll-target" id="business-info"></div>
         
         <!-- Section 1: Business Information -->
@@ -1080,7 +1093,8 @@
             </div>
           </div>
         </div>
-  <!-- Scroll targets -->
+        
+        <!-- Scroll targets -->
         <div class="scroll-target" id="items-services"></div>
         
         <!-- Section 2: Items & Services -->
@@ -1134,7 +1148,8 @@
     <div class="lightbox-content" id="lightbox-content"></div>
   </div>
   
-    <script>
+  
+ <script>
     // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
@@ -1240,8 +1255,8 @@
         if (businessData.package) {
           selectedPackage = {
             name: businessData.package,
-            price: 0, // Price isn't stored in business data
-            items: maxItems // Will be updated below
+            price: 0,
+            items: maxItems
           };
           
           // Find package details from UI
@@ -1270,7 +1285,7 @@
           addItemToForm(item.title, item.price, item.mediaUrl, item.id);
         });
         
-   // Update UI
+        // Update UI
         updateItemCounter();
         document.getElementById('submit-btn').disabled = false;
         document.getElementById('submit-btn').innerHTML = '<i class="fas fa-sync-alt"></i> Update Business';
@@ -1328,69 +1343,69 @@
     function loadFormState() {
       const savedData = sessionStorage.getItem('businessFormData');
       if (!savedData) {
-        // Add default item if not editing and no saved data
-        if (!isEditMode) {
-          addItemToForm();
-        }
+        if (!isEditMode) addItemToForm();
         return;
       }
       
-      const formData = JSON.parse(savedData);
-      
-      // Fill form fields
-      document.getElementById('business-title').value = formData.title || '';
-      document.getElementById('business-location').value = formData.location || '';
-      document.getElementById('business-category').value = formData.category || '';
-      document.getElementById('business-description').value = formData.description || '';
-      document.getElementById('business-link').value = formData.link || '';
-      document.getElementById('whatsapp-number').value = formData.whatsapp || '';
-      
-      // Restore edit mode state
-      isEditMode = formData.isEditMode || false;
-      editingBusinessId = formData.editingBusinessId || null;
-      
-      if (isEditMode && editingBusinessId) {
-        document.getElementById('submit-btn').innerHTML = '<i class="fas fa-sync-alt"></i> Update Business';
-      }
-      
-      // Handle selected package
-      if (formData.selectedPackage) {
-        selectedPackage = formData.selectedPackage;
+      try {
+        const formData = JSON.parse(savedData);
         
-        // Update UI for selected package
-        document.getElementById('selected-package').textContent = selectedPackage.name;
-        document.getElementById('selected-price').textContent = selectedPackage.price.toLocaleString();
-        document.getElementById('selected-items').textContent = selectedPackage.items;
-        document.getElementById('package-info').style.display = 'flex';
+        // Fill form fields
+        document.getElementById('business-title').value = formData.title || '';
+        document.getElementById('business-location').value = formData.location || '';
+        document.getElementById('business-category').value = formData.category || '';
+        document.getElementById('business-description').value = formData.description || '';
+        document.getElementById('business-link').value = formData.link || '';
+        document.getElementById('whatsapp-number').value = formData.whatsapp || '';
         
-        maxItems = selectedPackage.items;
-        document.getElementById('package-reminder').classList.add('hidden');
+        // Restore edit mode state
+        isEditMode = formData.isEditMode || false;
+        editingBusinessId = formData.editingBusinessId || null;
         
-        // Update payment button
-        const paymentBtn = document.getElementById('payment-btn');
-        paymentBtn.classList.remove('hidden');
-        if (selectedPackage.name === 'Starter') {
-          paymentBtn.classList.add('hidden');
-          document.getElementById('submit-btn').disabled = false;
-          paymentComplete = true;
+        if (isEditMode && editingBusinessId) {
+          document.getElementById('submit-btn').innerHTML = '<i class="fas fa-sync-alt"></i> Update Business';
         }
+        
+        // Handle selected package
+        if (formData.selectedPackage) {
+          selectedPackage = formData.selectedPackage;
+          
+          // Update UI for selected package
+          document.getElementById('selected-package').textContent = selectedPackage.name;
+          document.getElementById('selected-price').textContent = selectedPackage.price.toLocaleString();
+          document.getElementById('selected-items').textContent = selectedPackage.items;
+          document.getElementById('package-info').style.display = 'flex';
+          
+          maxItems = selectedPackage.items;
+          document.getElementById('package-reminder').classList.add('hidden');
+          
+          // Update payment button
+          const paymentBtn = document.getElementById('payment-btn');
+          paymentBtn.classList.remove('hidden');
+          if (selectedPackage.name === 'Starter') {
+            paymentBtn.classList.add('hidden');
+            document.getElementById('submit-btn').disabled = false;
+            paymentComplete = true;
+          }
+        }
+        
+        // Clear existing items
+        document.getElementById('items-container').innerHTML = '';
+        currentItems = 0;
+        
+        // Add saved items
+        if (formData.items && formData.items.length > 0) {
+          formData.items.forEach(item => {
+            addItemToForm(item.title, item.price, item.mediaUrl, item.itemId);
+          });
+        } else if (!isEditMode) {
+          addItemToForm();
+        }
+        
+        updateItemCounter();
+      } catch (e) {
+        console.error("Error loading form state:", e);
       }
-      
-      // Clear existing items
-      document.getElementById('items-container').innerHTML = '';
-      currentItems = 0;
-      
-      // Add saved items
-      if (formData.items && formData.items.length > 0) {
-        formData.items.forEach(item => {
-          addItemToForm(item.title, item.price, item.mediaUrl, item.itemId);
-        });
-      } else if (!isEditMode) {
-        // Add default item if none
-        addItemToForm();
-      }
-      
-      updateItemCounter();
     }
 
     // Clear form state
@@ -1401,8 +1416,15 @@
     // Package selection
     document.querySelectorAll('.package-btn').forEach(button => {
       button.addEventListener('click', function() {
-        // Skip if disabled
         if (this.disabled) return;
+        
+        // Remove selection from all buttons
+        document.querySelectorAll('.package-btn').forEach(btn => {
+          btn.classList.remove('selected');
+        });
+        
+        // Add selection to clicked button
+        this.classList.add('selected');
         
         // Get package data
         const packageName = this.dataset.package;
@@ -1416,7 +1438,7 @@
           items: packageItems
         };
         
-           // Update UI
+        // Update UI
         document.getElementById('selected-package').textContent = packageName;
         document.getElementById('selected-price').textContent = packagePrice.toLocaleString();
         document.getElementById('selected-items').textContent = packageItems;
@@ -1432,7 +1454,7 @@
         const paymentBtn = document.getElementById('payment-btn');
         paymentBtn.classList.remove('hidden');
         
-        // For Starter package, hide payment button
+        // For Starter package
         if (packageName === 'Starter') {
           paymentBtn.classList.add('hidden');
           document.getElementById('submit-btn').disabled = false;
@@ -1442,10 +1464,9 @@
           paymentComplete = false;
         }
         
-        // Hide the package reminder
+ // Hide package reminder
         document.getElementById('package-reminder').classList.add('hidden');
         
-        // Save form state
         saveFormState();
       });
     });
@@ -1528,15 +1549,12 @@
         deleteBtn.addEventListener('click', function(e) {
           e.preventDefault();
           if (confirm('Are you sure you want to delete this item?')) {
-            // If this is an existing item, mark for deletion
             if (itemId) {
               newItem.dataset.delete = "true";
               newItem.style.opacity = "0.6";
               deleteBtn.disabled = true;
               editBtn.disabled = true;
-            } 
-            // If it's a new item, just remove it
-            else {
+            } else {
               newItem.remove();
               currentItems--;
               updateItemCounter();
@@ -1544,8 +1562,7 @@
             saveFormState();
           }
         });
-        
-   // If we have a media URL, create preview
+        // If we have a media URL, create preview
         if (mediaUrl) {
           const wrapper = newItem.querySelector('.file-input-wrapper');
           wrapper.innerHTML = '';
@@ -1589,8 +1606,7 @@
           urlInput.type = "hidden";
           urlInput.className = "media-url";
           urlInput.value = mediaUrl;
-          
-          // Assemble
+             // Assemble
           controlsDiv.appendChild(mediaElement);
           controlsDiv.appendChild(zoomBtn);
           wrapper.appendChild(controlsDiv);
@@ -1746,108 +1762,24 @@
     
     // Payment button
     document.getElementById('payment-btn').addEventListener('click', function() {
-      if (selectedPackage) {
-        // Validate form
-        const businessTitle = document.getElementById('business-title').value;
-        const businessLocation = document.getElementById('business-location').value;
-        const businessCategory = document.getElementById('business-category').value;
-        const businessDescription = document.getElementById('business-description').value;
-        const whatsappNumber = document.getElementById('whatsapp-number').value;
-        
-        if(!businessTitle || !businessLocation || !businessCategory || !businessDescription || !whatsappNumber) {
-          alert('Please fill in all required fields');
-          return;
-        }
-        
-        if (businessDescription.length < 100) {
-          alert('Business description must be at least 100 characters');
-          return;
-        }
-        
-        // Collect items data
-        const items = [];
-        document.querySelectorAll(".item-card").forEach(card => {
-          const title = card.querySelector(".item-title").value;
-          const price = card.querySelector(".item-price").value;
-          const mediaInput = card.querySelector(".media-url");
-          const mediaUrl = mediaInput ? mediaInput.value : null;
-          
-          if (title && price) {
-            items.push({
-              title,
-              price: parseInt(price),
-              mediaUrl
-            });
-          }
-        });
-        
-        if (items.length === 0) {
-          alert('Please add at least one item');
-          return;
-        }
-        
-        // Prepare business data
-        const businessData = {
-          title: businessTitle,
-          location: businessLocation,
-          category: businessCategory,
-          description: businessDescription,
-          whatsapp: whatsappNumber,
-          businessLink: document.getElementById('business-link').value || null,
-          package: selectedPackage.name,
-          createdBy: currentUser.uid,
-          paymentStatus: 'unpaid',
-          status: 'pending'
-        };
-        
-     // Collect mediaUrls from items
-const mediaUrls = items.map(item => item.mediaUrl).filter(url => !!url);
-
-// Attach mediaUrls to business data
-businessData.mediaUrls = mediaUrls;
-businessData.mediaTypes = mediaUrls.map(url => url.endsWith('.mp4') ? 'video' : 'image');
-
-// Save original keys for paynow.html compatibility
-sessionStorage.setItem("businessData", JSON.stringify(businessData));
-sessionStorage.setItem("itemsData", JSON.stringify(items));
-
-// Optional: also store under simpler keys (if paynow.html also reads these)
-sessionStorage.setItem("business", JSON.stringify(businessData));
-sessionStorage.setItem("items", JSON.stringify(items));
-
-// Redirect to payment page
-window.location.href = "paynow.html";
-      }
-    });
-    
-    // Form submission
-    document.getElementById('submit-btn').addEventListener('click', async function() {
-      // For paid packages, ensure payment is complete
-      if (selectedPackage && selectedPackage.name !== 'Starter' && !paymentComplete) {
-        alert('Please complete payment before submitting your business.');
-        return;
-      }
-      
-      // Get form data
+      // Validate form
       const businessTitle = document.getElementById('business-title').value;
       const businessLocation = document.getElementById('business-location').value;
       const businessCategory = document.getElementById('business-category').value;
       const businessDescription = document.getElementById('business-description').value;
-      const businessLink = document.getElementById('business-link').value;
       const whatsappNumber = document.getElementById('whatsapp-number').value;
-      
-      // Validation
-      if(!businessTitle || !businessLocation || !businessCategory || !businessDescription || !whatsappNumber) {
+      const businessLink = document.getElementById('business-link').value;
+
+      if (!businessTitle || !businessLocation || !businessCategory || !businessDescription || !whatsappNumber) {
         alert('Please fill in all required fields');
         return;
       }
-      
+
       if (businessDescription.length < 100) {
         alert('Business description must be at least 100 characters');
         return;
       }
-      
-      // Collect items data
+        // Collect items
       const items = [];
       document.querySelectorAll(".item-card").forEach(card => {
         const title = card.querySelector(".item-title").value;
@@ -1855,7 +1787,7 @@ window.location.href = "paynow.html";
         const mediaInput = card.querySelector(".media-url");
         const mediaUrl = mediaInput ? mediaInput.value : null;
         const itemId = card.dataset.itemId;
-        
+
         if (title && price && !card.dataset.delete) {
           items.push({
             title,
@@ -1865,49 +1797,133 @@ window.location.href = "paynow.html";
           });
         }
       });
-      
+
       if (items.length === 0) {
         alert('Please add at least one item');
         return;
       }
 
-      this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + 
-                       (isEditMode ? 'Updating...' : 'Submitting...');
-      this.disabled = true;
+      // Collect mediaUrls from items
+      const mediaUrls = items.map(item => item.mediaUrl).filter(url => !!url);
+
+      // Prepare business data
+      const businessData = {
+        title: businessTitle,
+        location: businessLocation,
+        category: businessCategory,
+        description: businessDescription,
+        whatsapp: whatsappNumber,
+        businessLink: businessLink || null,
+        package: selectedPackage.name,
+        createdBy: currentUser.uid,
+        paymentStatus: selectedPackage.name === 'Starter' ? 'free' : 'unpaid',
+        status: selectedPackage.name === 'Starter' ? 'active' : 'pending',
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        mediaUrls,
+        mediaTypes: mediaUrls.map(url => url.endsWith('.mp4') ? 'video' : 'image'),
+        timestamp: firebase.firestore.FieldValue.serverTimestamp() // Critical for homepage
+      };
+
+      if (!isEditMode) {
+        businessData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      }
+
+ // Save to sessionStorage for payment page
+      sessionStorage.setItem("businessData", JSON.stringify(businessData));
+      sessionStorage.setItem("itemsData", JSON.stringify(items));
       
-      try {
-        let businessId = editingBusinessId;
-        
-        // Prepare business data
-        const businessData = {
-          title: businessTitle,
-          location: businessLocation,
-          category: businessCategory,
-          description: businessDescription,
-          whatsapp: whatsappNumber,
-          businessLink: businessLink || null,
-          package: selectedPackage.name,
-          createdBy: currentUser.uid,
-          paymentStatus: selectedPackage.name === 'Starter' ? 'free' : 'unpaid',
-          status: selectedPackage.name === 'Starter' ? 'active' : 'pending',
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
-        
-        // Add timestamp for new businesses
-        if (!isEditMode) {
-          businessData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      // Redirect to payment page
+      window.location.href = "paynow.html";
+    });
+
+    // Submit button handler
+    document.getElementById('submit-btn').addEventListener('click', async function() {
+      // Validate form
+      const businessTitle = document.getElementById('business-title').value;
+      const businessLocation = document.getElementById('business-location').value;
+      const businessCategory = document.getElementById('business-category').value;
+      const businessDescription = document.getElementById('business-description').value;
+      const whatsappNumber = document.getElementById('whatsapp-number').value;
+      const businessLink = document.getElementById('business-link').value;
+
+      if (!businessTitle || !businessLocation || !businessCategory || !businessDescription || !whatsappNumber) {
+        alert('Please fill in all required fields');
+        return;
+      }
+
+      if (businessDescription.length < 100) {
+        alert('Business description must be at least 100 characters');
+        return;
+      }
+
+      // Collect items
+      const items = [];
+      document.querySelectorAll(".item-card").forEach(card => {
+        const title = card.querySelector(".item-title").value;
+        const price = card.querySelector(".item-price").value;
+        const mediaInput = card.querySelector(".media-url");
+        const mediaUrl = mediaInput ? mediaInput.value : null;
+        const itemId = card.dataset.itemId;
+
+        if (title && price && !card.dataset.delete) {
+          items.push({
+            title,
+            price: parseInt(price),
+            mediaUrl,
+            itemId
+          });
         }
+      });
+
+      if (items.length === 0) {
+        alert('Please add at least one item');
+        return;
+      }
+
+      // Collect mediaUrls from items
+      const mediaUrls = items.map(item => item.mediaUrl).filter(url => !!url);
+
+      // Prepare business data with ALL required fields
+      const businessData = {
+        title: businessTitle,
+        location: businessLocation,
+        category: businessCategory,
+        description: businessDescription,
+        whatsapp: whatsappNumber,
+        businessLink: businessLink || null,
+        package: selectedPackage.name,
+        createdBy: currentUser.uid,
+        paymentStatus: selectedPackage.name === 'Starter' ? 'free' : 'unpaid',
+        status: selectedPackage.name === 'Starter' ? 'active' : 'pending',
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        mediaUrls,
+        mediaTypes: mediaUrls.map(url => url.endsWith('.mp4') ? 'video' : 'image'),
+        timestamp: firebase.firestore.FieldValue.serverTimestamp() // Critical for homepage
+      };
+
+      // Add created date for new businesses
+      if (!isEditMode) {
+        businessData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      }
+
+      try {
+        this.disabled = true;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        
+        let businessId = editingBusinessId || crypto.randomUUID();
         
         // STARTER PACKAGE OR EDIT MODE FLOW
         if (selectedPackage.name === 'Starter' || isEditMode) {
-          // For new businesses, create a new document
+          // For new businesses
           if (!isEditMode) {
-            const businessRef = await db.collection('businesses').add(businessData);
-            businessId = businessRef.id;
+            await db.collection("businesses").doc(businessId).set({
+              ...businessData,
+              businessId
+            });
           } 
-          // For existing businesses, update the document
+          // For existing businesses
           else {
-            await db.collection('businesses').doc(businessId).update(businessData);
+            await db.collection("businesses").doc(businessId).update(businessData);
           }
           
           // Save/update items
@@ -1964,15 +1980,6 @@ window.location.href = "paynow.html";
             document.getElementById('submit-btn').innerHTML = '<i class="fas fa-sync-alt"></i> Update Business';
           }
         } 
-        // PAID PACKAGES FLOW (new businesses)
-        else {
-          // Save to sessionStorage for payment page
-          sessionStorage.setItem("businessData", JSON.stringify(businessData));
-          sessionStorage.setItem("itemsData", JSON.stringify(items));
-          
-          // Redirect to payment page
-          window.location.href = "paynow.html";
-        }
         
         // Save form state
         saveFormState();
@@ -1986,8 +1993,8 @@ window.location.href = "paynow.html";
         this.disabled = false;
       }
     });
-
- // Show saving notice
+    
+    // Show saving notice
     function showSavingNotice() {
       const notice = document.createElement('div');
       notice.className = 'saving-notice';
@@ -2027,8 +2034,8 @@ window.location.href = "paynow.html";
         } else if(sectionId === 'review-submit') {
           document.querySelectorAll('.progress-step')[2].classList.add('active');
         }
-        
-        // Scroll to target
+
+ // Scroll to target
         window.scrollTo({
           top: target.offsetTop - 100,
           behavior: 'smooth'
