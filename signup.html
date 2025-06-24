@@ -259,7 +259,7 @@
       </div>
       
       <div class="form-group">
-        <label for="phone">WhatsApp Number(Begin with 256...)</label>
+        <label for="phone">WhatsApp Number(Begin with 256..)</label>
         <i class="fas fa-phone input-icon"></i>
         <input type="text" id="phone" placeholder="256700000000" required />
       </div>
@@ -293,168 +293,184 @@
       Already have an account? <a href="login.html">Log In</a>
     </div>
   </div>
+  
+  
   <script type="module">
-    // Import Firebase modules
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
-    import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+  // Import Firebase modules
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+  import { 
+    getFirestore, setDoc, doc, query, where, getDocs, collection 
+  } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-    // Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
-      authDomain: "oblinks-7fdb1.firebaseapp.com",
-      projectId: "oblinks-7fdb1",
-      storageBucket: "oblinks-7fdb1.appspot.com",
-      messagingSenderId: "587017639779",
-      appId: "1:587017639779:web:d11b60f40f431cfc202556"
-    };
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
+    authDomain: "oblinks-7fdb1.firebaseapp.com",
+    projectId: "oblinks-7fdb1",
+    storageBucket: "oblinks-7fdb1.appspot.com",
+    messagingSenderId: "587017639779",
+    appId: "1:587017639779:web:d11b60f40f431cfc202556"
+  };
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-    // DOM elements
-    const form = document.getElementById('signupForm');
-    const errorMsg = document.getElementById('errorMsg');
-    const passwordInput = document.getElementById('password');
-    const confirmInput = document.getElementById('confirm');
-    const passwordToggle = document.getElementById('passwordToggle');
-    const confirmToggle = document.getElementById('confirmToggle');
-    const strengthMeter = document.getElementById('strengthMeter');
-    const referralNotice = document.getElementById('referralNotice');
-    const referralMessage = document.getElementById('referralMessage');
+  // Elements
+  const form = document.getElementById('signupForm');
+  const errorMsg = document.getElementById('errorMsg');
+  const passwordInput = document.getElementById('password');
+  const confirmInput = document.getElementById('confirm');
+  const passwordToggle = document.getElementById('passwordToggle');
+  const confirmToggle = document.getElementById('confirmToggle');
+  const strengthMeter = document.getElementById('strengthMeter');
+  const referralNotice = document.getElementById('referralNotice');
+  const referralMessage = document.getElementById('referralMessage');
 
-    // Check for referral parameter in URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const refParam = urlParams.get('referrer');
-    
-    if (refParam) {
-      // Store referral in sessionStorage
-      sessionStorage.setItem('referrer', refParam);
-      
-      // Show referral notice
-      referralMessage.textContent += refParam;
-      referralNotice.style.display = 'block';
+  // Check referral in URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const refParam = urlParams.get('referrer');
+
+  if (refParam) {
+    sessionStorage.setItem('referrer', refParam);
+    referralMessage.textContent += refParam;
+    referralNotice.style.display = 'block';
+  }
+
+  // Commission rates
+  const commissionRates = {
+    Starter: 0.2,
+    Basic: 0.3,
+    Standard: 0.4,
+    Advanced: 0.5,
+    Professional: 0.6,
+    Premium: 0.7,
+    Enterprise: 0.8
+  };
+
+  // Toggle password visibility
+  passwordToggle.addEventListener('click', () => {
+    const type = passwordInput.type === 'password' ? 'text' : 'password';
+    passwordInput.type = type;
+    passwordToggle.innerHTML = type === 'password' ? '<i class="far fa-eye"></i>' : '<i class="far fa-eye-slash"></i>';
+  });
+
+  confirmToggle.addEventListener('click', () => {
+    const type = confirmInput.type === 'password' ? 'text' : 'password';
+    confirmInput.type = type;
+    confirmToggle.innerHTML = type === 'password' ? '<i class="far fa-eye"></i>' : '<i class="far fa-eye-slash"></i>';
+  });
+
+  // Password strength indicator
+  passwordInput.addEventListener('input', () => {
+    const password = passwordInput.value;
+    let strength = 0;
+    if (password.length > 5) strength += 25;
+    if (password.length > 7) strength += 25;
+    if (/[A-Z]/.test(password)) strength += 25;
+    if (/[0-9]/.test(password) || /[^A-Za-z0-9]/.test(password)) strength += 25;
+    strengthMeter.style.width = strength + '%';
+    strengthMeter.style.backgroundColor =
+      strength < 50 ? '#ef4444' : strength < 75 ? '#f59e0b' : '#10b981';
+  });
+
+  // Submit signup form
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById('email').value.trim();
+    const password = passwordInput.value.trim();
+    const confirm = confirmInput.value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const referrerWhatsapp = sessionStorage.getItem('referrer') || null;
+
+    // Validation
+    if (!email || !phone || !password || !confirm) {
+      errorMsg.textContent = 'Please fill in all fields';
+      errorMsg.style.display = 'block';
+      return;
     }
 
-    // Password toggle functionality
-    passwordToggle.addEventListener('click', () => {
-      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-      passwordInput.setAttribute('type', type);
-      passwordToggle.innerHTML = type === 'password' ? '<i class="far fa-eye"></i>' : '<i class="far fa-eye-slash"></i>';
-    });
+    if (!/^[0-9]{10,15}$/.test(phone)) {
+      errorMsg.textContent = 'Please enter a valid WhatsApp number';
+      errorMsg.style.display = 'block';
+      return;
+    }
 
-    confirmToggle.addEventListener('click', () => {
-      const type = confirmInput.getAttribute('type') === 'password' ? 'text' : 'password';
-      confirmInput.setAttribute('type', type);
-      confirmToggle.innerHTML = type === 'password' ? '<i class="far fa-eye"></i>' : '<i class="far fa-eye-slash"></i>';
-    });
+    if (password !== confirm) {
+      errorMsg.textContent = 'Passwords do not match';
+      errorMsg.style.display = 'block';
+      return;
+    }
 
-    // Password strength indicator
-    passwordInput.addEventListener('input', () => {
-      const password = passwordInput.value;
-      let strength = 0;
-      
-      if (password.length > 5) strength += 25;
-      if (password.length > 7) strength += 25;
-      if (/[A-Z]/.test(password)) strength += 25;
-      if (/[0-9]/.test(password) || /[^A-Za-z0-9]/.test(password)) strength += 25;
-      
-      strengthMeter.style.width = strength + '%';
-      strengthMeter.style.backgroundColor = 
-        strength < 50 ? '#ef4444' : 
-        strength < 75 ? '#f59e0b' : '#10b981';
-    });
+    if (password.length < 6) {
+      errorMsg.textContent = 'Password must be at least 6 characters';
+      errorMsg.style.display = 'block';
+      return;
+    }
 
-    // Form submission
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+    errorMsg.style.display = 'none';
 
-      // Get form values
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-      const confirm = document.getElementById('confirm').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      
-      // Get referrer from sessionStorage
-      const referrer = sessionStorage.getItem('referrer') || null;
+    // Initialize referrer info
+    let referrerUserId = null;
+    let referrerPackage = null;
+    let referrerCommissionRate = 0;
 
-      // Validate inputs
-      if (!email || !phone || !password || !confirm) {
-        errorMsg.textContent = 'Please fill in all fields';
-        errorMsg.style.display = 'block';
-        return;
-      }
-
-      // Validate WhatsApp number format
-      if (!/^[0-9]{10,15}$/.test(phone)) {
-        errorMsg.textContent = 'Please enter a valid WhatsApp number';
-        errorMsg.style.display = 'block';
-        return;
-      }
-
-      // Validate password match
-      if (password !== confirm) {
-        errorMsg.textContent = 'Passwords do not match';
-        errorMsg.style.display = 'block';
-        return;
-      }
-
-      // Validate password strength
-      if (password.length < 6) {
-        errorMsg.textContent = 'Password must be at least 6 characters';
-        errorMsg.style.display = 'block';
-        return;
-      }
-
-      // Hide error message
-      errorMsg.style.display = 'none';
-
-      try {
-        // Create user with Firebase Authentication
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-
-        // Save additional user data to Firestore
-        await setDoc(doc(db, "users", user.uid), {
-          email: email,
-          whatsapp: phone,
-          package: "Starter",
-          referrerWhatsapp: referrer,
-          createdAt: new Date()
-        });
-
-        // Clear sessionStorage after successful signup
-        sessionStorage.removeItem('referrer');
-        
-        // Show success message
-        errorMsg.textContent = 'Account created successfully! Redirecting...';
-        errorMsg.style.color = '#10b981';
-        errorMsg.style.display = 'block';
-        
-        // Redirect after a short delay
-        setTimeout(() => {
-          window.location.href = "index.html";
-        }, 1500);
-
-      } catch (error) {
-        // Handle errors
-        let errorMessage = 'An error occurred during signup';
-        
-        if (error.code === 'auth/email-already-in-use') {
-          errorMessage = 'This email is already registered';
-        } else if (error.code === 'auth/invalid-email') {
-          errorMessage = 'Please enter a valid email address';
-        } else if (error.code === 'auth/weak-password') {
-          errorMessage = 'Password should be at least 6 characters';
+    try {
+      // 🔍 If there's a referrer, fetch their user info
+      if (referrerWhatsapp) {
+        const q = query(collection(db, "users"), where("whatsapp", "==", referrerWhatsapp));
+        const refSnapshot = await getDocs(q);
+        if (!refSnapshot.empty) {
+          const refDoc = refSnapshot.docs[0];
+          const refData = refDoc.data();
+          referrerUserId = refDoc.id;
+          referrerPackage = refData.package || "Starter";
+          referrerCommissionRate = commissionRates[referrerPackage] || 0.2;
         }
-        
-        errorMsg.textContent = errorMessage;
-        errorMsg.style.color = '#ef4444';
-        errorMsg.style.display = 'block';
       }
-    });
-  </script>
+
+      // 🔐 Create user
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // ✅ Save user in Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        userId: user.uid,
+        email: email,
+        whatsapp: phone,
+        package: "Starter",
+        referrerWhatsapp,
+        referrerUserId,
+        referrerPackage,
+        referrerCommissionRate,
+        createdAt: new Date()
+      });
+
+      sessionStorage.removeItem('referrer');
+      errorMsg.textContent = 'Account created successfully! Redirecting...';
+      errorMsg.style.color = '#10b981';
+      errorMsg.style.display = 'block';
+
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 1500);
+
+    } catch (error) {
+      let msg = 'An error occurred during signup';
+      if (error.code === 'auth/email-already-in-use') {
+        msg = 'This email is already registered';
+      } else if (error.code === 'auth/invalid-email') {
+        msg = 'Please enter a valid email address';
+      } else if (error.code === 'auth/weak-password') {
+        msg = 'Password should be at least 6 characters';
+      }
+      errorMsg.textContent = msg;
+      errorMsg.style.color = '#ef4444';
+      errorMsg.style.display = 'block';
+    }
+  });
+</script>
 </body>
 </html>
