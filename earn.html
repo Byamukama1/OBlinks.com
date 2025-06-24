@@ -456,17 +456,6 @@
             color: var(--primary);
         }
         
-        .commission-badge {
-            background: var(--primary-light);
-            color: var(--primary);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            margin-top: 15px;
-            display: inline-block;
-        }
-        
         .business-promo {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             border-radius: var(--border-radius);
@@ -475,7 +464,8 @@
             text-align: center;
             margin-bottom: 30px;
         }
-           .promo-title {
+        
+        .promo-title {
             font-size: 28px;
             font-weight: 700;
             margin-bottom: 15px;
@@ -507,7 +497,7 @@
             transform: translateY(-3px);
         }
         
-        footer {
+            footer {
             text-align: center;
             padding: 30px 0;
             color: #64748b;
@@ -531,7 +521,27 @@
             margin: 0 auto 20px;
         }
         
-        @keyframes spin {
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            display: none;
+        }
+        
+        .success-message {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            display: none;
+        }
+        
+ @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
@@ -562,6 +572,59 @@
                 font-size: 16px;
             }
         }
+        
+        .package-commission {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #cbd5e1;
+            font-size: 14px;
+            color: #64748b;
+        }
+        
+        .referral-explainer {
+            background: #fff;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+        
+        .explainer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .explainer-card {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .explainer-card i {
+            font-size: 32px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .explainer-card h4 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .commission-rate {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--success);
+            margin-top: 5px;
+        }
+        
+        .stat-card.package-stat {
+            border-top: 4px solid var(--secondary);
+        }
     </style>
 </head>
 <body>
@@ -573,7 +636,7 @@
             </div>
             <div class="nav-links">
                 <a href="index.html">Back</a>
-                <a href="addbusinessform.html">Addbusiness</a>
+                <a href="addbusinessform.html">Add business</a>
                 <a href="earn.html" class="active">Earnings</a>
                 <a href="myaccount.html">Account</a>
             </div>
@@ -593,27 +656,26 @@
                 <div class="stat-icon">
                     <i class="fas fa-wallet"></i>
                 </div>
-                <div class="stat-title">Total Earnings</div>
-                <div class="stat-value" id="totalEarnings">UGX 0</div>
-                <div class="stat-subtitle">Lifetime earnings</div>
+                <div class="stat-title">Total Earned</div>
+                <div class="stat-value" id="totalEarned">UGX 0</div>
+                <div class="stat-subtitle">Lifetime commissions</div>
             </div>
             
             <div class="stat-card">
                 <div class="stat-icon">
                     <i class="fas fa-user-friends"></i>
                 </div>
-                <div class="stat-title">Referral Count</div>
+                <div class="stat-title">Paid Referrals</div>
                 <div class="stat-value" id="referralCount">0</div>
-                <div class="stat-subtitle">Successful referrals</div>
+                <div class="stat-subtitle">Successful commissions</div>
             </div>
-            
-            <div class="stat-card">
+                  <div class="stat-card">
                 <div class="stat-icon">
-                    <i class="fas fa-store"></i>
+                    <i class="fas fa-exchange-alt"></i>
                 </div>
-                <div class="stat-title">Businesses</div>
-                <div class="stat-value" id="businessCount">0</div>
-                <div class="stat-subtitle">Referred businesses</div>
+                <div class="stat-title">Withdrawal Requests</div>
+                <div class="stat-value" id="withdrawalRequestsCount">0</div>
+                <div class="stat-subtitle">Total requests</div>
             </div>
             
             <div class="stat-card">
@@ -624,12 +686,60 @@
                 <div class="stat-value" id="availableBalance">UGX 0</div>
                 <div class="stat-subtitle">Ready for withdrawal</div>
             </div>
+            
+            <div class="stat-card package-stat">
+                <div class="stat-icon">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div class="stat-title">Your Package</div>
+                <div class="stat-value" id="userPackage">Basic</div>
+                <div class="stat-subtitle">Commission Rate: <span id="commissionRate">30%</span></div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-money-check-alt"></i>
+                </div>
+                <div class="stat-title">Total Withdrawn</div>
+                <div class="stat-value" id="totalWithdrawn">UGX 0</div>
+                <div class="stat-subtitle">Amount withdrawn</div>
+            </div>
         </div>
-        
-        <div class="business-promo">
-            <h2 class="promo-title">Grow Your Business with OBlinks</h2>
-            <p class="promo-text">Expand your reach and attract more customers by advertising on Uganda's fastest growing business platform</p>
-            <a href="#" class="promo-btn">Upgrade Your Business Listing</a>
+
+   <div class="referral-explainer">
+            <h3 class="section-title"><i class="fas fa-handshake"></i> How Referral Earnings Work</h3>
+            <p class="info-text">
+                OBlinks rewards you for helping other businesses grow. When you refer a business owner to our platform, 
+                you earn a commission when they upgrade to a paid advertising package. This creates a win-win situation: 
+                you earn rewards while helping other businesses reach more customers.
+            </p>
+            
+            <div class="explainer-grid">
+                <div class="explainer-card">
+                    <i class="fas fa-share-alt"></i>
+                    <h4>Share Your Link</h4>
+                    <p>Share your unique referral link with business owners</p>
+                </div>
+                
+                <div class="explainer-card">
+                    <i class="fas fa-store"></i>
+                    <h4>Business Joins</h4>
+                    <p>They sign up and list their business on OBlinks</p>
+                </div>
+                
+                <div class="explainer-card">
+                    <i class="fas fa-chart-line"></i>
+                    <h4>Business Upgrades</h4>
+                    <p>When they upgrade to a paid package</p>
+                </div>
+                
+                <div class="explainer-card">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <h4>You Earn Commission</h4>
+                    <p>You receive a percentage of their upgrade</p>
+                    <div class="commission-rate" id="userCommissionRate">30%</div>
+                </div>
+            </div>
         </div>
         
         <div class="referral-section">
@@ -649,6 +759,9 @@
             </div>
         </div>
         
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+        
         <div class="tables-container">
             <div class="table-section">
                 <h3 class="section-title"><i class="fas fa-chart-line"></i> Earnings History</h3>
@@ -659,9 +772,10 @@
                 <table id="earningsTable" style="display: none;">
                     <thead>
                         <tr>
-                            <th>Business Contact</th>
+                            <th>Referee</th>
                             <th>Package</th>
-                            <th>Amount Earned</th>
+                            <th>Amount Paid</th>
+                            <th>Commission</th>
                             <th>Date</th>
                         </tr>
                     </thead>
@@ -721,39 +835,19 @@
             </form>
         </div>
         
+        <div class="business-promo">
+            <h2 class="promo-title">Grow Your Business with OBlinks</h2>
+            <p class="promo-text">Expand your reach and attract more customers by advertising on Uganda's fastest growing business platform</p>
+            <a href="#" class="promo-btn">Upgrade Your Business Listing</a>
+        </div>
+        
         <div class="info-section">
-            <h3 class="info-title">How Business Referral Earnings Work</h3>
-            
+            <h3 class="info-title">Advertising Packages</h3>
             <p class="info-text">
-                OBlinks rewards you for helping other businesses grow. When you refer a business owner to our platform, 
-                you earn a commission when they upgrade to a paid advertising package. This creates a win-win situation: 
-                you earn rewards while helping other businesses reach more customers.
+                Businesses on OBlinks can choose from a variety of advertising packages to suit their needs. 
+                Each package offers different benefits and exposure levels to help businesses grow.
             </p>
             
-            <div class="info-grid">
-                <div>
-                    <h4 class="info-subtitle">Key Features</h4>
-                    <ul style="padding-left: 20px; margin-bottom: 20px; color: #475569;">
-                        <li>Earn when businesses upgrade to paid advertising packages</li>
-                        <li>Commission is paid once per business</li>
-                        <li>Starter package does not generate commission</li>
-                        <li>Upgrades between paid packages do not generate additional commission</li>
-                        <li>Minimum withdrawal amount is 5,000 UGX</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="info-subtitle">Why Businesses Love OBlinks</h4>
-                    <ul style="padding-left: 20px; margin-bottom: 20px; color: #475569;">
-                        <li>Reach thousands of potential customers</li>
-                        <li>Affordable advertising packages</li>
-                        <li>Easy-to-use business dashboard</li>
-                        <li>Detailed analytics and insights</li>
-                        <li>Dedicated customer support</li>
-                    </ul>
-                </div>
-            </div>
-            
-            <h4 class="info-subtitle">Advertising Packages</h4>
             <div class="info-grid">
                 <!-- Starter Package -->
                 <div class="package-card">
@@ -764,40 +858,46 @@
                         <span class="feature-value">2</span>
                     </div>
                     <div class="package-feature">
-                        <span>Referral Commission</span>
-                        <span class="feature-value">20%</span>
+                        <span>Featured Placement</span>
+                        <span class="feature-value">No</span>
                     </div>
-                    <div class="commission-badge">UGX 0</div>
+                    <div class="package-commission">
+                        Referral Commission: <span class="feature-value">20%</span>
+                    </div>
                 </div>
                 
                 <!-- Basic Package -->
                 <div class="package-card">
                     <div class="package-name">Basic</div>
-                    <div class="package-price">10,000 UGX/year</div>
+                    <div class="package-price">30,000 UGX/year</div>
                     <div class="package-feature">
                         <span>Items Allowed</span>
                         <span class="feature-value">10</span>
                     </div>
                     <div class="package-feature">
-                        <span>Referral Commission</span>
-                        <span class="feature-value">30%</span>
+                        <span>Featured Placement</span>
+                        <span class="feature-value">Basic</span>
                     </div>
-                    <div class="commission-badge">UGX 3,000</div>
+                    <div class="package-commission">
+                        Referral Commission: <span class="feature-value">30%</span>
+                    </div>
                 </div>
                 
                 <!-- Standard Package -->
                 <div class="package-card">
                     <div class="package-name">Standard</div>
-                    <div class="package-price">30,000 UGX/year</div>
+                    <div class="package-price">40,000 UGX/year</div>
                     <div class="package-feature">
                         <span>Items Allowed</span>
                         <span class="feature-value">30</span>
                     </div>
                     <div class="package-feature">
-                        <span>Referral Commission</span>
-                        <span class="feature-value">40%</span>
+                        <span>Featured Placement</span>
+                        <span class="feature-value">Standard</span>
                     </div>
-                    <div class="commission-badge">UGX 12,000</div>
+                    <div class="package-commission">
+                        Referral Commission: <span class="feature-value">40%</span>
+                    </div>
                 </div>
                 
                 <!-- Advanced Package -->
@@ -809,13 +909,15 @@
                         <span class="feature-value">50</span>
                     </div>
                     <div class="package-feature">
-                        <span>Referral Commission</span>
-                        <span class="feature-value">50%</span>
+                        <span>Featured Placement</span>
+                        <span class="feature-value">Advanced</span>
                     </div>
-                    <div class="commission-badge">UGX 25,000</div>
+                    <div class="package-commission">
+                        Referral Commission: <span class="feature-value">50%</span>
+                    </div>
                 </div>
-                
-                <!-- Professional Package -->
+
+  <!-- Professional Package -->
                 <div class="package-card">
                     <div class="package-name">Professional</div>
                     <div class="package-price">100,000 UGX/year</div>
@@ -824,13 +926,14 @@
                         <span class="feature-value">70</span>
                     </div>
                     <div class="package-feature">
-                        <span>Referral Commission</span>
-                        <span class="feature-value">60%</span>
+                        <span>Featured Placement</span>
+                        <span class="feature-value">Priority</span>
                     </div>
-                    <div class="commission-badge">UGX 60,000</div>
+                    <div class="package-commission">
+                        Referral Commission: <span class="feature-value">60%</span>
+                    </div>
                 </div>
-                
-                <!-- Premium Package -->
+                !-- Premium Package -->
                 <div class="package-card">
                     <div class="package-name">Premium</div>
                     <div class="package-price">150,000 UGX/year</div>
@@ -839,10 +942,12 @@
                         <span class="feature-value">90</span>
                     </div>
                     <div class="package-feature">
-                        <span>Referral Commission</span>
-                        <span class="feature-value">70%</span>
+                        <span>Featured Placement</span>
+                        <span class="feature-value">Top Priority</span>
                     </div>
-                    <div class="commission-badge">UGX 105,000</div>
+                    <div class="package-commission">
+                        Referral Commission: <span class="feature-value">70%</span>
+                    </div>
                 </div>
                 
                 <!-- Enterprise Package -->
@@ -854,10 +959,12 @@
                         <span class="feature-value">100</span>
                     </div>
                     <div class="package-feature">
-                        <span>Referral Commission</span>
-                        <span class="feature-value">80%</span>
+                        <span>Featured Placement</span>
+                        <span class="feature-value">Maximum</span>
                     </div>
-                    <div class="commission-badge">UGX 160,000</div>
+                    <div class="package-commission">
+                        Referral Commission: <span class="feature-value">80%</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -868,236 +975,350 @@
         </footer>
     </div>
 
-    <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
-            authDomain: "oblinks-7fdb1.firebaseapp.com",
-            projectId: "oblinks-7fdb1",
-            storageBucket: "oblinks-7fdb1.appspot.com",
-            messagingSenderId: "587017639779",
-            appId: "1:587017639779:web:d11b60f40f431cfc202556"
-        };
-        
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
-        
-        // DOM elements
-        const userInitial = document.getElementById('userInitial');
-        const userName = document.getElementById('userName');
-        const referralLink = document.getElementById('referralLink');
-        const totalEarnings = document.getElementById('totalEarnings');
-        const referralCount = document.getElementById('referralCount');
-        const businessCount = document.getElementById('businessCount');
-        const availableBalance = document.getElementById('availableBalance');
-        const earningsBody = document.getElementById('earningsBody');
-        const withdrawalsBody = document.getElementById('withdrawalsBody');
-        const earningsTable = document.getElementById('earningsTable');
-        const withdrawalsTable = document.getElementById('withdrawalsTable');
-        const earningsLoading = document.getElementById('earningsLoading');
-        const withdrawalsLoading = document.getElementById('withdrawalsLoading');
-        const withdrawalForm = document.getElementById('withdrawalForm');
-        
-        // Current user data
-        let currentUser = null;
-        let userData = null;
-        
-        // Check authentication state
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                currentUser = user;
-                userInitial.textContent = user.email ? user.email.charAt(0).toUpperCase() : 'U';
-                fetchUserData(user.uid);
-            } else {
-                // Redirect to login if not authenticated
-                window.location.href = 'login.html';
-            }
-        });
-        
-        // Fetch user data from Firestore
-        function fetchUserData(uid) {
-            db.collection("users").doc(uid).get()
-            .then(doc => {
-                if (doc.exists) {
-                    userData = doc.data();
-                    userName.textContent = userData.name || userData.email.split('@')[0];
-                    
-                    // Generate referral link
-                    if (userData.whatsapp) {
-                        // Format WhatsApp number for URL
-                        const formattedWhatsapp = userData.whatsapp.startsWith('+') ? 
-                            userData.whatsapp.substring(1) : userData.whatsapp;
-                        referralLink.value = `https://onlinemarket-ug.com/signup.html?referrer=${formattedWhatsapp}`;
-                    }
-                    
-                    // Fetch dashboard data
-                    fetchDashboardData();
-                } else {
-                    console.log("No such user document!");
+   <script>
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
+        authDomain: "oblinks-7fdb1.firebaseapp.com",
+        projectId: "oblinks-7fdb1",
+        storageBucket: "oblinks-7fdb1.appspot.com",
+        messagingSenderId: "587017639779",
+        appId: "1:587017639779:web:d11b60f40f431cfc202556"
+    };
+    
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+    
+    // DOM elements
+    const userInitial = document.getElementById('userInitial');
+    const userName = document.getElementById('userName');
+    const referralLink = document.getElementById('referralLink');
+    const totalEarned = document.getElementById('totalEarned');
+    const totalWithdrawn = document.getElementById('totalWithdrawn');
+    const availableBalance = document.getElementById('availableBalance');
+    const referralCount = document.getElementById('referralCount');
+    const userPackage = document.getElementById('userPackage');
+    const commissionRate = document.getElementById('commissionRate');
+    const userCommissionRate = document.getElementById('userCommissionRate');
+    const earningsBody = document.getElementById('earningsBody');
+    const withdrawalsBody = document.getElementById('withdrawalsBody');
+    const earningsTable = document.getElementById('earningsTable');
+    const withdrawalsTable = document.getElementById('withdrawalsTable');
+    const earningsLoading = document.getElementById('earningsLoading');
+    const withdrawalsLoading = document.getElementById('withdrawalsLoading');
+    const withdrawalForm = document.getElementById('withdrawalForm');
+    const errorMessage = document.getElementById('errorMessage');
+    const successMessage = document.getElementById('successMessage');
+    const withdrawalRequestsCount = document.getElementById('withdrawalRequestsCount');
+    
+    // Commission rates mapping
+    const commissionRates = {
+        "Starter": 20,
+        "Basic": 30,
+        "Standard": 40,
+        "Advanced": 50,
+        "Professional": 60,
+        "Premium": 70,
+        "Enterprise": 80
+    };
+    
+    // Current user data
+    let currentUser = null;
+    let userData = null;
+    let currentBalance = 0;
+    let earningsData = [];
+    let withdrawalsData = [];
+    
+    // Show/hide messages
+    function showError(message) {
+        errorMessage.textContent = message;
+        errorMessage.style.display = 'block';
+        setTimeout(() => {
+            errorMessage.style.display = 'none';
+        }, 5000);
+    }
+    
+    function showSuccess(message) {
+        successMessage.textContent = message;
+        successMessage.style.display = 'block';
+        setTimeout(() => {
+            successMessage.style.display = 'none';
+        }, 5000);
+    }
+    
+    // Check authentication state
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            currentUser = user;
+            userInitial.textContent = user.email ? user.email.charAt(0).toUpperCase() : 'U';
+            fetchUserData(user.uid);
+        } else {
+            // Redirect to login if not authenticated
+            window.location.href = 'login.html';
+        }
+    });
+    
+    // Fetch user data from Firestore
+    function fetchUserData(uid) {
+        db.collection("users").doc(uid).get()
+        .then(doc => {
+            if (doc.exists) {
+                userData = doc.data();
+                userName.textContent = userData.name || userData.email.split('@')[0];
+                
+                // Set commission rate based on user's package
+                if (userData.package) {
+                    userPackage.textContent = userData.package;
+                    const rate = commissionRates[userData.package] || 30;
+                    commissionRate.textContent = `${rate}%`;
+                    userCommissionRate.textContent = `${rate}%`;
                 }
+                 // Generate referral link
+                if (userData.whatsapp) {
+                    // Format WhatsApp number for URL
+                    const formattedWhatsapp = userData.whatsapp.startsWith('+') ? 
+                        userData.whatsapp.substring(1) : userData.whatsapp;
+                    referralLink.value = `https://onlinemarket-ug.com/signup.html?referrer=${formattedWhatsapp}`;
+                }
+                
+                // Fetch all dashboard data
+                fetchDashboardData();
+            } else {
+                console.log("No such user document!");
+                showError("User data not found. Please try again.");
+            }
+        })
+        .catch(error => {
+            console.log("Error getting user document:", error);
+            showError("Failed to load user data. Please try again.");
+        });
+    }
+    
+    // Fetch all dashboard data
+    function fetchDashboardData() {
+        // 1. Get earnings data
+        db.collection("earnings")
+            .where("referrerId", "==", currentUser.uid)
+            .get()
+            .then(earningsSnapshot => {
+                let totalEarnings = 0;
+                earningsData = [];
+                
+                earningsSnapshot.forEach(doc => {
+                    const earning = doc.data();
+                    earningsData.push(earning);
+                    totalEarnings += earning.commission;
+                });
+                
+                // Update earnings data
+                totalEarned.textContent = `UGX ${totalEarnings.toLocaleString()}`;
+                referralCount.textContent = earningsSnapshot.size;
+                
+                // Build earnings table
+                buildEarningsTable();
+                
+                // Fetch withdrawals to calculate balance
+                fetchWithdrawals(totalEarnings);
             })
             .catch(error => {
-                console.log("Error getting user document:", error);
+                console.log("Error getting earnings:", error);
+                showError("Failed to load earnings data. Please try again.");
+            });
+    }
+    
+  // Fetch withdrawals and calculate balance
+    function fetchWithdrawals(totalEarnings) {
+        db.collection("withdrawals")
+            .where("userId", "==", currentUser.uid)
+            .get()
+            .then(withdrawalsSnapshot => {
+                withdrawalsData = [];
+                let totalWithdrawnAmount = 0;
+                let pendingWithdrawnAmount = 0;
+                
+                withdrawalsSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    const withdrawal = {
+                        id: doc.id,
+                        ...data
+                    };
+                    withdrawalsData.push(withdrawal);
+                    
+                    if (data.status === 'completed') {
+                        totalWithdrawnAmount += data.amount;
+                    } else if (data.status === 'pending') {
+                        pendingWithdrawnAmount += data.amount;
+                    }
+                });
+                
+                // Update withdrawal stats
+                totalWithdrawn.textContent = `UGX ${totalWithdrawnAmount.toLocaleString()}`;
+                withdrawalRequestsCount.textContent = withdrawalsData.length;
+                
+                // Calculate available balance
+                currentBalance = totalEarnings - (totalWithdrawnAmount + pendingWithdrawnAmount);
+                availableBalance.textContent = `UGX ${Math.max(0, currentBalance).toLocaleString()}`;
+                
+                // Build withdrawals table
+                buildWithdrawalsTable();
+            })
+            .catch(error => {
+                console.log("Error getting withdrawals:", error);
+                showError("Failed to load withdrawal history. Please try again.");
+            });
+    }
+    
+    // Build earnings table
+    function buildEarningsTable() {
+        const earningsRows = [];
+        
+        if (earningsData.length === 0) {
+            earningsRows.push(`
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 30px;">
+                        <i class="fas fa-info-circle" style="color: #64748b; font-size: 24px; margin-bottom: 10px;"></i>
+                        <p>No earnings data found</p>
+                    </td>
+                </tr>
+            `);
+        } else {
+            earningsData.forEach(earning => {
+                // Format date
+                const date = earning.timestamp.toDate();
+                const formattedDate = `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
+                
+                // Add to table
+                earningsRows.push(`
+                    <tr>
+                        <td>${earning.refereeWhatsapp || 'N/A'}</td>
+                        <td>${earning.packageBought || 'N/A'}</td>
+                        <td>UGX ${earning.amountPaid.toLocaleString()}</td>
+                        <td>UGX ${earning.commission.toLocaleString()}</td>
+                        <td>${formattedDate}</td>
+                    </tr>
+                `);
             });
         }
         
-        // Fetch dashboard data
-        function fetchDashboardData() {
-            if (!userData || !userData.whatsapp) return;
-            
-            // Fetch earnings data
-            db.collection("earnings")
-                .where("referrerWhatsapp", "==", userData.whatsapp)
-                .get()
-                .then(querySnapshot => {
-                    let total = 0;
-                    const earningsRows = [];
-                    
-                    querySnapshot.forEach(doc => {
-                        const data = doc.data();
-                        total += data.amount;
-                        
-                        // Format date
-                        const date = data.timestamp.toDate();
-                        const formattedDate = `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
-                        
-                        // Add to table
-                        earningsRows.push(`
-                            <tr>
-                                <td>${data.referredWhatsapp}</td>
-                                <td>${data.package}</td>
-                                <td>UGX ${data.amount.toLocaleString()}</td>
-                                <td>${formattedDate}</td>
-                            </tr>
-                        `);
-                    });
-                    
-                    // Update UI
-                    totalEarnings.textContent = `UGX ${total.toLocaleString()}`;
-                    referralCount.textContent = querySnapshot.size;
-                    earningsBody.innerHTML = earningsRows.join('');
-                     // Hide loading, show table
-                    earningsLoading.style.display = 'none';
-                    earningsTable.style.display = 'table';
-                    
-                    // Set available balance (for now same as earnings)
-                    availableBalance.textContent = `UGX ${total.toLocaleString()}`;
-                })
-                .catch(error => {
-                    console.log("Error getting earnings:", error);
-                });
-            
-            // Fetch businesses count
-            db.collection("businesses")
-                .where("referrer", "==", userData.whatsapp)
-                .get()
-                .then(querySnapshot => {
-                    businessCount.textContent = querySnapshot.size;
-                })
-                .catch(error => {
-                    console.log("Error getting businesses:", error);
-                });
-            
-            // Fetch withdrawal history
-            db.collection("withdrawals")
-                .where("userId", "==", currentUser.uid)
-                .orderBy("timestamp", "desc")
-                .get()
-                .then(querySnapshot => {
-                    const withdrawalsRows = [];
-                    
-                    querySnapshot.forEach(doc => {
-                        const data = doc.data();
-                        
-                        // Format date
-                        const date = data.timestamp.toDate();
-                        const formattedDate = `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
-                        
-                        // Status badge
-                        const statusClass = data.status === 'completed' ? 'status-paid' : 'status-pending';
-                        const statusText = data.status === 'completed' ? 'Completed' : 'Pending';
-                        
-                        // Add to table
-                        withdrawalsRows.push(`
-                            <tr>
-                                <td>UGX ${data.amount.toLocaleString()}</td>
-                                <td>${data.method === 'mobile_money' ? 'Mobile Money' : 'Bank Transfer'}</td>
-                                <td><span class="status ${statusClass}">${statusText}</span></td>
-                                <td>${formattedDate}</td>
-                            </tr>
-                        `);
-                    });
-                    
-                    // Update UI
-                    withdrawalsBody.innerHTML = withdrawalsRows.join('');
-                    
-                    // Hide loading, show table
-                    withdrawalsLoading.style.display = 'none';
-                    withdrawalsTable.style.display = 'table';
-                })
-                .catch(error => {
-                    console.log("Error getting withdrawals:", error);
-                });
+        // Update UI
+        earningsBody.innerHTML = earningsRows.join('');
+        
+        // Hide loading, show table
+        earningsLoading.style.display = 'none';
+        earningsTable.style.display = 'table';
+    }
+    
+    // Build withdrawals table
+    function buildWithdrawalsTable() {
+        const withdrawalsRows = [];
+        
+        if (withdrawalsData.length === 0) {
+            withdrawalsRows.push(`
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 30px;">
+                        <i class="fas fa-info-circle" style="color: #64748b; font-size: 24px; margin-bottom: 10px;"></i>
+                        <p>No withdrawal history found</p>
+                    </td>
+                </tr>
+            `);
+        } else {
+            withdrawalsData.forEach(withdrawal => {
+                // Format date
+                const date = withdrawal.timestamp.toDate();
+                const formattedDate = `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
+                
+                // Status badge
+                const statusClass = withdrawal.status === 'completed' ? 'status-paid' : 
+                                  withdrawal.status === 'pending' ? 'status-pending' : 'status-default';
+                const statusText = withdrawal.status.charAt(0).toUpperCase() + withdrawal.status.slice(1);
+                
+                // Add to table
+                withdrawalsRows.push(`
+                    <tr>
+                        <td>UGX ${withdrawal.amount.toLocaleString()}</td>
+                        <td>${withdrawal.method === 'mobile_money' ? 'Mobile Money' : 'Bank Transfer'}</td>
+                        <td><span class="status ${statusClass}">${statusText}</span></td>
+                        <td>${formattedDate}</td>
+                    </tr>
+                `);
+            });
         }
         
-        // Copy referral link to clipboard
-        function copyReferralLink() {
-            referralLink.select();
-            referralLink.setSelectionRange(0, 99999);
-            document.execCommand("copy");
-            
-            const btn = document.querySelector('.copy-btn');
-            const originalText = btn.textContent;
-            btn.textContent = "Copied!";
-            
-            setTimeout(() => {
-                btn.textContent = originalText;
-            }, 2000);
+        // Update UI
+        withdrawalsBody.innerHTML = withdrawalsRows.join('');
+        
+        // Hide loading, show table
+        withdrawalsLoading.style.display = 'none';
+        withdrawalsTable.style.display = 'table';
+    }
+    
+    // Copy referral link to clipboard
+    function copyReferralLink() {
+        referralLink.select();
+        referralLink.setSelectionRange(0, 99999);
+        document.execCommand("copy");
+        
+        const btn = document.querySelector('.copy-btn');
+        const originalText = btn.textContent;
+        btn.textContent = "Copied!";
+        
+        setTimeout(() => {
+            btn.textContent = originalText;
+        }, 2000);
+        
+        showSuccess("Referral link copied to clipboard!");
+    }
+    
+    // Handle withdrawal form submission
+    withdrawalForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const amount = parseFloat(document.getElementById('amount').value);
+        const method = document.getElementById('method').value;
+        const details = document.getElementById('details').value;
+        
+        // Validate amount
+        if (amount < 5000) {
+            showError('Minimum withdrawal amount is 5,000 UGX');
+            return;
         }
         
-        // Handle withdrawal form submission
-        withdrawalForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const amount = parseFloat(document.getElementById('amount').value);
-            const method = document.getElementById('method').value;
-            const details = document.getElementById('details').value;
-            
-            // Validate amount
-            if (amount < 5000) {
-                alert('Minimum withdrawal amount is 5,000 UGX');
-                return;
-            }
-            
-            // Create withdrawal record
-            const withdrawalData = {
-                userId: currentUser.uid,
-                amount: amount,
-                method: method,
-                details: details,
-                status: 'pending',
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            };
-            
-            // Add to Firestore
-            db.collection("withdrawals").add(withdrawalData)
-                .then(() => {
-                    // Show success message
-                    alert(`Withdrawal request for UGX ${amount.toLocaleString()} has been submitted!`);
-                    
-                    // Reset form
-                    withdrawalForm.reset();
-                    
-                    // Refresh data
-                    fetchDashboardData();
-                })
-                .catch(error => {
-                    console.error("Error adding withdrawal: ", error);
-                    alert('Failed to submit withdrawal request. Please try again.');
-                });
-        });
-    </script>
+        // Check sufficient balance
+        if (amount > currentBalance) {
+            showError(`Insufficient balance. Your available balance is UGX ${currentBalance.toLocaleString()}`);
+            return;
+        }
+        
+        // Create withdrawal record
+        const withdrawalData = {
+            userId: currentUser.uid,
+            whatsapp: userData.whatsapp,
+            amount: amount,
+            method: method,
+            details: details,
+            status: 'pending',
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        
+        // Add to Firestore
+        db.collection("withdrawals").add(withdrawalData)
+            .then(() => {
+                // Show success message
+                showSuccess(`Withdrawal request for UGX ${amount.toLocaleString()} has been submitted!`);
+                
+                // Reset form
+                withdrawalForm.reset();
+                
+                // Refresh data
+                fetchDashboardData();
+            })
+            .catch(error => {
+                console.error("Error adding withdrawal: ", error);
+                showError('Failed to submit withdrawal request. Please try again.');
+            });
+    });
+</script>
 </body>
 </html>
