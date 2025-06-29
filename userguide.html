@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBlinks Guide - Your Complete Business Platform Guide</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --accent: #8b5cf6;
+            --border: #e2e8f0;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-text h1 {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        
+        .tagline {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: #e2e8f0;
+        }
+        
+        .hero {
+            background: linear-gradient(rgba(37, 99, 235, 0.9), rgba(29, 78, 216, 0.8)), url('https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3') center/cover;
+            border-radius: 12px;
+            padding: 60px 40px;
+            text-align: center;
+            color: white;
+            margin: 30px 0;
+            box-shadow: var(--shadow);
+        }
+        
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: white;
+            color: var(--primary);
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            margin: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow);
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            color: var(--primary-dark);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 15px;
+        }
+        
+        .section-title i {
+            font-size: 1.8rem;
+        }
+        
+        .step-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .step {
+            flex: 1;
+            min-width: 300px;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+        
+        .step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        
+        .step h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: var(--primary-dark);
+        }
+        
+        .package-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .package-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .package-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        
+        .package-card.popular {
+            border: 2px solid var(--accent);
+            transform: scale(1.03);
+        }
+        
+        .package-card.popular::before {
+            content: 'POPULAR';
+            position: absolute;
+            top: 15px;
+            right: -35px;
+            background: var(--accent);
+            color: white;
+            padding: 5px 40px;
+            transform: rotate(45deg);
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        
+        .package-name {
+            font-size: 1.6rem;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        .package-price {
+            font-size: 2.2rem;
+            color: var(--dark);
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .package-price span {
+            font-size: 1rem;
+            color: var(--secondary);
+            font-weight: normal;
+        }
+        
+        .package-features {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+        
+        .package-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .package-features li i {
+            color: var(--success);
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .feature-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border-color: var(--primary);
+        }
+        
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(37, 99, 235, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.4rem;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+        }
+        
+        .feature-details {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .feature-details h4 {
+            color: var(--success);
+            margin-bottom: 10px;
+        }
+        
+        .support-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .support-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        
+        .support-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        
+        .support-card i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        .support-card h3 {
+            font-size: 1.6rem;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+        }
+        
+        .support-card p {
+            margin-bottom: 20px;
+            color: var(--secondary);
+        }
+        
+        .support-card a {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .support-card a:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+        }
+        
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 40px 0;
+            margin-top: 50px;
+            border-top: 5px solid var(--primary);
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            color: var(--light);
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-column ul li a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-column ul li a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid #334155;
+            color: #94a3b8;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .nav-links {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .hero {
+                padding: 40px 20px;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .section {
+                padding: 30px 20px;
+            }
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        
+        .back-to-top:hover {
+            background: var(--primary-dark);
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-text">
+                    <h1>OBlinks</h1>
+                    <p class="tagline">Global Business Platform</p>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="#add-business">Add Business</a>
+                <a href="#packages">Packages</a>
+                <a href="#earn">Earn</a>
+                <a href="#features">Features</a>
+                <a href="#support">Support</a>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>Your Complete Guide to OBlinks</h1>
+            <p>Welcome to OBlinks - Uganda's easiest way to list your business online. Whether you're selling clothes, food, or services, OBlinks helps you reach more customers and grow your sales. This guide explains everything you need to know.</p>
+            <div>
+                <a href="#add-business" class="btn">Add Your Business</a>
+                <a href="#features" class="btn btn-primary">See All Features</a>
+            </div>
+        </section>
+        
+        <!-- How to Add Your Business Section -->
+        <section id="add-business" class="section">
+            <h2 class="section-title"><i class="fas fa-store"></i> How to Add Your Business</h2>
+            <p>Follow these simple steps to list your business on OBlinks and start reaching customers:</p>
+            
+            <div class="step-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Choose a Package</h3>
+                    <p>Select a business package that fits your needs. We have free and paid options with different features.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Enter Business Details</h3>
+                    <p>Fill in your business name, description, location, category, and WhatsApp number so customers can contact you.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Add Items & Services</h3>
+                    <p>List your products or services with prices and photos. Show customers exactly what you offer.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Submit & Pay (if needed)</h3>
+                    <p>For paid packages, complete payment to activate your listing. Free listings go live immediately.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Packages Explained Section -->
+        <section id="packages" class="section">
+            <h2 class="section-title"><i class="fas fa-box-open"></i> Packages Explained</h2>
+            <p>Choose the package that best fits your business needs. All packages are billed annually.</p>
+            
+            <div class="package-grid">
+                <div class="package-card">
+                    <div class="package-name">Starter</div>
+                    <div class="package-price">0 <span>UGX/year</span></div>
+                    <ul class="package-features">
+                        <li><i class="fas fa-check-circle"></i> 2 items allowed</li>
+                        <li><i class="fas fa-check-circle"></i> Basic listing</li>
+                        <li><i class="fas fa-check-circle"></i> 20% referral commission</li>
+                        <li><i class="fas fa-times-circle"></i> No pinning</li>
+                    </ul>
+                    <p><strong>Best for:</strong> Small businesses just starting online</p>
+                </div>
+                
+                <div class="package-card popular">
+                    <div class="package-name">Professional</div>
+                    <div class="package-price">100,000 <span>UGX/year</span></div>
+                    <ul class="package-features">
+                        <li><i class="fas fa-check-circle"></i> 70 items allowed</li>
+                        <li><i class="fas fa-check-circle"></i> Featured placement</li>
+                        <li><i class="fas fa-check-circle"></i> 60% referral commission</li>
+                        <li><i class="fas fa-check-circle"></i> 2 days pinning</li>
+                    </ul>
+                    <p><strong>Best for:</strong> Growing businesses wanting more visibility</p>
+                </div>
+                
+                <div class="package-card">
+                    <div class="package-name">Enterprise</div>
+                    <div class="package-price">200,000 <span>UGX/year</span></div>
+                    <ul class="package-features">
+                        <li><i class="fas fa-check-circle"></i> 100 items allowed</li>
+                        <li><i class="fas fa-check-circle"></i> Maximum visibility</li>
+                        <li><i class="fas fa-check-circle"></i> 80% referral commission</li>
+                        <li><i class="fas fa-check-circle"></i> 7 days pinning</li>
+                    </ul>
+                    <p><strong>Best for:</strong> Established businesses wanting premium features</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Earn with Referrals Section -->
+        <section id="earn" class="section">
+            <h2 class="section-title"><i class="fas fa-money-bill-wave"></i> Earn with Referrals</h2>
+            <p>OBlinks lets you earn real money by helping other businesses join our platform. You earn commission only when businesses you refer upgrade to paid packages.</p>
+            
+            <div class="step-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Share Your Link</h3>
+                    <p>Find your unique referral link in your Earnings Dashboard.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Business Joins</h3>
+                    <p>When a business signs up using your link, they become your referral.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Business Upgrades</h3>
+                    <p>When your referral upgrades to a paid package, you earn commission.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>You Get Paid</h3>
+                    <p>Commission is paid annually to your mobile money or bank account.</p>
+                </div>
+            </div>
+            
+            <div style="background: #eef2ff; padding: 20px; border-radius: 10px; margin-top: 30px;">
+                <h3 style="color: var(--primary-dark); margin-bottom: 15px;"><i class="fas fa-info-circle"></i> How Commission Works</h3>
+                <p>Your commission rate depends on your current package. For example:</p>
+                <ul style="margin: 15px 0 15px 30px; color: var(--dark);">
+                    <li>Starter: 20% commission</li>
+                    <li>Professional: 60% commission</li>
+                    <li>Enterprise: 80% commission</li>
+                </ul>
+                <p>You earn a percentage of your referral's package payment. Payments are made annually through Mobile Money or bank transfer.</p>
+            </div>
+        </section>
+        
+        <!-- Buttons & Features Section -->
+        <section id="features" class="section">
+            <h2 class="section-title"><i class="fas fa-mouse-pointer"></i> OBlinks Buttons & Features Explained</h2>
+            <p>Here's what every button and feature does on OBlinks:</p>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <h3>Add Business Button</h3>
+                    <p>Opens the form to list your business details, products, and services.</p>
+                    <div class="feature-details">
+                        <h4><i class="fas fa-eye"></i> Where you see it:</h4>
+                        <p>Bottom navigation bar (center button)</p>
+                        <h4><i class="fas fa-gift"></i> Benefit:</h4>
+                        <p>Lets you showcase your business to customers</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <h3>Pay Now Button</h3>
+                    <p>Appears when you choose a paid package. Takes you to payment options.</p>
+                    <div class="feature-details">
+                        <h4><i class="fas fa-eye"></i> Where you see it:</h4>
+                        <p>Business form footer for paid packages</p>
+                        <h4><i class="fas fa-gift"></i> Benefit:</h4>
+                        <p>Activates your business listing with premium features</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h3>View All Button</h3>
+                    <p>Shows all products/services from a business in one place.</p>
+                    <div class="feature-details">
+                        <h4><i class="fas fa-eye"></i> Where you see it:</h4>
+                        <p>On each business card</p>
+                        <h4><i class="fas fa-gift"></i> Benefit:</h4>
+                        <p>Customers see everything you offer at once</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <h3>Order Button</h3>
+                    <p>Opens an order form for customers to place orders.</p>
+                    <div class="feature-details">
+                        <h4><i class="fas fa-eye"></i> Where you see it:</h4>
+                        <p>On each business card and product</p>
+                        <h4><i class="fas fa-gift"></i> Benefit:</h4>
+                        <p>Customers can order directly, and you get notifications</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <h3>Chat on WhatsApp Button</h3>
+                    <p>Starts a WhatsApp chat with the business.</p>
+                    <div class="feature-details">
+                        <h4><i class="fas fa-eye"></i> Where you see it:</h4>
+                        <p>On each business card and product</p>
+                        <h4><i class="fas fa-gift"></i> Benefit:</h4>
+                        <p>Customers can ask questions or order through WhatsApp</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <h3>Business Link Button</h3>
+                    <p>Opens your website, Facebook page, or other link you added.</p>
+                    <div class="feature-details">
+                        <h4><i class="fas fa-eye"></i> Where you see it:</h4>
+                        <p>On your business card</p>
+                        <h4><i class="fas fa-gift"></i> Benefit:</h4>
+                        <p>Drives traffic to your other platforms</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h3>Notifications Bell</h3>
+                    <p>Shows new orders, messages, and important updates.</p>
+                    <div class="feature-details">
+                        <h4><i class="fas fa-eye"></i> Where you see it:</h4>
+                        <p>Top right corner of the website</p>
+                        <h4><i class="fas fa-gift"></i> Benefit:</h4>
+                        <p>Never miss an order or important update</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h3>My Account / Profile</h3>
+                    <p>Manage your account details, businesses, and earnings.</p>
+                    <div class="feature-details">
+                        <h4><i class="fas fa-eye"></i> Where you see it:</h4>
+                        <p>Top right corner of the website</p>
+                        <h4><i class="fas fa-gift"></i> Benefit:</h4>
+                        <p>Central place to manage your OBlinks presence</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <h3>Rent Package / Upgrade</h3>
+                    <p>See your current package or upgrade to a better one.</p>
+                    <div class="feature-details">
+                        <h4><i class="fas fa-eye"></i> Where you see it:</h4>
+                        <p>In your account dashboard</p>
+                        <h4><i class="fas fa-gift"></i> Benefit:</h4>
+                        <p>Get more features and visibility for your business</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </div>
+                    <h3>Logout Button</h3>
+                    <p>Securely signs you out of your account.</p>
+                    <div class="feature-details">
+                        <h4><i class="fas fa-eye"></i> Where you see it:</h4>
+                        <p>In your account menu</p>
+                        <h4><i class="fas fa-gift"></i> Benefit:</h4>
+                        <p>Keeps your account secure, especially on shared devices</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Support Section -->
+        <section id="support" class="section">
+            <h2 class="section-title"><i class="fas fa-headset"></i> Support and Contact</h2>
+            <p>We're here to help! Contact our support team through any of these channels:</p>
+            
+            <div class="support-cards">
+                <div class="support-card">
+                    <i class="fab fa-whatsapp"></i>
+                    <h3>WhatsApp Support</h3>
+                    <p>Get instant help through WhatsApp chat. Our team responds quickly during business hours.</p>
+                    <a href="https://wa.me/256761828694" target="_blank">Chat Now</a>
+                </div>
+                
+                <div class="support-card">
+                    <i class="fas fa-envelope"></i>
+                    <h3>Email Support</h3>
+                    <p>Send us a detailed message and we'll respond within 24 hours.</p>
+                    <a href="mailto:support@oblinks.com">support@oblinks.com</a>
+                </div>
+                
+                <div class="support-card">
+                    <i class="fas fa-book"></i>
+                    <h3>Knowledge Base</h3>
+                    <p>Find answers to common questions in our help center.</p>
+                    <a href="#">Visit Help Center</a>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <a href="#" class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>OBlinks</h3>
+                <p>The Global Business Platform helping Ugandan businesses connect with customers online.</p>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="#add-business">Add Business</a></li>
+                    <li><a href="#packages">Packages</a></li>
+                    <li><a href="#earn">Earn with Referrals</a></li>
+                    <li><a href="#support">Support</a></li>
+                </ul>
+            </div>
+            
+            <div></div>
+                    <li><a href="#">Business Tips</a></li>
+                  
+            
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fab fa-whatsapp"></i> <a href="https://wa.me/256761828694">+256 761 828694</a></li>
+                    <li><i class="fas fa-envelope"></i> <a href="mailto:support@oblinks.com">support@oblinks.com</a></li>
+                    <li><i class="fas fa-map-marker-alt"></i> Kampala, Uganda</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>&copy; 2023 OBlinks - The Global Business Platform. All rights reserved.</p>
+        </div>
+    </footer>
+
+ <script>
+        // Simple back to top functionality
+        document.querySelector('.back-to-top').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // Highlight active section in navigation
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.nav-links a');
+            
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (window.scrollY >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
