@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OBlinks - Edit Business</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #64748b;
+      --light: #f8fafc;
+      --dark: #1e293b;
+      --success: #10b981;
+      --error: #ef4444;
+      --warning: #f59e0b;
+      --accent: #8b5cf6;
+      --border: #e2e8f0;
+      --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    
+    body {
+      background: #f1f5f9;
+      color: var(--dark);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Header Styles */
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 15px 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      z-index: 100;
+      position: sticky;
+      top: 0;
+    }
+    
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .logo-text h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    
+    .tagline {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+    
+    /* Main Container */
+    .container {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+      flex-grow: 1;
+      width: 100%;
+    }
+    
+    /* Business Selection Section */
+    .business-selection {
+      background: white;
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+      padding: 25px;
+      margin-bottom: 30px;
+    }
+    
+    .business-selection h2 {
+      color: var(--primary-dark);
+      font-size: 24px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--dark);
+      font-size: 14px;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      background: white;
+    }
+    
+    .form-control:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    /* Package Info */
+    .package-info {
+      background: #eef2ff;
+      border-radius: 8px;
+      padding: 15px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-left: 4px solid var(--primary);
+    }
+    
+    .package-info .details {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      font-size: 14px;
+    }
+    
+    .package-info .name {
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+    
+    .package-info .price {
+      font-weight: 600;
+      color: var(--dark);
+    }
+    
+    /* Form Styles */
+    .form-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+      margin-bottom: 40px;
+      display: none;
+    }
+    
+    .form-header {
+      background: linear-gradient(to right, #f8fafc, #eef2ff);
+      padding: 25px 30px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .form-header h2 {
+      color: var(--primary-dark);
+      font-size: 24px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .form-header p {
+      color: var(--secondary);
+      max-width: 700px;
+      font-size: 14px;
+    }
+    
+    .form-content {
+      padding: 30px;
+    }
+    
+    .form-section {
+      margin-bottom: 40px;
+      padding: 20px;
+      border-radius: 10px;
+      background: #f8fafc;
+    }
+    
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .section-header h3 {
+      font-size: 20px;
+      color: var(--primary);
+    }
+    
+    .section-header i {
+      background: rgba(37, 99, 235, 0.1);
+      color: var(--primary);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-bottom: 25px;
+    }
+    
+    .form-group .required::after {
+      content: "*";
+      color: #ef4444;
+      margin-left: 4px;
+    }
+    
+    textarea.form-control {
+      min-height: 120px;
+      resize: vertical;
+    }
+    
+    .form-note {
+      font-size: 13px;
+      color: var(--secondary);
+      margin-top: 5px;
+    }
+    
+    /* Items Section */
+    .items-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .items-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .item-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .item-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+    
+    .item-media {
+      height: 160px;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    
+    .item-media img, .item-media video {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      transition: transform 0.3s ease;
+    }
+    
+    .item-media .placeholder {
+      color: var(--secondary);
+      text-align: center;
+      padding: 15px;
+      font-size: 13px;
+    }
+    
+    .item-body {
+      padding: 15px;
+    }
+    
+    .item-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--dark);
+    }
+    
+    .item-price {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--success);
+      margin-bottom: 15px;
+    }
+    
+    .add-item-btn {
+      background: var(--accent);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      border: none;
+      margin: 0 auto;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+    
+    .add-item-btn:hover {
+      background: #7c3aed;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .add-item-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+      /* Form Footer */
+    .form-footer {
+      display: flex;
+      justify-content: flex-end;
+      padding: 25px 30px;
+      border-top: 1px solid var(--border);
+      background: #f8fafc;
+    }
+    
+    .btn-submit {
+      background: var(--success);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-submit:hover {
+      background: #059669;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .btn-submit:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+ /* Lightbox for zooming */
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .lightbox-content {
+      max-width: 90%;
+      max-height: 90%;
+    }
+    
+    .lightbox-content img, .lightbox-content video {
+      max-width: 100%;
+      max-height: 90vh;
+      object-fit: contain;
+    }
+    
+    .close-lightbox {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+    }
+    
+    /* File Input */
+    .file-input-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .file-input-wrapper input[type="file"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+    
+    /* Item Actions */
+    .item-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .edit-btn {
+      background: var(--primary);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      transition: all 0.2s ease;
+    }
+    
+    .edit-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+    
+    .delete-btn {
+      background: var(--error);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      transition: all 0.2s ease;
+    }
+    
+    .delete-btn:hover {
+      background: #dc2626;
+      transform: translateY(-2px);
+    }
+    
+    /* Loading spinner */
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-left-color: var(--primary);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+      display: none;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Notification */
+    .notification {
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-weight: 500;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+    }
+    
+    .notification-error {
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+    
+    .notification-success {
+      background: #f0fdf4;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+    
+    .notification i {
+      font-size: 1.2rem;
+    }
+    
+    .item-counter {
+      background: var(--primary);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 14px;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-content">
+      <div class="logo">
+        <div class="logo-text">
+          <h1>OBlinks</h1>
+          <p class="tagline">Global Business Platform</p>
+        </div>
+      </div>
+    </div>
+  </header>
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Business Selection Section -->
+    <div class="business-selection">
+      <h2><i class="fas fa-store"></i> Edit Your Business</h2>
+      
+      <div class="form-group">
+        <label>Select a Business to Edit:</label>
+        <select id="business-select" class="form-control">
+          <option value=""> click here to Select Business to edit</option>
+          <!-- Businesses will be loaded here -->
+        </select>
+      </div>
+      
+      <div id="loading-spinner" class="spinner"></div>
+      <div id="notification-area"></div>
+    </div>
+    
+    <!-- Package Info -->
+    <div class="package-info" id="package-info" style="display: none;">
+      <div class="details">
+        <div class="name">Current Package: <span id="selected-package">Starter</span></div>
+        <div class="price">Items Allowed: <span id="selected-items">2</span></div>
+        <div>Current Items: <span id="current-items-count">0</span></div>
+      </div>
+    </div>
+    
+    <!-- Business Form -->
+    <div class="form-container" id="edit-form">
+      <div class="form-header">
+        <h2><i class="fas fa-edit"></i> Edit Your Business</h2>
+        <p>Update your business details and items as needed.</p>
+      </div>
+      
+      <div class="form-content">
+        <!-- Section 1: Business Information -->
+        <div class="form-section">
+          <div class="section-header">
+            <i class="fas fa-info-circle"></i>
+            <h3>Business Information</h3>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label class="required">Business Title</label>
+              <input type="text" id="business-title" class="form-control" placeholder="Enter your business name">
+            </div>
+            
+            <div class="form-group">
+              <label class="required">Business Location</label>
+              <input type="text" id="business-location" class="form-control" placeholder="Country, District, City etc.">
+            </div>
+            
+            <div class="form-group">
+              <label for="business-category" class="required">Business Category</label>
+              <select id="business-category" class="form-control" required>
+                <option value="" disabled selected>Select a category</option>
+                <option value="electronics">Electronics</option>
+                <option value="fashion">Fashion</option>
+                <option value="food">Food & Dining</option>
+                <option value="services">Services</option>
+                <option value="home">Home & Garden</option>
+                <option value="health">Health & Beauty</option>
+                <option value="auto">Automotive</option>
+                <option value="education">Education</option>
+                <option value="entertainment">Entertainment</option>
+                <option value="travel">Travel</option>
+                <option value="sports">Sports</option>
+                <option value="all">All Businesses</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="required">Business Description</label>
+            <textarea id="business-description" class="form-control" placeholder="Describe your business, products/services, and what makes it unique..."></textarea>
+            <div class="form-note">Minimum 100 characters. Describe what your business offers and why customers should choose you.</div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Business Link (Optional)</label>
+              <input type="url" id="business-link" class="form-control" placeholder="https://yourbusiness.com">
+              <div class="form-note">Your website, social media page, or online store</div>
+            </div>
+            
+            <div class="form-group">
+              <label class="required">WhatsApp Number</label>
+              <input type="tel" id="whatsapp-number" class="form-control" placeholder="256712345678">
+              <div class="form-note">Customers will contact you via WhatsApp using this number</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Section 2: Items & Services -->
+        <div class="form-section">
+          <div class="section-header">
+            <i class="fas fa-box-open"></i>
+            <h3>Items & Services <span id="item-counter" class="item-counter">0/2</span></h3>
+          </div>
+          
+          <div class="items-header">
+            <h4>Manage your products or services</h4>
+            <div class="form-note">Items that customers can order directly from your business</div>
+          </div>
+          
+          <div class="items-container" id="items-container">
+            <!-- Items will be added here dynamically -->
+          </div>
+          
+          <button class="add-item-btn" id="add-item-btn">
+            <i class="fas fa-plus"></i> Add New Item
+          </button>
+        </div>
+      </div>
+      
+      <!-- Form Footer -->
+      <div class="form-footer">
+        <button class="btn-submit" id="save-btn" disabled>
+          <i class="fas fa-save"></i> Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Lightbox for zooming -->
+  <div class="lightbox" id="lightbox">
+    <span class="close-lightbox">&times;</span>
+    <div class="lightbox-content" id="lightbox-content"></div>
+  </div>
+  
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
+      authDomain: "oblinks-7fdb1.firebaseapp.com",
+      projectId: "oblinks-7fdb1",
+      storageBucket: "oblinks-7fdb1.appspot.com",
+      messagingSenderId: "587017639779",
+      appId: "1:587017639779:web:d11b60f40f431cfc202556"
+    };
+ // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    // Cloudinary configuration
+    const cloudinaryConfig = {
+      cloudName: 'dp81zzxlh',
+      uploadPreset: 'Unsigned upload'
+    };
+
+    // Global state
+    let currentUser = null;
+    let selectedBusiness = null;
+    let maxItems = 0;
+    let currentItems = 0;
+    let userBusinesses = [];
+    
+    // Check authentication
+    auth.onAuthStateChanged(user => {
+      currentUser = user;
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        loadUserBusinesses();
+      }
+    });
+    
+    // Load user's businesses
+    function loadUserBusinesses() {
+      const spinner = document.getElementById('loading-spinner');
+      spinner.style.display = 'block';
+      
+      db.collection("businesses")
+        .where("createdBy", "==", currentUser.uid)
+        .get()
+        .then(querySnapshot => {
+          spinner.style.display = 'none';
+          
+          if (querySnapshot.empty) {
+            showNotification("You don't have any businesses to edit", "error");
+            return;
+          }
+          
+          userBusinesses = [];
+          const select = document.getElementById('business-select');
+          
+          querySnapshot.forEach(doc => {
+            const business = {
+              id: doc.id,
+              ...doc.data()
+            };
+            userBusinesses.push(business);
+            
+            const option = document.createElement('option');
+            option.value = doc.id;
+            option.textContent = business.title;
+            select.appendChild(option);
+          });
+        })
+        .catch(error => {
+          spinner.style.display = 'none';
+          console.error("Error loading businesses:", error);
+          showNotification("Failed to load businesses: " + error.message, "error");
+        });
+    }
+        // Business selection handler
+    document.getElementById('business-select').addEventListener('change', function() {
+      const businessId = this.value;
+      if (!businessId) {
+        document.getElementById('edit-form').style.display = 'none';
+        document.getElementById('package-info').style.display = 'none';
+        return;
+      }
+      
+      const business = userBusinesses.find(b => b.id === businessId);
+      if (!business) return;
+      
+      selectedBusiness = business;
+      loadBusinessData(business);
+    });
+    
+    // Load business data and items
+    function loadBusinessData(business) {
+      const spinner = document.getElementById('loading-spinner');
+      spinner.style.display = 'block';
+      
+      // Show package info
+      document.getElementById('package-info').style.display = 'flex';
+      document.getElementById('selected-package').textContent = business.package;
+      
+      // Get package items limit
+      let itemsLimit = 2; // Default to Starter
+      switch(business.package) {
+        case 'Basic': itemsLimit = 10; break;
+        case 'Standard': itemsLimit = 30; break;
+        case 'Advanced': itemsLimit = 50; break;
+        case 'Professional': itemsLimit = 70; break;
+        case 'Premium': itemsLimit = 90; break;
+        case 'Enterprise': itemsLimit = 100; break;
+      }
+      maxItems = itemsLimit;
+      document.getElementById('selected-items').textContent = maxItems;
+      
+      // Fill business data
+      document.getElementById('business-title').value = business.title || '';
+      document.getElementById('business-location').value = business.location || '';
+      document.getElementById('business-category').value = business.category || '';
+      document.getElementById('business-description').value = business.description || '';
+      document.getElementById('business-link').value = business.businessLink || '';
+      document.getElementById('whatsapp-number').value = business.whatsapp || '';
+      
+      // Load items
+      db.collection("items")
+        .where("businessId", "==", business.id)
+        .get()
+        .then(querySnapshot => {
+          spinner.style.display = 'none';
+          
+          const itemsContainer = document.getElementById('items-container');
+          itemsContainer.innerHTML = '';
+          currentItems = 0;
+          
+          querySnapshot.forEach(doc => {
+            const item = doc.data();
+            addItemToForm(item.title, item.price, item.mediaUrl, doc.id);
+          });
+          
+          // Update item counter
+          updateItemCounter();
+          
+          // Show the form
+          document.getElementById('edit-form').style.display = 'block';
+          document.getElementById('save-btn').disabled = false;
+          
+          // Update current items count
+          document.getElementById('current-items-count').textContent = currentItems;
+        })
+        .catch(error => {
+          spinner.style.display = 'none';
+          console.error("Error loading items:", error);
+          showNotification("Failed to load business items: " + error.message, "error");
+        });
+    }
+    
+    // Update item counter
+    function updateItemCounter() {
+      const counter = document.getElementById('item-counter');
+      counter.textContent = `${currentItems}/${maxItems}`;
+      
+      // Disable add button if limit reached
+      const addBtn = document.getElementById('add-item-btn');
+      if (currentItems >= maxItems) {
+        addBtn.disabled = true;
+        addBtn.innerHTML = '<i class="fas fa-ban"></i> Package Limit Reached';
+      } else {
+        addBtn.disabled = false;
+        addBtn.innerHTML = '<i class="fas fa-plus"></i> Add New Item';
+      }
+    }
+    
+    // Add item to form with optional data
+    function addItemToForm(title = '', price = '', mediaUrl = '', itemId = '') {
+      if (currentItems < maxItems) {
+        const itemsContainer = document.getElementById('items-container');
+        const newItem = document.createElement('div');
+        newItem.className = 'item-card';
+        if (itemId) newItem.dataset.itemId = itemId;
+        
+        newItem.innerHTML = `
+          <div class="item-media">
+            <div class="file-input-wrapper">
+              <input type="file" class="media-input" accept="image/*,video/*">
+              ${mediaUrl ? '' : `
+                <div class="placeholder">
+                  <i class="fas fa-image fa-2x"></i>
+                  <p>Click to upload image or video</p>
+                </div>
+              `}
+            </div>
+          </div>
+          <div class="item-body">
+            <input type="text" class="form-control item-title" placeholder="Item Title" 
+                   value="${title}" style="margin-bottom: 10px;">
+            <input type="text" class="form-control item-price" placeholder="Price (UGX)" 
+                   value="${price}" style="margin-bottom: 15px;">
+            <div class="item-actions">
+              <button class="edit-btn edit-item">
+                <i class="fas fa-edit"></i> Edit
+              </button>
+              <button class="delete-btn delete-item">
+                <i class="fas fa-trash"></i> Delete
+              </button>
+            </div>
+          </div>
+        `;
+        
+        itemsContainer.appendChild(newItem);
+        currentItems++;
+        
+        // Add media input event
+        const mediaInput = newItem.querySelector('.media-input');
+        mediaInput.addEventListener('change', handleMediaUpload);
+        
+        // Add edit button event
+        const editBtn = newItem.querySelector('.edit-item');
+        editBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          toggleItemEditMode(newItem);
+        });
+
+  // Add delete button event
+        const deleteBtn = newItem.querySelector('.delete-item');
+        deleteBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (confirm('Are you sure you want to delete this item?')) {
+            if (itemId) {
+              newItem.dataset.delete = "true";
+              newItem.style.opacity = "0.6";
+              deleteBtn.disabled = true;
+              editBtn.disabled = true;
+            } else {
+              newItem.remove();
+              currentItems--;
+              updateItemCounter();
+            }
+          }
+        });
+        
+        // If we have a media URL, create preview
+        if (mediaUrl) {
+          const wrapper = newItem.querySelector('.file-input-wrapper');
+          wrapper.innerHTML = '';
+          
+          const isVideo = mediaUrl.endsWith('.mp4');
+          const controlsDiv = document.createElement("div");
+          controlsDiv.style.position = "relative";
+          controlsDiv.style.width = "100%";
+          controlsDiv.style.borderRadius = "10px";
+          controlsDiv.style.overflow = "hidden";
+          
+          // Create media element
+          let mediaElement;
+          if (isVideo) {
+            mediaElement = document.createElement("video");
+            mediaElement.src = mediaUrl;
+            mediaElement.controls = true;
+            mediaElement.muted = true;
+            mediaElement.style.width = "100%";
+            mediaElement.style.maxHeight = "200px";
+            mediaElement.style.borderRadius = "10px";
+            mediaElement.style.objectFit = "cover";
+          } else {
+            mediaElement = document.createElement("img");
+            mediaElement.src = mediaUrl;
+            mediaElement.alt = "Uploaded image";
+            mediaElement.style.width = "100%";
+            mediaElement.style.maxHeight = "200px";
+            mediaElement.style.borderRadius = "10px";
+            mediaElement.style.objectFit = "contain";
+          }
+          
+          // Zoom button
+          const zoomBtn = document.createElement("button");
+          zoomBtn.innerHTML = `<i class="fas fa-search-plus"></i>`;
+          zoomBtn.className = "zoom-btn";
+          zoomBtn.onclick = () => openLightbox(mediaUrl, isVideo ? 'video' : 'image');
+          
+          // Hidden input to store URL
+          const urlInput = document.createElement("input");
+          urlInput.type = "hidden";
+          urlInput.className = "media-url";
+          urlInput.value = mediaUrl;
+          
+          // Assemble
+          controlsDiv.appendChild(mediaElement);
+          controlsDiv.appendChild(zoomBtn);
+          wrapper.appendChild(controlsDiv);
+          wrapper.appendChild(urlInput);
+        }
+        
+        updateItemCounter();
+      }
+    }
+      // Toggle item edit mode
+    function toggleItemEditMode(itemCard) {
+      const titleInput = itemCard.querySelector('.item-title');
+      const priceInput = itemCard.querySelector('.item-price');
+      const editBtn = itemCard.querySelector('.edit-item');
+      
+      if (titleInput.readOnly) {
+        // Enable editing
+        titleInput.readOnly = false;
+        priceInput.readOnly = false;
+        editBtn.innerHTML = '<i class="fas fa-save"></i> Save';
+      } else {
+        // Save changes
+        titleInput.readOnly = true;
+        priceInput.readOnly = true;
+        editBtn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+      }
+    }
+    
+    // Add item functionality
+    document.getElementById('add-item-btn').addEventListener('click', function() {
+      addItemToForm();
+    });
+
+    // Handle media upload to Cloudinary
+    async function handleMediaUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      // Validate file
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'video/webm'];
+      if (!validTypes.includes(file.type)) {
+        alert('Only images (JPEG, PNG, GIF) and videos (MP4, WebM) are allowed');
+        return;
+      }
+      
+      if (file.size > 10 * 1024 * 1024) {
+        alert('File size must be less than 10MB');
+        return;
+      }
+
+      const wrapper = e.target.parentElement;
+      wrapper.innerHTML = `<div class="upload-progress"><i class="fas fa-spinner fa-spin"></i> Uploading...</div>`;
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "Unsigned upload");
+
+      try {
+        const response = await fetch(
+          "https://api.cloudinary.com/v1_1/dp81zzxlh/auto/upload",
+          {
+            method: "POST",
+            body: formData
+          }
+        );
+        const data = await response.json();
+
+        wrapper.innerHTML = "";
+
+        const isVideo = data.resource_type === "video";
+
+        // Create preview container
+        const controlsDiv = document.createElement("div");
+        controlsDiv.style.position = "relative";
+        controlsDiv.style.width = "100%";
+        controlsDiv.style.borderRadius = "10px";
+        controlsDiv.style.overflow = "hidden";
+
+        // Create media element
+        let mediaElement;
+        if (isVideo) {
+          mediaElement = document.createElement("video");
+          mediaElement.src = data.secure_url;
+          mediaElement.controls = true;
+          mediaElement.muted = true;
+          mediaElement.style.width = "100%";
+          mediaElement.style.maxHeight = "200px";
+          mediaElement.style.borderRadius = "10px";
+          mediaElement.style.objectFit = "cover";
+        } else {
+          mediaElement = document.createElement("img");
+          mediaElement.src = data.secure_url;
+          mediaElement.alt = "Uploaded image";
+          mediaElement.style.width = "100%";
+          mediaElement.style.maxHeight = "200px";
+          mediaElement.style.borderRadius = "10px";
+          mediaElement.style.objectFit = "contain";
+        }
+
+        // Zoom button
+        const zoomBtn = document.createElement("button");
+        zoomBtn.innerHTML = `<i class="fas fa-search-plus"></i>`;
+        zoomBtn.className = "zoom-btn";
+        zoomBtn.onclick = () => openLightbox(data.secure_url, isVideo ? 'video' : 'image');
+
+        // Hidden input to store URL
+        const urlInput = document.createElement("input");
+        urlInput.type = "hidden";
+        urlInput.className = "media-url";
+        urlInput.value = data.secure_url;
+
+        // Assemble
+        controlsDiv.appendChild(mediaElement);
+        controlsDiv.appendChild(zoomBtn);
+        wrapper.appendChild(controlsDiv);
+        wrapper.appendChild(urlInput);
+      } catch (error) {
+        wrapper.innerHTML = `<div class="upload-error"><i class="fas fa-exclamation-triangle"></i> Upload failed: ${error.message}</div>`;
+      }
+    }
+    
+    // Open lightbox for zooming
+    function openLightbox(src, type) {
+      const lightbox = document.getElementById('lightbox');
+      const content = document.getElementById('lightbox-content');
+      
+      if (type === 'image') {
+        content.innerHTML = `<img src="${src}" alt="Zoomed product image">`;
+      } else {
+        content.innerHTML = `<video src="${src}" controls autoplay></video>`;
+      }
+      
+      lightbox.style.display = 'flex';
+    }
+    
+    // Close lightbox
+    document.querySelector('.close-lightbox').addEventListener('click', function() {
+      document.getElementById('lightbox').style.display = 'none';
+    });
+    
+    // Close lightbox when clicking outside content
+    document.getElementById('lightbox').addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.style.display = 'none';
+      }
+    });
+        // Save changes button
+    document.getElementById('save-btn').addEventListener('click', async function() {
+      // Validate form
+      const businessTitle = document.getElementById('business-title').value;
+      const businessLocation = document.getElementById('business-location').value;
+      const businessCategory = document.getElementById('business-category').value;
+      const businessDescription = document.getElementById('business-description').value;
+      const whatsappNumber = document.getElementById('whatsapp-number').value;
+      const businessLink = document.getElementById('business-link').value;
+
+      if (!businessTitle || !businessLocation || !businessCategory || !businessDescription || !whatsappNumber) {
+        showNotification('Please fill in all required fields', 'error');
+        return;
+      }
+
+      if (businessDescription.length < 100) {
+        showNotification('Business description must be at least 100 characters', 'error');
+        return;
+      }
+ // Collect items
+      const items = [];
+      document.querySelectorAll(".item-card").forEach(card => {
+        const title = card.querySelector(".item-title").value;
+        const price = card.querySelector(".item-price").value;
+        const mediaInput = card.querySelector(".media-url");
+        const mediaUrl = mediaInput ? mediaInput.value : null;
+        const itemId = card.dataset.itemId;
+        const isDeleted = card.dataset.delete === "true";
+
+        if (title && price && !isDeleted) {
+          items.push({
+            title,
+            price: parseInt(price),
+            mediaUrl,
+            itemId
+          });
+        }
+      });
+
+      if (items.length === 0) {
+        showNotification('Please add at least one item', 'error');
+        return;
+      }
+
+      // Prepare business data
+      const businessData = {
+        title: businessTitle,
+        location: businessLocation,
+        category: businessCategory,
+        description: businessDescription,
+        whatsapp: whatsappNumber,
+        businessLink: businessLink || null,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      try {
+        this.disabled = true;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+        
+        // Update business document
+        await db.collection("businesses").doc(selectedBusiness.id).update(businessData);
+        
+        // Process items in a batch
+        const batch = db.batch();
+        
+        // Process existing items
+        document.querySelectorAll('.item-card').forEach(card => {
+          const cardItemId = card.dataset.itemId;
+          const title = card.querySelector('.item-title').value;
+          const price = card.querySelector('.item-price').value;
+          const mediaInput = card.querySelector('.media-url');
+          const mediaUrl = mediaInput ? mediaInput.value : null;
+          const isDeleted = card.dataset.delete === "true";
+          
+          if (cardItemId) {
+            // Update existing item
+            if (!isDeleted) {
+              const itemRef = db.collection('items').doc(cardItemId);
+              batch.update(itemRef, {
+                title,
+                price: parseInt(price),
+                mediaUrl,
+                lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+              });
+            } 
+            // Delete marked items
+            else {
+              const itemRef = db.collection('items').doc(cardItemId);
+              batch.delete(itemRef);
+            }
+          }
+          // Add new items
+          else if (!isDeleted) {
+            const itemRef = db.collection('items').doc();
+            batch.set(itemRef, {
+              title,
+              price: parseInt(price),
+              mediaUrl,
+              businessId: selectedBusiness.id,
+              userId: currentUser.uid,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+          }
+        });
+        
+        await batch.commit();
+        
+        showNotification('Business updated successfully!', 'success');
+        
+        // Update UI
+        this.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+        this.disabled = false;
+        
+        // Reload business data to reflect changes
+        loadBusinessData(selectedBusiness);
+      } catch (error) {
+        console.error('Error updating business: ', error);
+        showNotification('Error updating business: ' + error.message, 'error');
+        this.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+        this.disabled = false;
+      }
+    });
+    
+    // Show notification
+    function showNotification(message, type) {
+      const notificationArea = document.getElementById('notification-area');
+      const notification = document.createElement('div');
+      notification.className = `notification notification-${type}`;
+      
+      let icon = '';
+      if (type === 'success') {
+        icon = '<i class="fas fa-check-circle"></i>';
+      } else if (type === 'error') {
+        icon = '<i class="fas fa-exclamation-circle"></i>';
+      }
+      
+      notification.innerHTML = `
+        ${icon}
+        <span>${message}</span>
+      `;
+      
+      notificationArea.appendChild(notification);
+      
+      // Auto remove after 5 seconds
+      setTimeout(() => {
+        notification.remove();
+      }, 5000);
+    }
+  </script>
+</body>
+</html>
