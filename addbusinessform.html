@@ -1076,7 +1076,7 @@
           <div class="form-group">
             <label class="required">Business Description</label>
             <textarea id="business-description" class="form-control" placeholder="Describe your business, products/services, and what makes it unique..."></textarea>
-            <div class="form-note">Minimum 100 characters. Describe what your business offers and why customers should choose you.</div>
+            <div class="form-note">Minimum 10 words. Describe what your business offers and why customers should choose you.</div>
           </div>
           
           <div class="form-row">
@@ -1775,8 +1775,8 @@
         return;
       }
 
-      if (businessDescription.length < 100) {
-        alert('Business description must be at least 100 characters');
+      if (businessDescription.length < 10) {
+        alert('Business description must be at least 10 words');
         return;
       }
         // Collect items
@@ -1851,8 +1851,8 @@
         return;
       }
 
-      if (businessDescription.length < 100) {
-        alert('Business description must be at least 100 characters');
+      if (businessDescription.length < 10) {
+        alert('Business description must be at least 10 words');
         return;
       }
 
