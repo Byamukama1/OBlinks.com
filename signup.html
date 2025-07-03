@@ -362,14 +362,15 @@
     confirmToggle.innerHTML = type === 'password' ? '<i class="far fa-eye"></i>' : '<i class="far fa-eye-slash"></i>';
   });
 
-  // Password strength indicator
+  // Password strength indicator (100% at 6+ characters)
   passwordInput.addEventListener('input', () => {
     const password = passwordInput.value;
     let strength = 0;
-    if (password.length > 5) strength += 25;
-    if (password.length > 7) strength += 25;
-    if (/[A-Z]/.test(password)) strength += 25;
-    if (/[0-9]/.test(password) || /[^A-Za-z0-9]/.test(password)) strength += 25;
+
+    if (password.length >= 6) {
+      strength = 100;
+    }
+
     strengthMeter.style.width = strength + '%';
     strengthMeter.style.backgroundColor =
       strength < 50 ? '#ef4444' : strength < 75 ? '#f59e0b' : '#10b981';
@@ -431,7 +432,7 @@
         }
       }
 
-      // 🔐 Create user
+      // 🔐 Create user in Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
@@ -464,7 +465,7 @@
       } else if (error.code === 'auth/invalid-email') {
         msg = 'Please enter a valid email address';
       } else if (error.code === 'auth/weak-password') {
-        msg = 'Password should be at least 6 characters';
+        msg = 'Password must be at least 6 characters';
       }
       errorMsg.textContent = msg;
       errorMsg.style.color = '#ef4444';
