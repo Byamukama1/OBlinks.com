@@ -114,18 +114,45 @@
             justify-content: center;
             position: relative;
             overflow: hidden;
+            cursor: pointer;
         }
         
         .product-image img, .product-image video {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.3s;
+        }
+        
+        .product-image:hover img,
+        .product-image:hover video {
+            transform: scale(1.05);
         }
         
         .product-image i {
             font-size: 40px;
             color: #1a73e8;
             opacity: 0.7;
+        }
+        
+        .play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.6);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+        
+        .play-icon i {
+            color: white;
+            font-size: 20px;
         }
         
         .discount-badge {
@@ -138,6 +165,7 @@
             border-radius: 15px;
             font-size: 10px;
             font-weight: bold;
+            z-index: 2;
         }
         
         .product-info {
@@ -183,8 +211,7 @@
             background: linear-gradient(to right, #0d47a1, #1a73e8);
             transform: scale(1.02);
         }
-        
-        /* Business Description */
+               /* Business Description */
         .business-description {
             margin-top: 30px;
             padding: 20px;
@@ -204,8 +231,8 @@
             line-height: 1.5;
             color: #555;
         }
-        
-        /* Action Buttons */
+
+   /* Action Buttons */
         .action-bar {
             position: fixed;
             bottom: 0;
@@ -273,6 +300,62 @@
             font-size: 14px;
             color: #666;
         }
+
+        /* Lightbox Modal */
+        .lightbox-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+        
+        .modal-content img,
+        .modal-content video {
+            max-width: 100%;
+            max-height: 80vh;
+            display: block;
+            margin: 0 auto;
+            border-radius: 8px;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            z-index: 3;
+            background: rgba(0,0,0,0.5);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+            font-size: 14px;
+        }
         
         /* Responsive adjustments */
         @media (max-width: 480px) {
@@ -296,9 +379,18 @@
                 font-size: 12px;
                 padding: 10px;
             }
+
+            .lightbox-modal {
+                padding: 10px;
+            }
+            
+            .modal-content {
+                max-width: 95%;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <!-- Header with back button -->
@@ -324,13 +416,14 @@
                 <p>Loading items...</p>
             </div>
         </div>
+        
         <!-- Business Description -->
         <div class="business-description" id="businessDescription">
             <!-- Business description will be loaded dynamically -->
         </div>
         
         <!-- Footer -->
-  <div class="footer">
+        <div class="footer">
             <p>OBlinks &copy; 2023 - Your Trusted Shopping Partner</p>
         </div>
     </div>
@@ -340,168 +433,251 @@
         <!-- Buttons will be added dynamically -->
     </div>
 
-   
-<script type="module">  
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";  
-  import {  
-    getFirestore,  
-    doc,  
-    getDoc,  
-    collection,  
-    query,  
-    where,  
-    orderBy,  
-    getDocs  
-  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";  
+    <!-- Lightbox Modal -->
+    <div class="lightbox-modal" id="lightboxModal">
+        <span class="close-modal" id="closeModal">&times;</span>
+        <div class="modal-content" id="modalContent"></div>
+        <div class="modal-controls" id="modalControls"></div>
+    </div>
 
-  const firebaseConfig = {  
-    apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",  
-    authDomain: "oblinks-7fdb1.firebaseapp.com",  
-    projectId: "oblinks-7fdb1",  
-    storageBucket: "oblinks-7fdb1.appspot.com",  
-    messagingSenderId: "79327968002",  
-    appId: "1:79327968002:web:8c5b0c44e9f9f2e67c04b3",  
-    measurementId: "G-HF4PZ4C83N"  
-  };  
+    <script type="module">  
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";  
+        import {  
+            getFirestore,  
+            doc,  
+            getDoc,  
+            collection,  
+            query,  
+            where,  
+            orderBy,  
+            getDocs  
+        } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";  
 
-  const app = initializeApp(firebaseConfig);  
-  const db = getFirestore(app);  
+        const firebaseConfig = {  
+            apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",  
+            authDomain: "oblinks-7fdb1.firebaseapp.com",  
+            projectId: "oblinks-7fdb1",  
+            storageBucket: "oblinks-7fdb1.appspot.com",  
+            messagingSenderId: "79327968002",  
+            appId: "1:79327968002:web:8c5b0c44e9f9f2e67c04b3",  
+            measurementId: "G-HF4PZ4C83N"  
+        };  
 
-  const urlParams = new URLSearchParams(window.location.search);  
-  const businessDocId = urlParams.get('id');  
+        const app = initializeApp(firebaseConfig);  
+        const db = getFirestore(app);  
 
-  const productGrid = document.getElementById('productGrid');  
-  const businessDescription = document.getElementById('businessDescription');  
-  const actionBar = document.getElementById('actionBar');  
-  const searchBar = document.querySelector('.search-bar');  
+        const urlParams = new URLSearchParams(window.location.search);  
+        const businessDocId = urlParams.get('id');  
 
-  let currentBusiness = null;  
+        const productGrid = document.getElementById('productGrid');  
+        const businessDescription = document.getElementById('businessDescription');  
+        const actionBar = document.getElementById('actionBar');  
+        const searchBar = document.querySelector('.search-bar');  
+        const lightboxModal = document.getElementById('lightboxModal');  
+        const modalContent = document.getElementById('modalContent');  
+        const closeModal = document.getElementById('closeModal');  
+        const modalControls = document.getElementById('modalControls');  
 
-  async function loadBusiness() {  
-    if (!businessDocId) return showError('❌ No business ID provided.');  
+        let currentBusiness = null;  
 
-    try {  
-      const businessSnap = await getDoc(doc(db, "businesses", businessDocId));  
-      if (!businessSnap.exists()) return showError("❌ Business not found.");  
+        async function loadBusiness() {  
+            if (!businessDocId) return showError('❌ No business ID provided.');  
 
-      currentBusiness = businessSnap.data();  
+            try {  
+                const businessSnap = await getDoc(doc(db, "businesses", businessDocId));  
+                if (!businessSnap.exists()) return showError("❌ Business not found.");  
 
-      const customBusinessId = currentBusiness.businessId;  
-      if (!customBusinessId) return showError("❌ Business ID missing.");  
+                currentBusiness = businessSnap.data();  
 
-      console.log("✅ Business:", currentBusiness.title, "ID:", customBusinessId);  
+                const customBusinessId = currentBusiness.businessId;  
+                if (!customBusinessId) return showError("❌ Business ID missing.");  
 
-      renderBusinessDescription(currentBusiness);  
-      renderActionButtons(currentBusiness);  
+                console.log("✅ Business:", currentBusiness.title, "ID:", customBusinessId);  
 
-      // Load items
-      const itemsQuery = query(  
-        collection(db, "items"),  
-        where("businessId", "==", customBusinessId),  
-        orderBy("timestamp", "desc")  
-      );  
+                renderBusinessDescription(currentBusiness);  
+                renderActionButtons(currentBusiness);  
 
-      const itemsSnap = await getDocs(itemsQuery);  
-      const items = itemsSnap.docs.map(doc => doc.data());  
+                // Load items
+                const itemsQuery = query(  
+                    collection(db, "items"),  
+                    where("businessId", "==", customBusinessId),  
+                    orderBy("timestamp", "desc")  
+                );  
 
-      console.log("✅ Items loaded:", items.length);  
-      renderItems(items);  
-      setupSearch(items);  
+                const itemsSnap = await getDocs(itemsQuery);  
+                const items = itemsSnap.docs.map(doc => doc.data());  
 
-    } catch (err) {  
-      console.error("❌ Error:", err);  
-      showError("❌ Failed to load data.");  
-    }  
-  }  
+                console.log("✅ Items loaded:", items.length);  
+                renderItems(items);  
+                setupSearch(items);  
 
-  function renderBusinessDescription(business) {  
-    if (!business.description) {  
-      businessDescription.style.display = 'none';  
-      return;  
-    }  
+                // Setup media zoom functionality
+                setupMediaZoom();
 
-    businessDescription.innerHTML = `  
-      <hr style="margin: 20px 0;">  
-      <h2>About ${business.title || "the Business"}</h2>  
-      <p>${business.description}</p>  
-    `;  
-  }  
+            } catch (err) {  
+                console.error("❌ Error:", err);  
+                showError("❌ Failed to load data.");  
+            }  
+        }  
 
-  function renderActionButtons(business) {  
-    if (!business.whatsapp && !business.businessLink) return;  
+        function renderBusinessDescription(business) {  
+            if (!business.description) {  
+                businessDescription.style.display = 'none';  
+                return;  
+            }  
 
-    let buttons = "";  
+            businessDescription.innerHTML = `  
+                <hr style="margin: 20px 0;">  
+                <h2>About ${business.title || "the Business"}</h2>  
+                <p>${business.description}</p>  
+            `;  
+        }  
 
-    if (business.whatsapp) {  
-      buttons += `<a href="https://wa.me/${business.whatsapp}" class="action-button chat-button" target="_blank">  
-        <i class="fab fa-whatsapp"></i> Chat via WhatsApp</a>`;  
-    }  
+        function renderActionButtons(business) {  
+            if (!business.whatsapp && !business.businessLink) return;  
 
-    if (business.businessLink) {  
-      const link = business.businessLink.startsWith("http")  
-        ? business.businessLink  
-        : "https://" + business.businessLink;  
+            let buttons = "";  
 
-      buttons += `<a href="${link}" class="action-button link-button" target="_blank">  
-        <i class="fas fa-external-link-alt"></i> Visit Business</a>`;  
-    }  
+            if (business.whatsapp) {  
+                buttons += `<a href="https://wa.me/${business.whatsapp}" class="action-button chat-button" target="_blank">  
+                    <i class="fab fa-whatsapp"></i> Chat via WhatsApp</a>`;  
+            }  
 
-    actionBar.innerHTML = buttons;  
-    actionBar.style.display = 'flex';  
-  }  
+            if (business.businessLink) {  
+                const link = business.businessLink.startsWith("http")  
+                    ? business.businessLink  
+                    : "https://" + business.businessLink;  
 
-  function renderItems(items) {  
-    if (!items.length) {  
-      productGrid.innerHTML = '<div class="no-results">No items available for this business</div>';  
-      return;  
-    }  
+                buttons += `<a href="${link}" class="action-button link-button" target="_blank">  
+                    <i class="fas fa-external-link-alt"></i> Visit Business</a>`;  
+            }  
 
-    productGrid.innerHTML = items.map(item => {  
-      const url = item.mediaUrl || "";  
-      const formattedPrice = 'UGX ' + parseInt(item.price || 0).toLocaleString();  
-      const isVideo = url.endsWith('.mp4');  
+            actionBar.innerHTML = buttons;  
+            actionBar.style.display = 'flex';  
+        }  
 
-      return `  
-        <div class="product-card" data-name="${(item.title || '').toLowerCase()}">  
-          <div class="product-image">  
-            ${isVideo  
-              ? `<video controls style="width: 100%; border-radius: 8px;"><source src="${url}" type="video/mp4"></video>`  
-              : `<img src="${url}" alt="${item.title || 'Item'}" style="width: 100%; border-radius: 8px;">`}  
-          </div>  
-          <div class="product-info">  
-            <div class="product-name">${item.title || 'No title'}</div>  
-            <div class="product-price">${formattedPrice}</div>  
-            <a href="order_form.html?businessId=${businessDocId}&itemName=${encodeURIComponent(item.title || '')}" class="order-button">ORDER NOW</a>  
-          </div>  
-        </div>  
-      `;  
-    }).join('');  
-  }  
+        function renderItems(items) {  
+            if (!items.length) {  
+                productGrid.innerHTML = '<div class="no-results">No items available for this business</div>';  
+                return;  
+            }  
 
-  function setupSearch(items) {  
-    searchBar.addEventListener("input", function (e) {  
-      const term = e.target.value.toLowerCase();  
-      const cards = document.querySelectorAll(".product-card");  
-      let count = 0;  
+            productGrid.innerHTML = items.map(item => {  
+                const url = item.mediaUrl || "";  
+                const formattedPrice = 'UGX ' + parseInt(item.price || 0).toLocaleString();  
+                const isVideo = url.endsWith('.mp4');  
 
-      cards.forEach(card => {  
-        const name = card.dataset.name;  
-        const show = name.includes(term);  
-        card.style.display = show ? "block" : "none";  
-        if (show) count++;  
-      });  
+                return `  
+                    <div class="product-card" data-name="${(item.title || '').toLowerCase()}">  
+                        <div class="product-image" data-media-type="${isVideo ? 'video' : 'image'}" data-media-url="${url}">  
+                            ${isVideo  
+                                ? `<video muted loop playsinline style="width: 100%; border-radius: 8px;">  
+                                    <source src="${url}" type="video/mp4">  
+                                </video>  
+                                <div class="play-icon">  
+                                    <i class="fas fa-play"></i>  
+                                </div>`  
+                                : `<img src="${url}" alt="${item.title || 'Item'}" style="width: 100%; border-radius: 8px;">`}  
+                        </div>  
+                        <div class="product-info">  
+                            <div class="product-name">${item.title || 'No title'}</div>  
+                            <div class="product-price">${formattedPrice}</div>  
+                            <a href="order_form.html?businessId=${businessDocId}&itemName=${encodeURIComponent(item.title || '')}" class="order-button">ORDER NOW</a>  
+                        </div>  
+                    </div>  
+                `;  
+            }).join('');  
+        }  
 
-      if (count === 0) {  
-        productGrid.innerHTML = '<div class="no-results">No items match your search</div>';  
-      }  
-    });  
-  }  
+        function setupSearch(items) {  
+            searchBar.addEventListener("input", function (e) {  
+                const term = e.target.value.toLowerCase();  
+                const cards = document.querySelectorAll(".product-card");  
+                let count = 0;  
 
-  function showError(message) {  
-    productGrid.innerHTML = `<div class="no-results">${message}</div>`;  
-  }  
+                cards.forEach(card => {  
+                    const name = card.dataset.name;  
+                    const show = name.includes(term);  
+                    card.style.display = show ? "block" : "none";  
+                    if (show) count++;  
+                });  
 
-  document.addEventListener('DOMContentLoaded', loadBusiness);  
-</script>
+                if (count === 0) {  
+                    productGrid.innerHTML = '<div class="no-results">No items match your search</div>';  
+                }  
+            });  
+        }  
+
+        function setupMediaZoom() {
+            // Add click event to all product images
+            document.querySelectorAll('.product-image').forEach(media => {
+                media.addEventListener('click', function(e) {
+                    // Prevent triggering if clicked on play icon
+                    if (e.target.closest('.play-icon')) return;
+                    
+                    const mediaType = this.dataset.mediaType;
+                    const mediaUrl = this.dataset.mediaUrl;
+                    
+                    openLightbox(mediaType, mediaUrl);
+                });
+            });
+            
+            // Close modal when clicking close button
+            closeModal.addEventListener('click', function() {
+                closeLightbox();
+            });
+            
+            // Close modal when clicking outside content
+            lightboxModal.addEventListener('click', function(e) {
+                if (e.target === lightboxModal) {
+                    closeLightbox();
+                }
+            });
+            
+            // Close on ESC key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === "Escape" && lightboxModal.style.display === 'flex') {
+                    closeLightbox();
+                }
+            });
+        }
+
+        function openLightbox(mediaType, mediaUrl) {
+            modalContent.innerHTML = '';
+            modalControls.innerHTML = '';
+            
+            if (mediaType === 'video') {
+                modalContent.innerHTML = `
+                    <video controls autoplay style="width: 100%; max-height: 80vh;">
+                        <source src="${mediaUrl}" type="video/mp4">
+                    </video>
+                `;
+                modalControls.innerHTML = 'Click anywhere outside or press ESC to close';
+            } else {
+                modalContent.innerHTML = `<img src="${mediaUrl}" alt="Zoomed view" style="max-width: 100%; max-height: 80vh;">`;
+                modalControls.innerHTML = 'Click to close or press ESC';
+            }
+            
+            lightboxModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            // Pause any playing videos
+            const video = modalContent.querySelector('video');
+            if (video) {
+                video.pause();
+            }
+            
+            lightboxModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function showError(message) {  
+            productGrid.innerHTML = `<div class="no-results">${message}</div>`;  
+        }  
+
+        document.addEventListener('DOMContentLoaded', loadBusiness);  
+    </script>
 </body>
 </html>
