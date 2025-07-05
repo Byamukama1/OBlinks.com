@@ -380,6 +380,7 @@
   </div>
 
 
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
   import {
@@ -391,7 +392,7 @@
     serverTimestamp
   } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
 
-  // ✅ Firebase config
+  // Firebase configuration
   const firebaseConfig = {
     apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
     authDomain: "oblinks-7fdb1.firebaseapp.com",
@@ -403,9 +404,6 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-
-  // ✅ Your Replit server (update if needed)
-  const SERVER_URL = "https://oblinks-payout-automation.byamukamambabaz.repl.co";
 
   document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("paymentForm");
@@ -424,33 +422,29 @@
       Enterprise: 200000
     };
 
-    // Auto-fill price
     packageField.addEventListener("change", () => {
       const price = packagePrices[packageField.value];
       amountField.value = price ? price.toLocaleString() : "";
     });
 
-    // Copy pay number
     copyBtn.addEventListener("click", () => {
       navigator.clipboard.writeText("0761828694")
         .then(() => showStatus("Payment number copied!", "success"))
         .catch(() => showStatus("Copy failed!", "error"));
     });
 
-    // Form submission
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const phone = document.getElementById("paymentPhone").value.trim();
       const packageName = packageField.value;
-      const amountRaw = amountField.value.trim().replace(/,/g, "");
+      const amount = amountField.value.trim();
 
-      if (!phone || !packageName || !amountRaw) {
+      if (!phone || !packageName || !amount) {
         showStatus("Please fill in all fields.", "error");
         return;
       }
 
-      const amount = parseInt(amountRaw);
       const businessRaw = sessionStorage.getItem("businessData");
       const itemsRaw = sessionStorage.getItem("itemsData");
 
@@ -463,69 +457,45 @@
       const itemsData = JSON.parse(itemsRaw);
 
       try {
-        // ✅ 1. Trigger SiliconPay STK push via your server
-        const response = await fetch(`${SERVER_URL}/start-payment`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            phone,
-            amount,
-            email: businessData.whatsapp,
-            package: packageName
-          })
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to initiate payment with SiliconPay server");
-        }
-
-        const serverResult = await response.json();
-        console.log("✅ Server response:", serverResult);
-
-        showStatus("✅ Payment prompt sent! Enter PIN on your phone.", "success");
-
-        // ✅ 2. Save payment record in Firestore
+        // ✅ Save to payments collection
         await addDoc(collection(db, "payments"), {
           businessTitle: businessData.title || "Untitled",
           whatsappNumber: businessData.whatsapp || "",
           paymentPhone: phone,
-          packageName,
-          amountPaid: amount,
+          packageName: packageName,
+          amountPaid: parseInt(amount.replace(/,/g, "")),
           status: "pending",
           timestamp: serverTimestamp()
         });
 
-        // ✅ 3. Save business in pendingBusinesses
+        // ✅ Save to pendingBusinesses with ID and include it in data
         const businessRef = doc(collection(db, "pendingBusinesses"));
-        const businessId = businessRef.id;
-
         await setDoc(businessRef, {
           ...businessData,
-          businessId,
+          businessId: businessRef.id,
           paymentPhone: phone,
           package: packageName,
           paymentStatus: "paid",
           timestamp: serverTimestamp()
         });
 
-        // ✅ 4. Save items with businessId
+        // ✅ Save each item with businessId
         for (let item of itemsData) {
           await addDoc(collection(db, "items"), {
             ...item,
-            businessId,
+            businessId: businessRef.id,
             timestamp: serverTimestamp()
           });
         }
 
-        // ✅ Cleanup
+        showStatus("Business submitted! Awaiting approval.", "success");
         sessionStorage.removeItem("businessData");
         sessionStorage.removeItem("itemsData");
         form.reset();
         amountField.value = "";
-
       } catch (err) {
-        console.error("Error:", err);
-        showStatus("❌ Failed to submit. Try again.", "error");
+        console.error("Firestore error:", err);
+        showStatus("Failed to submit. Try again.", "error");
       }
     });
 
@@ -536,6 +506,7 @@
       setTimeout(() => statusMessage.style.display = "none", 5000);
     }
   });
+</script>
 </script>
 </body>
 </html>
