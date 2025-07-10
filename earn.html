@@ -975,7 +975,8 @@
         </footer>
     </div>
 
-   <script>
+  
+<script>
     // Firebase configuration
     const firebaseConfig = {
         apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
@@ -985,12 +986,15 @@
         messagingSenderId: "587017639779",
         appId: "1:587017639779:web:d11b60f40f431cfc202556"
     };
-    
+
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const auth = firebase.auth();
-    
+
+    // Set your server URL
+    const SERVER_URL = 'https://oblinks-payment-server.onrender.com';
+
     // DOM elements
     const userInitial = document.getElementById('userInitial');
     const userName = document.getElementById('userName');
@@ -1012,7 +1016,7 @@
     const errorMessage = document.getElementById('errorMessage');
     const successMessage = document.getElementById('successMessage');
     const withdrawalRequestsCount = document.getElementById('withdrawalRequestsCount');
-    
+
     // Commission rates mapping
     const commissionRates = {
         "Starter": 20,
@@ -1023,14 +1027,15 @@
         "Premium": 70,
         "Enterprise": 80
     };
-    
+
     // Current user data
     let currentUser = null;
     let userData = null;
     let currentBalance = 0;
     let earningsData = [];
     let withdrawalsData = [];
-    
+    let currentCommissionRate = 20; // Default rate
+
     // Show/hide messages
     function showError(message) {
         errorMessage.textContent = message;
@@ -1039,7 +1044,7 @@
             errorMessage.style.display = 'none';
         }, 5000);
     }
-    
+
     function showSuccess(message) {
         successMessage.textContent = message;
         successMessage.style.display = 'block';
@@ -1047,7 +1052,25 @@
             successMessage.style.display = 'none';
         }, 5000);
     }
-    
+
+    // Phone number validation and formatting function
+    function validateAndFormatPhone(phone) {
+        // Remove all non-digit characters
+        const cleaned = phone.replace(/\D/g, '');
+        
+        // Check for Uganda numbers (07 or +256 prefix)
+        if (cleaned.startsWith('07') && cleaned.length === 10) {
+            return '256' + cleaned.substring(1); // Convert 07... to 256...
+        } 
+        else if (cleaned.startsWith('2567') && cleaned.length === 12) {
+            return cleaned; // Already in correct format
+        }
+        else if (cleaned.startsWith('+2567') && cleaned.length === 13) {
+            return cleaned.substring(1); // Remove the '+'
+        }
+        return null; // Invalid format
+    }
+
     // Check authentication state
     auth.onAuthStateChanged(user => {
         if (user) {
@@ -1055,66 +1078,126 @@
             userInitial.textContent = user.email ? user.email.charAt(0).toUpperCase() : 'U';
             fetchUserData(user.uid);
         } else {
-            // Redirect to login if not authenticated
+            sessionStorage.setItem("redirectAfterLogin", window.location.pathname);
             window.location.href = 'login.html';
         }
     });
-    
+
     // Fetch user data from Firestore
     function fetchUserData(uid) {
+        // First get user document
         db.collection("users").doc(uid).get()
         .then(doc => {
             if (doc.exists) {
                 userData = doc.data();
                 userName.textContent = userData.name || userData.email.split('@')[0];
                 
-                // Set commission rate based on user's package
-                if (userData.package) {
-                    userPackage.textContent = userData.package;
-                    const rate = commissionRates[userData.package] || 30;
-                    commissionRate.textContent = `${rate}%`;
-                    userCommissionRate.textContent = `${rate}%`;
-                }
-                 // Generate referral link
+                // Generate referral link
                 if (userData.whatsapp) {
-                    // Format WhatsApp number for URL
                     const formattedWhatsapp = userData.whatsapp.startsWith('+') ? 
                         userData.whatsapp.substring(1) : userData.whatsapp;
                     referralLink.value = `https://onlinemarket-ug.com/signup.html?referrer=${formattedWhatsapp}`;
                 }
                 
-                // Fetch all dashboard data
-                fetchDashboardData();
+                // Get latest business to determine package
+                fetchLatestBusinessPackage(uid);
             } else {
                 console.log("No such user document!");
                 showError("User data not found. Please try again.");
+                fetchDashboardData(); // Try to load other data anyway
             }
         })
         .catch(error => {
             console.log("Error getting user document:", error);
             showError("Failed to load user data. Please try again.");
+            fetchDashboardData(); // Try to load other data anyway
         });
     }
-    
+
+    // Get latest business to determine package
+    function fetchLatestBusinessPackage(uid) {
+        db.collection("businesses")
+            .where("createdBy", "==", uid)
+            .orderBy("timestamp", "desc")
+            .limit(1)
+            .get()
+            .then(snapshot => {
+                if (!snapshot.empty) {
+                    const latestBusiness = snapshot.docs[0].data();
+                    const latestPackage = latestBusiness.package;
+                    
+                    // Update UI with latest package
+                    updatePackageUI(latestPackage);
+                } else {
+                    // If user has no business, fallback to user document
+                    updatePackageUI(userData.package || "Starter");
+                }
+
+                // Fetch other dashboard data
+                fetchDashboardData();
+            })
+            .catch(error => {
+                console.log("Error getting businesses:", error);
+                showError("Failed to load package info.");
+                // Fallback to user document package
+                updatePackageUI(userData.package || "Starter");
+                fetchDashboardData();
+            });
+    }
+
+    // Update UI with package info
+    function updatePackageUI(packageName) {
+        userPackage.textContent = packageName;
+        currentCommissionRate = commissionRates[packageName] || 20;
+        commissionRate.textContent = `${currentCommissionRate}%`;
+        userCommissionRate.textContent = `${currentCommissionRate}%`;
+    }
+
     // Fetch all dashboard data
     function fetchDashboardData() {
-        // 1. Get earnings data
-        db.collection("earnings")
+        // 1. Get paid earnings data
+        const earningsPromise = db.collection("earnings")
             .where("referrerId", "==", currentUser.uid)
-            .get()
-            .then(earningsSnapshot => {
+            .get();
+        
+        // 2. Get starter referrals from users collection
+        const starterPromise = userData.whatsapp 
+            ? db.collection("users")
+                .where("referrerWhatsapp", "==", userData.whatsapp)
+                .where("package", "==", "Starter")
+                .get()
+            : Promise.resolve({ empty: true, forEach: () => {} }); // Empty promise if no whatsapp
+
+        Promise.all([earningsPromise, starterPromise])
+            .then(([earningsSnapshot, starterSnapshot]) => {
                 let totalEarnings = 0;
                 earningsData = [];
                 
+                // Process paid earnings
                 earningsSnapshot.forEach(doc => {
                     const earning = doc.data();
                     earningsData.push(earning);
                     totalEarnings += earning.commission;
                 });
                 
+                // Process starter referrals
+                starterSnapshot.forEach(doc => {
+                    const user = doc.data();
+                    earningsData.push({
+                        refereeWhatsapp: user.whatsapp,
+                        packageBought: "Starter",
+                        amountPaid: 0,
+                        commission: 0,
+                        timestamp: doc.createTime // Use document creation time
+                    });
+                });
+                
+                // Sort by timestamp (newest first)
+                earningsData.sort((a, b) => b.timestamp.toMillis() - a.timestamp.toMillis());
+                
                 // Update earnings data
                 totalEarned.textContent = `UGX ${totalEarnings.toLocaleString()}`;
-                referralCount.textContent = earningsSnapshot.size;
+                referralCount.textContent = earningsData.length; // Includes both paid and starter
                 
                 // Build earnings table
                 buildEarningsTable();
@@ -1128,7 +1211,7 @@
             });
     }
     
-  // Fetch withdrawals and calculate balance
+    // Fetch withdrawals and calculate balance
     function fetchWithdrawals(totalEarnings) {
         db.collection("withdrawals")
             .where("userId", "==", currentUser.uid)
@@ -1146,7 +1229,8 @@
                     };
                     withdrawalsData.push(withdrawal);
                     
-                    if (data.status === 'completed') {
+                    // ONLY COUNT APPROVED WITHDRAWALS
+                    if (data.status === 'approved') {
                         totalWithdrawnAmount += data.amount;
                     } else if (data.status === 'pending') {
                         pendingWithdrawnAmount += data.amount;
@@ -1194,8 +1278,8 @@
                     <tr>
                         <td>${earning.refereeWhatsapp || 'N/A'}</td>
                         <td>${earning.packageBought || 'N/A'}</td>
-                        <td>UGX ${earning.amountPaid.toLocaleString()}</td>
-                        <td>UGX ${earning.commission.toLocaleString()}</td>
+                        <td>UGX ${(earning.amountPaid || 0).toLocaleString()}</td>
+                        <td>UGX ${(earning.commission || 0).toLocaleString()}</td>
                         <td>${formattedDate}</td>
                     </tr>
                 `);
@@ -1229,8 +1313,8 @@
                 const date = withdrawal.timestamp.toDate();
                 const formattedDate = `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
                 
-                // Status badge
-                const statusClass = withdrawal.status === 'completed' ? 'status-paid' : 
+                // Status badge with 'approved' status
+                const statusClass = withdrawal.status === 'approved' ? 'status-paid' : 
                                   withdrawal.status === 'pending' ? 'status-pending' : 'status-default';
                 const statusText = withdrawal.status.charAt(0).toUpperCase() + withdrawal.status.slice(1);
                 
@@ -1253,7 +1337,7 @@
         withdrawalsLoading.style.display = 'none';
         withdrawalsTable.style.display = 'table';
     }
-    
+      
     // Copy referral link to clipboard
     function copyReferralLink() {
         referralLink.select();
@@ -1271,17 +1355,22 @@
         showSuccess("Referral link copied to clipboard!");
     }
     
-    // Handle withdrawal form submission
-    withdrawalForm.addEventListener('submit', function(e) {
+    // Handle withdrawal form submission - UPDATED
+    withdrawalForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        const amount = parseFloat(document.getElementById('amount').value);
-        const method = document.getElementById('method').value;
-        const details = document.getElementById('details').value;
+        const amountInput = document.getElementById('amount');
+        const methodInput = document.getElementById('method');
+        const detailsInput = document.getElementById('details');
+        
+        const amount = parseFloat(amountInput.value);
+        const method = methodInput.value;
+        let details = detailsInput.value;
         
         // Validate amount
-        if (amount < 5000) {
+        if (isNaN(amount) || amount < 5000) {
             showError('Minimum withdrawal amount is 5,000 UGX');
+            amountInput.focus();
             return;
         }
         
@@ -1291,33 +1380,100 @@
             return;
         }
         
-        // Create withdrawal record
-        const withdrawalData = {
-            userId: currentUser.uid,
-            whatsapp: userData.whatsapp,
-            amount: amount,
-            method: method,
-            details: details,
-            status: 'pending',
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        };
+        // Validate and format phone number for Mobile Money
+        if (method === 'mobile_money') {
+            const formattedPhone = validateAndFormatPhone(details);
+            
+            if (!formattedPhone) {
+                showError('Invalid phone number. Please use a valid Uganda number (07XXXXXXXX or +2567XXXXXXXX)');
+                detailsInput.focus();
+                return;
+            }
+            details = formattedPhone; // Use formatted version
+        }
         
-        // Add to Firestore
-        db.collection("withdrawals").add(withdrawalData)
-            .then(() => {
-                // Show success message
-                showSuccess(`Withdrawal request for UGX ${amount.toLocaleString()} has been submitted!`);
-                
-                // Reset form
-                withdrawalForm.reset();
-                
-                // Refresh data
-                fetchDashboardData();
-            })
-            .catch(error => {
-                console.error("Error adding withdrawal: ", error);
-                showError('Failed to submit withdrawal request. Please try again.');
+        try {
+            // Create withdrawal record
+            const withdrawalData = {
+                userId: currentUser.uid,
+                whatsapp: userData.whatsapp,
+                emailAddress: currentUser.email,
+                amount: amount,
+                method: method,
+                details: details,
+                status: 'pending',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            // Add to Firestore
+            const withdrawalRef = await db.collection("withdrawals").add(withdrawalData);
+            const withdrawalId = withdrawalRef.id;
+            
+            // Show processing message
+            showSuccess(`Withdrawal request for UGX ${amount.toLocaleString()} submitted! Processing...`);
+            
+            // Disable the button during processing
+            const submitBtn = withdrawalForm.querySelector('.withdraw-btn');
+            submitBtn.disabled = true;
+            const originalBtnText = submitBtn.textContent;
+            submitBtn.textContent = 'Processing...';
+            
+            // Send to backend server for processing
+            const response = await fetch(`${SERVER_URL}/process-single-withdrawal`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    withdrawalId: withdrawalId 
+                })
             });
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                if (result.success) {
+                    // Show success message
+                    showSuccess(`Withdrawal for UGX ${amount.toLocaleString()} processed successfully!`);
+                    
+                    // Reset form
+                    withdrawalForm.reset();
+                    
+                    // Refresh data
+                    fetchDashboardData();
+                } else {
+                    throw new Error(result.error || 'Withdrawal processing failed');
+                }
+            } else {
+                throw new Error(result.error || 'Server returned an error');
+            }
+        } catch (error) {
+            console.error("Withdrawal error:", error);
+            showError(`Withdrawal failed: ${error.message}`);
+            
+            // Update Firestore to mark as failed
+            if (withdrawalId) {
+                await db.collection("withdrawals").doc(withdrawalId).update({
+                    status: 'failed',
+                    errorMessage: error.message
+                });
+            }
+        } finally {
+            // Re-enable the button
+            const submitBtn = withdrawalForm.querySelector('.withdraw-btn');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Request Withdrawal';
+        }
+    });
+
+    // Initialize dashboard when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        // Refresh dashboard every 60 seconds
+        setInterval(() => {
+            if (currentUser) {
+                fetchDashboardData();
+            }
+        }, 60000);
     });
 </script>
 </body>
