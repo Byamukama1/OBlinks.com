@@ -1380,35 +1380,35 @@
             return;
         }
         
-        // Validate and format phone number for Mobile Money
-        if (method === 'mobile_money') {
-            const formattedPhone = validateAndFormatPhone(details);
-            
-            if (!formattedPhone) {
-                showError('Invalid phone number. Please use a valid Uganda number (07XXXXXXXX or +2567XXXXXXXX)');
-                detailsInput.focus();
-                return;
-            }
-            details = formattedPhone; // Use formatted version
-        }
-        
-        try {
-            // Create withdrawal record
-            const withdrawalData = {
-                userId: currentUser.uid,
-                whatsapp: userData.whatsapp,
-                emailAddress: currentUser.email,
-                amount: amount,
-                method: method,
-                account: details,
-                status: 'pending',
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            };
-            
-            // Add to Firestore
-            const withdrawalRef = await db.collection("withdrawals").add(withdrawalData);
-            const withdrawalId = withdrawalRef.id;
-            
+  // Validate and format phone number for Mobile Money
+let formattedPhone = details;
+if (method === 'mobile_money') {
+    formattedPhone = validateAndFormatPhone(details);
+    
+    if (!formattedPhone) {
+        showError('Invalid phone number. Please use a valid Uganda number (07XXXXXXXX or +2567XXXXXXXX)');
+        detailsInput.focus();
+        return;
+    }
+}
+
+try {
+    // Create withdrawal record
+    const withdrawalData = {
+        userId: currentUser.uid,
+        whatsapp: userData.whatsapp,
+        emailAddress: currentUser.email,
+        amount: amount,
+        method: method,
+        account: formattedPhone,  // ✅ ALWAYS save formatted number
+        status: 'pending',
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    // Add to Firestore
+    const withdrawalRef = await db.collection("withdrawals").add(withdrawalData);
+    const withdrawalId = withdrawalRef.id;
+
             // Show processing message
             showSuccess(`Withdrawal request for UGX ${amount.toLocaleString()} submitted! Processing...`);
             
