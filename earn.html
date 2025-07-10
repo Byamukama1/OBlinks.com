@@ -1355,116 +1355,105 @@
         showSuccess("Referral link copied to clipboard!");
     }
     
-    // Handle withdrawal form submission - UPDATED
-    withdrawalForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const amountInput = document.getElementById('amount');
-        const methodInput = document.getElementById('method');
-        const detailsInput = document.getElementById('details');
-        
-        const amount = parseFloat(amountInput.value);
-        const method = methodInput.value;
-        let details = detailsInput.value;
-        
-        // Validate amount
-        if (isNaN(amount) || amount < 5000) {
-            showError('Minimum withdrawal amount is 5,000 UGX');
-            amountInput.focus();
-            return;
-        }
-        
-        // Check sufficient balance
-        if (amount > currentBalance) {
-            showError(`Insufficient balance. Your available balance is UGX ${currentBalance.toLocaleString()}`);
-            return;
-        }
-        
-  // Validate and format phone number for Mobile Money
-let formattedPhone = details;
-if (method === 'mobile_money') {
-    formattedPhone = validateAndFormatPhone(details);
-    
-    if (!formattedPhone) {
-        showError('Invalid phone number. Please use a valid Uganda number (07XXXXXXXX or +2567XXXXXXXX)');
-        detailsInput.focus();
+  // Handle withdrawal form submission
+withdrawalForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const amountInput = document.getElementById('amount');
+    const methodInput = document.getElementById('method');
+    const detailsInput = document.getElementById('details');
+
+    const amount = parseFloat(amountInput.value);
+    const method = methodInput.value;
+    let details = detailsInput.value;
+
+    // Validate amount
+    if (isNaN(amount) || amount < 5000) {
+        showError('Minimum withdrawal amount is 5,000 UGX');
+        amountInput.focus();
         return;
     }
-}
 
-try {
-    // Create withdrawal record
-    const withdrawalData = {
-        userId: currentUser.uid,
-        whatsapp: userData.whatsapp,
-        emailAddress: currentUser.email,
-        amount: amount,
-        method: method,
-        account: formattedPhone,  // ✅ ALWAYS save formatted number
-        status: 'pending',
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    };
+    // Check sufficient balance
+    if (amount > currentBalance) {
+        showError(`Insufficient balance. Your available balance is UGX ${currentBalance.toLocaleString()}`);
+        return;
+    }
 
-    // Add to Firestore
-    const withdrawalRef = await db.collection("withdrawals").add(withdrawalData);
-    const withdrawalId = withdrawalRef.id;
-
-            // Show processing message
-            showSuccess(`Withdrawal request for UGX ${amount.toLocaleString()} submitted! Processing...`);
-            
-            // Disable the button during processing
-            const submitBtn = withdrawalForm.querySelector('.withdraw-btn');
-            submitBtn.disabled = true;
-            const originalBtnText = submitBtn.textContent;
-            submitBtn.textContent = 'Processing...';
-            
-            // Send to backend server for processing
-            const response = await fetch(`${SERVER_URL}/process-single-withdrawal`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ 
-                    withdrawalId: withdrawalId 
-                })
-            });
-            
-            const result = await response.json();
-            
-            if (response.ok) {
-                if (result.success) {
-                    // Show success message
-                    showSuccess(`Withdrawal for UGX ${amount.toLocaleString()} processed successfully!`);
-                    
-                    // Reset form
-                    withdrawalForm.reset();
-                    
-                    // Refresh data
-                    fetchDashboardData();
-                } else {
-                    throw new Error(result.error || 'Withdrawal processing failed');
-                }
-            } else {
-                throw new Error(result.error || 'Server returned an error');
-            }
-        } catch (error) {
-            console.error("Withdrawal error:", error);
-            showError(`Withdrawal failed: ${error.message}`);
-            
-            // Update Firestore to mark as failed
-            if (withdrawalId) {
-                await db.collection("withdrawals").doc(withdrawalId).update({
-                    status: 'failed',
-                    errorMessage: error.message
-                });
-            }
-        } finally {
-            // Re-enable the button
-            const submitBtn = withdrawalForm.querySelector('.withdraw-btn');
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Request Withdrawal';
+    // Validate and format phone number for Mobile Money
+    if (method === 'mobile_money') {
+        const formattedPhone = validateAndFormatPhone(details);
+        if (!formattedPhone) {
+            showError('Invalid phone number. Please use a valid Uganda number (07XXXXXXXX or +2567XXXXXXXX)');
+            detailsInput.focus();
+            return;
         }
-    });
+        details = formattedPhone;
+    }
+
+    let withdrawalId = null;
+    try {
+        // Disable button during processing
+        const submitBtn = withdrawalForm.querySelector('.withdraw-btn');
+        submitBtn.disabled = true;
+        const originalBtnText = submitBtn.textContent;
+        submitBtn.textContent = 'Processing...';
+
+        // Show early message
+        showSuccess(`Withdrawal request for UGX ${amount.toLocaleString()} submitted! Processing...`);
+
+        // Create Firestore withdrawal record
+        const withdrawalData = {
+            userId: currentUser.uid,
+            whatsapp: userData.whatsapp,
+            emailAddress: currentUser.email,
+            amount: amount,
+            method: method,
+            account: details,
+            status: 'pending',
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        const withdrawalRef = await db.collection("withdrawals").add(withdrawalData);
+        withdrawalId = withdrawalRef.id;
+
+        // Call backend to process this withdrawal
+        const response = await fetch(`${SERVER_URL}/process-single-withdrawal`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ withdrawalId })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            showSuccess(`Withdrawal for UGX ${amount.toLocaleString()} processed successfully!`);
+            withdrawalForm.reset();
+            fetchDashboardData();
+        } else {
+            throw new Error(result.error || 'Withdrawal processing failed');
+        }
+
+    } catch (error) {
+        console.error("Withdrawal error:", error);
+        showError(`Withdrawal failed: ${error.message}`);
+
+        // Mark in Firestore as failed
+        if (withdrawalId) {
+            await db.collection("withdrawals").doc(withdrawalId).update({
+                status: 'failed',
+                errorMessage: error.message
+            });
+        }
+    } finally {
+        // Re-enable button
+        const submitBtn = withdrawalForm.querySelector('.withdraw-btn');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Request Withdrawal';
+    }
+});
 
     // Initialize dashboard when page loads
     document.addEventListener('DOMContentLoaded', () => {
