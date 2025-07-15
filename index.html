@@ -30,7 +30,7 @@
       --accent: #8b5cf6;
       --panel-bg: rgba(255, 255, 255, 0.95);
       --overlay: rgba(0, 0, 0, 0.5);
-    }
+       --call: #4285F4;}
 
     body {
       background-color: #f1f5f9;
@@ -52,7 +52,10 @@
       position: sticky;
       top: 0;
     }
-
+.btn-call {
+  background: var(--call);
+  color: white;
+}
     .header-content {
       max-width: 1200px;
       margin: 0 auto;
@@ -484,9 +487,11 @@
     }
 
     .btn-link {
-      background: var(--secondary);
-      color: white;
-    }
+  background: none;
+  border: none;
+  color: var(--secondary);
+  box-shadow: none;
+}
 
     .btn-view {
       background: var(--accent);
@@ -824,6 +829,7 @@
   }
 </style>
 </head>
+
 <body>
 <!-- Header -->  
 <header>  
@@ -847,14 +853,14 @@
       </a>  
     </div>  
 
-    <div class="dropdown" id="profile-dropdown" style="cursor: pointer;">
-      <a href="myaccount.html" class="icon-btn">
-        <img id="navUserImage" 
-             src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23666' viewBox='0 0 24 24'%3E%3Cpath d='M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z'/%3E%3C/svg%3E"
-             alt="User" 
-             style="width: 40px; height: 40px; border-radius: 50%; background: #eee; padding: 4px; object-fit: cover;display: block;">
-      </a>
-    </div>  
+  <div class="dropdown" id="profile-dropdown" style="cursor: pointer;">
+  <a href="myaccount.html" class="icon-btn">
+    <img id="navUserImage" 
+         src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23FFFFFF' viewBox='0 0 24 24'%3E%3Cpath d='M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z'/%3E%3C/svg%3E"
+         alt="User" 
+         style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; display: block;">
+  </a>
+</div>
   </div>  
 </header>
 
@@ -1097,27 +1103,33 @@ q.get()
           </div>
         `;
       }
-
-      // Create buttons HTML - 4 buttons in one row
+//creating business card buttons
 const buttonsHTML = `
   <div class="btn-container">
     <button class="btn btn-order" data-id="${docId}">
       <i class="fas fa-shopping-cart"></i> Order
     </button>
+
     <a href="https://wa.me/${business.whatsapp || ''}" class="btn btn-chat" target="_blank">
       <i class="fab fa-whatsapp"></i> Chat
     </a>
-    ${business.businessLink ? `
-      <a href="${business.businessLink}" class="btn btn-link" target="_blank">
-        <i class="fas fa-link"></i> Link
-      </a>` : ''
-    }
+
+    ${business.whatsapp ? `
+      <a href="tel:+${business.whatsapp}" class="btn btn-call">
+        <i class="fas fa-phone"></i> Call
+      </a>` : ''}
+
     <a href="viewall.html?id=${docId}" class="btn btn-view">
-      <i class="fas fa-eye"></i> View
+      <i class="fas fa-eye"></i> Details
     </a>
+    
+      ${business.businessLink ? `
+      <a href="${business.businessLink}" class="btn btn-link" target="_blank">
+        <i class="fas fa-link"></i>
+      </a>` : ''}
+
   </div>
 `;
-
 
      // Card content
 card.innerHTML = `
