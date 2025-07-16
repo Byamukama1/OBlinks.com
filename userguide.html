@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OBlinks Guide - Your Complete Business Platform Guide</title>
+    <title>OBlinks Guide - Sales Agents & Business Owners</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -19,6 +19,8 @@
             --border: #e2e8f0;
             --card-bg: #ffffff;
             --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --sales-agent: #8b5cf6;
+            --business-owner: #10b981;
         }
         
         * {
@@ -78,22 +80,6 @@
             opacity: 0.9;
         }
         
-        .nav-links {
-            display: flex;
-            gap: 20px;
-        }
-        
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        
-        .nav-links a:hover {
-            color: #e2e8f0;
-        }
-        
         .hero {
             background: linear-gradient(rgba(37, 99, 235, 0.9), rgba(29, 78, 216, 0.8)), url('https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3') center/cover;
             border-radius: 12px;
@@ -140,6 +126,16 @@
             color: white;
         }
         
+        .btn-sales {
+            background: var(--sales-agent);
+            color: white;
+        }
+        
+        .btn-business {
+            background: var(--business-owner);
+            color: white;
+        }
+        
         .section {
             background: var(--card-bg);
             border-radius: 12px;
@@ -163,6 +159,14 @@
             font-size: 1.8rem;
         }
         
+        .section-title.sales {
+            color: var(--sales-agent);
+        }
+        
+        .section-title.business {
+            color: var(--business-owner);
+        }
+        
         .step-container {
             display: flex;
             flex-wrap: wrap;
@@ -178,6 +182,14 @@
             padding: 25px;
             border-left: 4px solid var(--primary);
             transition: all 0.3s ease;
+        }
+        
+        .step.sales {
+            border-left: 4px solid var(--sales-agent);
+        }
+        
+        .step.business {
+            border-left: 4px solid var(--business-owner);
         }
         
         .step:hover {
@@ -199,10 +211,26 @@
             margin-bottom: 20px;
         }
         
+        .step.sales .step-number {
+            background: var(--sales-agent);
+        }
+        
+        .step.business .step-number {
+            background: var(--business-owner);
+        }
+        
         .step h3 {
             font-size: 1.4rem;
             margin-bottom: 15px;
             color: var(--primary-dark);
+        }
+        
+        .step.sales h3 {
+            color: var(--sales-agent);
+        }
+        
+        .step.business h3 {
+            color: var(--business-owner);
         }
         
         .package-grid {
@@ -316,10 +344,28 @@
             font-size: 1.8rem;
         }
         
+        .feature-card.sales .feature-icon {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--sales-agent);
+        }
+        
+        .feature-card.business .feature-icon {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--business-owner);
+        }
+        
         .feature-card h3 {
             font-size: 1.4rem;
             color: var(--primary-dark);
             margin-bottom: 15px;
+        }
+        
+        .feature-card.sales h3 {
+            color: var(--sales-agent);
+        }
+        
+        .feature-card.business h3 {
+            color: var(--business-owner);
         }
         
         .feature-details {
@@ -437,17 +483,73 @@
             color: #94a3b8;
         }
         
+        .dual-role {
+            background: linear-gradient(to right, var(--sales-agent), var(--business-owner));
+            border-radius: 12px;
+            padding: 30px;
+            margin: 40px 0;
+            color: white;
+            text-align: center;
+        }
+        
+        .dual-role h2 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+        }
+        
+        .dual-role p {
+            max-width: 800px;
+            margin: 0 auto 20px;
+            font-size: 1.1rem;
+        }
+        
+        .dashboard-img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .highlight-box {
+            background: #eef2ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .highlight-box.sales {
+            border-left: 4px solid var(--sales-agent);
+            background: rgba(139, 92, 246, 0.1);
+        }
+        
+        .highlight-box.business {
+            border-left: 4px solid var(--business-owner);
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .highlight-box h3 {
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .highlight-box.sales h3 {
+            color: var(--sales-agent);
+        }
+        
+        .highlight-box.business h3 {
+            color: var(--business-owner);
+        }
+        
         /* Responsive design */
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
                 gap: 10px;
                 text-align: center;
-            }
-            
-            .nav-links {
-                justify-content: center;
-                flex-wrap: wrap;
             }
             
             .hero {
@@ -486,25 +588,53 @@
             background: var(--primary-dark);
             transform: translateY(-5px);
         }
+        
+        .guide-nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0 40px;
+            flex-wrap: wrap;
+        }
+        
+        .guide-nav a {
+            padding: 12px 25px;
+            background: white;
+            color: var(--dark);
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border: 2px solid var(--border);
+        }
+        
+        .guide-nav a:hover, .guide-nav a.active {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .guide-nav a.sales:hover, .guide-nav a.sales.active {
+            background: var(--sales-agent);
+        }
+        
+        .guide-nav a.business:hover, .guide-nav a.business.active {
+            background: var(--business-owner);
+        }
     </style>
 </head>
+
 <body>
     <!-- Header -->
     <header>
         <div class="header-content">
             <div class="logo">
                 <div class="logo-text">
-                    <h1>OBlinks</h1>
-                    <p class="tagline">Global Business Platform</p>
+                    <h1>OBlinks User Guide</h1>
+                    <p class="tagline">For Sales Agents & Business Owners</p>
                 </div>
-            </div>
-            <div class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="#add-business">Add Business</a>
-                <a href="#packages">Packages</a>
-                <a href="#earn">Earn</a>
-                <a href="#features">Features</a>
-                <a href="#support">Support</a>
             </div>
         </div>
     </header>
@@ -512,49 +642,168 @@
     <div class="container">
         <!-- Hero Section -->
         <section class="hero">
-            <h1>Your Complete Guide to OBlinks</h1>
-            <p>Welcome to OBlinks - Uganda's easiest way to list your business online. Whether you're selling clothes, food, or services, OBlinks helps you reach more customers and grow your sales. This guide explains everything you need to know.</p>
+            <h1>OBlinks Platform Guide</h1>
+            <p>Welcome to the complete OBlinks guide. Whether you're a Sales Agent or a Business Owner, this guide will help you navigate and maximize our platform. Learn how to refer businesses, list your own, and earn commissions.</p>
             <div>
-                <a href="#add-business" class="btn">Add Your Business</a>
-                <a href="#features" class="btn btn-primary">See All Features</a>
+                <a href="#sales-agent" class="btn btn-sales">Sales Agent Guide</a>
+                <a href="#business-owner" class="btn btn-business">Business Owner Guide</a>
             </div>
         </section>
         
-        <!-- How to Add Your Business Section -->
-        <section id="add-business" class="section">
-            <h2 class="section-title"><i class="fas fa-store"></i> How to Add Your Business</h2>
-            <p>Follow these simple steps to list your business on OBlinks and start reaching customers:</p>
+        <div class="guide-nav">
+            <a href="#sales-agent" class="sales active">Sales Agent Guide</a>
+            <a href="#business-owner" class="business">Business Owner Guide</a>
+            <a href="#dual-role" class="primary">Dual Role Guide</a>
+            <a href="#support" class="primary">Support</a>
+        </div>
+        
+        <!-- Sales Agent Guide -->
+        <section id="sales-agent" class="section">
+            <h2 class="section-title sales"><i class="fas fa-user-tie"></i> Sales Agent Guide</h2>
+            <p>
+            A sales agent is a professional who represents a company and sells its products or services, often working independently and earning commission-based income. As an OBlinks Sales Agent, you earn commissions by selling our packages to business owners through referring their businesses to our platform. This guide explains how to maximize your earnings.</p>
             
             <div class="step-container">
-                <div class="step">
+                <div class="step sales">
+                    <div class="step-number">1</div>
+                    <h3>Get Your Referral Link</h3>
+                    <p>Log in to your OBlinks account and navigate to the "Earnings Dashboard" to find your unique referral link.</p>
+                </div>
+                
+                <div class="step sales">
+                    <div class="step-number">2</div>
+                    <h3>Promote OBlinks</h3>
+                    <p>Share your referral link with business owners through WhatsApp, social media, or in-person meetings.</p>
+                </div>
+                
+                <div class="step sales">
+                    <div class="step-number">3</div>
+                    <h3>Assist with Signup</h3>
+                    <p>Help businesses sign up using your link and choose the right package for their needs.</p>
+                </div>
+                
+                <div class="step sales">
+                    <div class="step-number">4</div>
+                    <h3>Earn Commission</h3>
+                    <p>When a business you refer upgrades to a paid package, you earn commission based on your agent level.</p>
+                </div>
+            </div>
+            
+            <div class="highlight-box sales">
+                <h3><i class="fas fa-money-bill-wave"></i> Commission Structure</h3>
+                <p>Your commission rate depends on your sales agent level:</p>
+                <ul style="margin: 15px 0 15px 30px; color: var(--dark);">
+                    <li><strong>Starter Agent:</strong> 20% commission on all referred packages</li>
+                    <li><strong>Professional Agent:</strong> 60% commission on all referred packages</li>
+                    <li><strong>Enterprise Agent:</strong> 80% commission on all referred packages</li>
+                </ul>
+                <p>Commission is paid annually to your mobile money or bank account. You can track your earnings in the Earnings Dashboard.</p>
+            </div>
+            
+            <h3 style="margin: 30px 0 20px; color: var(--sales-agent);">Sales Agent Tools & Features</h3>
+            <div class="feature-grid">
+                <div class="feature-card sales">
+                    <div class="feature-icon">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <h3>Referral Link</h3>
+                    <p>Your unique link that tracks all businesses you refer to OBlinks.</p>
+                    <div class="feature-details">
+                        <h4><i class="fas fa-eye"></i> Where to find:</h4>
+                        <p>Earnings Dashboard in your account</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card sales">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Performance Dashboard</h3>
+                    <p>Track your referrals, conversions, and earnings in real-time.</p>
+                    <div class="feature-details">
+                        <h4><i class="fas fa-eye"></i> Where to find:</h4>
+                        <p>Earnings section of your account</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card sales">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3>Marketing Materials</h3>
+                    <p>Access brochures, videos, and presentation decks to help sell OBlinks.</p>
+                    <div class="feature-details">
+                        <h4><i class="fas fa-eye"></i> Where to find:</h4>
+                        <p>Resources section in your account</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card sales">
+                    <div class="feature-icon">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <h3>Payment Tracking</h3>
+                    <p>View your commission payments and payment history.</p>
+                    <div class="feature-details">
+                        <h4><i class="fas fa-eye"></i> Where to find:</h4>
+                        <p>Payments section in your Earnings Dashboard</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="highlight-box">
+                <h3><i class="fas fa-lightbulb"></i> Pro Tips for Sales Agents</h3>
+                <ul style="margin: 15px 0 15px 30px;">
+                    <li>Focus on businesses that would benefit most from online visibility</li>
+                    <li>Use the "Add Business" button to help businesses sign up directly</li>
+                    <li>Offer to help with the initial setup for businesses new to technology</li>
+                    <li>Follow up with businesses that signed up but haven't upgraded</li>
+                    <li>Leverage the Business Link feature to showcase success stories</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- Dual Role Section -->
+        <section id="dual-role" class="dual-role">
+            <h2><i class="fas fa-sync-alt"></i> Be Both a Business Owner AND Sales Agent</h2>
+            <p>Many of our most successful users wear both hats! You can run your own business on OBlinks while earning commissions by referring other businesses.</p>
+            <p>Your dashboard makes it easy to switch between managing your business and tracking your referrals.</p>
+            <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dual Role Dashboard" class="dashboard-img">
+        </section>
+        
+        <!-- Business Owner Guide -->
+        <section id="business-owner" class="section">
+            <h2 class="section-title business"><i class="fas fa-store"></i> Business Owner Guide</h2>
+            <p>List your business on OBlinks to reach more customers and grow your sales. This guide explains everything you need to know.</p>
+            
+            <div class="step-container">
+                <div class="step business">
                     <div class="step-number">1</div>
                     <h3>Choose a Package</h3>
                     <p>Select a business package that fits your needs. We have free and paid options with different features.</p>
                 </div>
                 
-                <div class="step">
+                <div class="step business">
                     <div class="step-number">2</div>
                     <h3>Enter Business Details</h3>
-                    <p>Fill in your business name, description, location, category, and WhatsApp number so customers can contact you.</p>
+                    <p>Fill in your business name, description, location, category, and WhatsApp number.</p>
                 </div>
                 
-                <div class="step">
+                <div class="step business">
                     <div class="step-number">3</div>
                     <h3>Add Items & Services</h3>
                     <p>List your products or services with prices and photos. Show customers exactly what you offer.</p>
                 </div>
                 
-                <div class="step">
+                <div class="step business">
                     <div class="step-number">4</div>
-                    <h3>Submit & Pay (if needed)</h3>
+                    <h3>Submit & Pay</h3>
                     <p>For paid packages, complete payment to activate your listing. Free listings go live immediately.</p>
                 </div>
             </div>
-        </section>
-        
-        <!-- Packages Explained Section -->
-        <section id="packages" class="section">
-            <h2 class="section-title"><i class="fas fa-box-open"></i> Packages Explained</h2>
+            
+            <!-- Packages Explained Section -->
+            <h3 style="margin: 40px 0 20px; color: var(--business-owner);">Packages Explained</h3>
             <p>Choose the package that best fits your business needs. All packages are billed annually.</p>
             
             <div class="package-grid">
@@ -564,8 +813,8 @@
                     <ul class="package-features">
                         <li><i class="fas fa-check-circle"></i> 2 items allowed</li>
                         <li><i class="fas fa-check-circle"></i> Basic listing</li>
-                        <li><i class="fas fa-check-circle"></i> 20% referral commission</li>
                         <li><i class="fas fa-times-circle"></i> No pinning</li>
+                        <li><i class="fas fa-times-circle"></i> Limited visibility</li>
                     </ul>
                     <p><strong>Best for:</strong> Small businesses just starting online</p>
                 </div>
@@ -576,8 +825,8 @@
                     <ul class="package-features">
                         <li><i class="fas fa-check-circle"></i> 70 items allowed</li>
                         <li><i class="fas fa-check-circle"></i> Featured placement</li>
-                        <li><i class="fas fa-check-circle"></i> 60% referral commission</li>
                         <li><i class="fas fa-check-circle"></i> 2 days pinning</li>
+                        <li><i class="fas fa-check-circle"></i> Priority visibility</li>
                     </ul>
                     <p><strong>Best for:</strong> Growing businesses wanting more visibility</p>
                 </div>
@@ -588,64 +837,19 @@
                     <ul class="package-features">
                         <li><i class="fas fa-check-circle"></i> 100 items allowed</li>
                         <li><i class="fas fa-check-circle"></i> Maximum visibility</li>
-                        <li><i class="fas fa-check-circle"></i> 80% referral commission</li>
                         <li><i class="fas fa-check-circle"></i> 7 days pinning</li>
+                        <li><i class="fas fa-check-circle"></i> Premium support</li>
                     </ul>
                     <p><strong>Best for:</strong> Established businesses wanting premium features</p>
                 </div>
             </div>
-        </section>
-        
-        <!-- Earn with Referrals Section -->
-        <section id="earn" class="section">
-            <h2 class="section-title"><i class="fas fa-money-bill-wave"></i> Earn with Referrals</h2>
-            <p>OBlinks lets you earn real money by helping other businesses join our platform. You earn commission only when businesses you refer upgrade to paid packages.</p>
             
-            <div class="step-container">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <h3>Share Your Link</h3>
-                    <p>Find your unique referral link in your Earnings Dashboard.</p>
-                </div>
-                
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <h3>Business Joins</h3>
-                    <p>When a business signs up using your link, they become your referral.</p>
-                </div>
-                
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <h3>Business Upgrades</h3>
-                    <p>When your referral upgrades to a paid package, you earn commission.</p>
-                </div>
-                
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <h3>You Get Paid</h3>
-                    <p>Commission is paid annually to your mobile money or bank account.</p>
-                </div>
-            </div>
-            
-            <div style="background: #eef2ff; padding: 20px; border-radius: 10px; margin-top: 30px;">
-                <h3 style="color: var(--primary-dark); margin-bottom: 15px;"><i class="fas fa-info-circle"></i> How Commission Works</h3>
-                <p>Your commission rate depends on your current package. For example:</p>
-                <ul style="margin: 15px 0 15px 30px; color: var(--dark);">
-                    <li>Starter: 20% commission</li>
-                    <li>Professional: 60% commission</li>
-                    <li>Enterprise: 80% commission</li>
-                </ul>
-                <p>You earn a percentage of your referral's package payment. Payments are made annually through Mobile Money or bank transfer.</p>
-            </div>
-        </section>
-        
-        <!-- Buttons & Features Section -->
-        <section id="features" class="section">
-            <h2 class="section-title"><i class="fas fa-mouse-pointer"></i> OBlinks Buttons & Features Explained</h2>
+   <!-- Buttons & Features Section -->
+            <h3 style="margin: 40px 0 20px; color: var(--business-owner);">OBlinks Buttons & Features Guide</h3>
             <p>Here's what every button and feature does on OBlinks:</p>
             
             <div class="feature-grid">
-                <div class="feature-card">
+                <div class="feature-card business">
                     <div class="feature-icon">
                         <i class="fas fa-plus"></i>
                     </div>
@@ -654,12 +858,10 @@
                     <div class="feature-details">
                         <h4><i class="fas fa-eye"></i> Where you see it:</h4>
                         <p>Bottom navigation bar (center button)</p>
-                        <h4><i class="fas fa-gift"></i> Benefit:</h4>
-                        <p>Lets you showcase your business to customers</p>
                     </div>
                 </div>
                 
-                <div class="feature-card">
+                <div class="feature-card business">
                     <div class="feature-icon">
                         <i class="fas fa-credit-card"></i>
                     </div>
@@ -668,12 +870,10 @@
                     <div class="feature-details">
                         <h4><i class="fas fa-eye"></i> Where you see it:</h4>
                         <p>Business form footer for paid packages</p>
-                        <h4><i class="fas fa-gift"></i> Benefit:</h4>
-                        <p>Activates your business listing with premium features</p>
                     </div>
                 </div>
                 
-                <div class="feature-card">
+                <div class="feature-card business">
                     <div class="feature-icon">
                         <i class="fas fa-eye"></i>
                     </div>
@@ -682,40 +882,34 @@
                     <div class="feature-details">
                         <h4><i class="fas fa-eye"></i> Where you see it:</h4>
                         <p>On each business card</p>
-                        <h4><i class="fas fa-gift"></i> Benefit:</h4>
-                        <p>Customers see everything you offer at once</p>
                     </div>
                 </div>
                 
-                <div class="feature-card">
+                <div class="feature-card business">
                     <div class="feature-icon">
                         <i class="fas fa-shopping-cart"></i>
                     </div>
                     <h3>Order Button</h3>
-                    <p>Opens an order form for customers to place orders.</p>
+                    <p>Opens an order form for customers to place orders directly.</p>
                     <div class="feature-details">
                         <h4><i class="fas fa-eye"></i> Where you see it:</h4>
                         <p>On each business card and product</p>
-                        <h4><i class="fas fa-gift"></i> Benefit:</h4>
-                        <p>Customers can order directly, and you get notifications</p>
                     </div>
                 </div>
                 
-                <div class="feature-card">
+                <div class="feature-card business">
                     <div class="feature-icon">
                         <i class="fab fa-whatsapp"></i>
                     </div>
-                    <h3>Chat on WhatsApp Button</h3>
-                    <p>Starts a WhatsApp chat with the business.</p>
+                    <h3>Chat on WhatsApp</h3>
+                    <p>Starts a WhatsApp chat with the business directly.</p>
                     <div class="feature-details">
                         <h4><i class="fas fa-eye"></i> Where you see it:</h4>
                         <p>On each business card and product</p>
-                        <h4><i class="fas fa-gift"></i> Benefit:</h4>
-                        <p>Customers can ask questions or order through WhatsApp</p>
                     </div>
                 </div>
                 
-                <div class="feature-card">
+                <div class="feature-card business">
                     <div class="feature-icon">
                         <i class="fas fa-link"></i>
                     </div>
@@ -724,66 +918,20 @@
                     <div class="feature-details">
                         <h4><i class="fas fa-eye"></i> Where you see it:</h4>
                         <p>On your business card</p>
-                        <h4><i class="fas fa-gift"></i> Benefit:</h4>
-                        <p>Drives traffic to your other platforms</p>
                     </div>
                 </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-bell"></i>
-                    </div>
-                    <h3>Notifications Bell</h3>
-                    <p>Shows new orders, messages, and important updates.</p>
-                    <div class="feature-details">
-                        <h4><i class="fas fa-eye"></i> Where you see it:</h4>
-                        <p>Top right corner of the website</p>
-                        <h4><i class="fas fa-gift"></i> Benefit:</h4>
-                        <p>Never miss an order or important update</p>
-                    </div>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <h3>My Account / Profile</h3>
-                    <p>Manage your account details, businesses, and earnings.</p>
-                    <div class="feature-details">
-                        <h4><i class="fas fa-eye"></i> Where you see it:</h4>
-                        <p>Top right corner of the website</p>
-                        <h4><i class="fas fa-gift"></i> Benefit:</h4>
-                        <p>Central place to manage your OBlinks presence</p>
-                    </div>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-crown"></i>
-                    </div>
-                    <h3>Rent Package / Upgrade</h3>
-                    <p>See your current package or upgrade to a better one.</p>
-                    <div class="feature-details">
-                        <h4><i class="fas fa-eye"></i> Where you see it:</h4>
-                        <p>In your account dashboard</p>
-                        <h4><i class="fas fa-gift"></i> Benefit:</h4>
-                        <p>Get more features and visibility for your business</p>
-                    </div>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </div>
-                    <h3>Logout Button</h3>
-                    <p>Securely signs you out of your account.</p>
-                    <div class="feature-details">
-                        <h4><i class="fas fa-eye"></i> Where you see it:</h4>
-                        <p>In your account menu</p>
-                        <h4><i class="fas fa-gift"></i> Benefit:</h4>
-                        <p>Keeps your account secure, especially on shared devices</p>
-                    </div>
-                </div>
+            </div>
+            
+            <div class="highlight-box business">
+                <h3><i class="fas fa-lightbulb"></i> Business Owner Tips</h3>
+                <ul style="margin: 15px 0 15px 30px;">
+                    <li>Use high-quality photos of your products and business</li>
+                    <li>Keep your business information updated regularly</li>
+                    <li>Respond quickly to orders and inquiries</li>
+                    <li>Use the pinning feature to keep your business visible</li>
+                    <li>Consider upgrading your package for better visibility</li>
+                    <li>Share your OBlinks listing on your social media</li>
+                </ul>
             </div>
         </section>
         
@@ -832,20 +980,20 @@
             <div class="footer-column">
                 <h3>Quick Links</h3>
                 <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="#add-business">Add Business</a></li>
-                    <li><a href="#packages">Packages</a></li>
-                    <li><a href="#earn">Earn with Referrals</a></li>
-                  
-   <li><a href="termsofservice.html">Terms of service</a></li>
-                     <li><a href="privacypolicy.html">Privacy Policy</a></li>
+                    <li><a href="#sales-agent">Sales Agent Guide</a></li>
+                    <li><a href="#business-owner">Business Owner Guide</a></li>
+                    <li><a href="#dual-role">Dual Role Guide</a></li>
+                    <li><a href="#support">Support</a></li>
                 </ul>
             </div>
             
-            <div></div>
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="#">Marketing Materials</a></li>
                     <li><a href="#">Business Tips</a></li>
-                  
-            
+                    <li><a href="#">Success Stories</a></li>
+                    <li><a href="#">Agent Training</a></li>
                 </ul>
             </div>
             
@@ -863,8 +1011,8 @@
             <p>&copy; 2023 OBlinks - The Global Business Platform. All rights reserved.</p>
         </div>
     </footer>
-
- <script>
+    
+    <script>
         // Simple back to top functionality
         document.querySelector('.back-to-top').addEventListener('click', function(e) {
             e.preventDefault();
@@ -874,15 +1022,17 @@
             });
         });
         
-        // Highlight active section in navigation
+        // Navigation highlighting
+        const navLinks = document.querySelectorAll('.guide-nav a');
+        const sections = document.querySelectorAll('section[id]');
+        
         window.addEventListener('scroll', function() {
-            const sections = document.querySelectorAll('.section');
-            const navLinks = document.querySelectorAll('.nav-links a');
-            
             let current = '';
             
             sections.forEach(section => {
                 const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                
                 if (window.scrollY >= sectionTop - 200) {
                     current = section.getAttribute('id');
                 }
@@ -892,6 +1042,24 @@
                 link.classList.remove('active');
                 if (link.getAttribute('href').substring(1) === current) {
                     link.classList.add('active');
+                }
+            });
+        });
+        
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 100,
+                        behavior: 'smooth'
+                    });
                 }
             });
         });
