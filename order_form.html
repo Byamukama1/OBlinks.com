@@ -172,8 +172,111 @@
             color: #0d47a1;
             margin-bottom: 8px;
         }
+        
+        .payment-method-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .payment-method-card:hover {
+            border-color: #0d47a1;
+            background: #f5f9ff;
+        }
+        
+        .payment-method-card.selected {
+            border-color: #0d47a1;
+            background: #e3f2fd;
+            border-width: 2px;
+        }
+        
+        .payment-method-type {
+            font-weight: 600;
+            color: #0d47a1;
+            margin-bottom: 5px;
+        }
+        
+        .payment-method-details {
+            font-size: 0.9rem;
+            color: #555;
+        }
+        
+        .payment-method-details span {
+            display: block;
+            margin-bottom: 3px;
+        }
+        
+        .payment-proof-container {
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .file-upload {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .file-upload-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 10px;
+            border: 1px dashed #0d47a1;
+            border-radius: 8px;
+            color: #0d47a1;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .file-upload-label:hover {
+            background: #e3f2fd;
+        }
+        
+        .file-name {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .payment-options {
+            margin-bottom: 20px;
+        }
+        
+        .payment-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        
+        .payment-option input {
+            width: auto;
+        }
+        
+        .spinner {
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border-left-color: #0d47a1;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -223,9 +326,43 @@
                     <label for="deliveryMethod" class="required">Delivery Method</label>
                     <textarea id="deliveryMethod" name="deliveryMethod" required placeholder="Describe your preferred delivery method (e.g., home delivery, pickup, express shipping)"></textarea>
                 </div>
-                                <div class="form-group">
-                    <label for="paymentMethod" class="required">Payment Method</label>
-                    <textarea id="paymentMethod" name="paymentMethod" required placeholder="Describe your preferred payment method (e.g., cash, bank transfer, mobile money)"></textarea>
+                
+                <div class="payment-options">
+                    <h3>Payment Option <span class="required">*</span></h3>
+                    <div class="payment-option">
+                        <input type="radio" id="paymentBefore" name="paymentOption" value="before" required>
+                        <label for="paymentBefore">Pay Before Delivery</label>
+                    </div>
+                    <div class="payment-option">
+                        <input type="radio" id="paymentAfter" name="paymentOption" value="after" required>
+                        <label for="paymentAfter">Pay On Delivery</label>
+                    </div>
+                </div>
+                
+                <div id="paymentMethodsContainer" style="display: none;">
+                    <h3>Select Payment Method <span class="required">*</span></h3>
+                    <div id="paymentMethodsList"></div>
+                    <div id="paymentMethodSpinner" class="spinner"></div>
+                    <p id="noMethodsMessage" style="display: none; color: #666;">This business hasn't set up any payment methods yet.</p>
+                </div>
+                
+                <div id="paymentProofContainer" class="payment-proof-container">
+                    <div class="form-group">
+                        <label for="paymentProof" class="required">Payment Proof</label>
+                        <div class="file-upload">
+                            <label for="paymentProof" class="file-upload-label">
+                                <i class="fas fa-upload"></i>
+                                <span>Upload Screenshot (PNG, JPG)</span>
+                            </label>
+                            <input type="file" id="paymentProof" name="paymentProof" accept="image/*" style="display: none;">
+                            <div id="fileName" class="file-name"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="paymentNote">Payment Note (Optional)</label>
+                        <textarea id="paymentNote" name="paymentNote" placeholder="Transaction ID, reference number, or any additional payment details"></textarea>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -246,8 +383,7 @@
             <p>© 2023 OBlinks. All rights reserved.</p>
         </div>
     </div>
-    
-    
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
   import {
@@ -255,7 +391,10 @@
     doc,
     getDoc,
     collection,
-    addDoc
+    addDoc,
+    query,
+    where,
+    getDocs
   } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -269,9 +408,22 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  
+  // Cloudinary configuration
+  const cloudName = 'dp81zzxlh';
+  const uploadPreset = 'Unsigned upload';
 
   document.addEventListener("DOMContentLoaded", async () => {
     const form = document.getElementById("order_form");
+    const paymentMethodsContainer = document.getElementById("paymentMethodsContainer");
+    const paymentMethodsList = document.getElementById("paymentMethodsList");
+    const paymentMethodSpinner = document.getElementById("paymentMethodSpinner");
+    const noMethodsMessage = document.getElementById("noMethodsMessage");
+    const paymentProofContainer = document.getElementById("paymentProofContainer");
+    const paymentProofInput = document.getElementById("paymentProof");
+    const fileNameDisplay = document.getElementById("fileName");
+    const paymentBeforeOption = document.getElementById("paymentBefore");
+    const paymentAfterOption = document.getElementById("paymentAfter");
 
     const urlParams = new URLSearchParams(window.location.search);
     const businessId = urlParams.get("businessId") || urlParams.get("id");
@@ -311,6 +463,88 @@
       return;
     }
 
+   // Handle payment option selection
+    paymentBeforeOption.addEventListener("change", async () => {
+      if (paymentBeforeOption.checked) {
+        paymentMethodsContainer.style.display = "block";
+        paymentProofContainer.style.display = "block";
+        await loadBusinessPaymentMethods(businessOwner);
+      }
+    });
+
+    paymentAfterOption.addEventListener("change", () => {
+      if (paymentAfterOption.checked) {
+        paymentMethodsContainer.style.display = "none";
+        paymentProofContainer.style.display = "none";
+      }
+    });
+
+    // Handle file upload display
+    paymentProofInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        fileNameDisplay.textContent = `Selected: ${file.name}`;
+      } else {
+        fileNameDisplay.textContent = "";
+      }
+    });
+
+    // Load business payment methods
+    async function loadBusinessPaymentMethods(ownerId) {
+      paymentMethodSpinner.style.display = "block";
+      paymentMethodsList.innerHTML = "";
+      noMethodsMessage.style.display = "none";
+
+      try {
+        const q = query(
+          collection(db, "paymentMethods"),
+          where("userId", "==", ownerId)
+        );
+
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+          noMethodsMessage.style.display = "block";
+          return;
+        }
+
+        querySnapshot.forEach(doc => {
+          const method = doc.data();
+          const methodId = doc.id;
+          
+          const methodCard = document.createElement("div");
+          methodCard.className = "payment-method-card";
+          methodCard.dataset.id = methodId;
+          
+          const methodType = method.methodType === "mobile_money" ? "Mobile Money" : "Bank Account";
+          
+          methodCard.innerHTML = `
+            <div class="payment-method-type">${methodType}</div>
+            <div class="payment-method-details">
+              <span><strong>Provider:</strong> ${method.provider}</span>
+              <span><strong>Account Name:</strong> ${method.accountName}</span>
+              <span><strong>Account Number:</strong> ${method.accountNumber}</span>
+            </div>
+          `;
+          
+          methodCard.addEventListener("click", () => {
+            document.querySelectorAll(".payment-method-card").forEach(card => {
+              card.classList.remove("selected");
+            });
+            methodCard.classList.add("selected");
+          });
+          
+          paymentMethodsList.appendChild(methodCard);
+        });
+
+      } catch (err) {
+        console.error("Error loading payment methods:", err);
+        alert("Could not load payment methods. Please try again.");
+      } finally {
+        paymentMethodSpinner.style.display = "none";
+      }
+    }
+
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -320,16 +554,54 @@
       const quantity = form["quantity"].value.trim();
       const location = form["location"].value.trim();
       const deliveryMethod = form["deliveryMethod"].value.trim();
-      const paymentMethod = form["paymentMethod"].value.trim();
+      const paymentOption = document.querySelector('input[name="paymentOption"]:checked')?.value;
+      const selectedPaymentMethod = document.querySelector(".payment-method-card.selected")?.dataset.id;
+      const paymentProofFile = paymentProofInput.files[0];
+      const paymentNote = form["paymentNote"].value.trim();
       const notes = form["notes"].value.trim();
 
-      if (!name || !phone || !item || !quantity || !location || !deliveryMethod || !paymentMethod) {
+      // Basic validation
+      if (!name || !phone || !item || !quantity || !location || !deliveryMethod || !paymentOption) {
         alert("Please fill in all required fields.");
         return;
       }
 
+      // Additional validation for payment before delivery
+      if (paymentOption === "before") {
+        if (!selectedPaymentMethod) {
+          alert("Please select a payment method.");
+          return;
+        }
+        if (!paymentProofFile) {
+          alert("Please upload payment proof.");
+          return;
+        }
+      }
+
       try {
-        await addDoc(collection(db, "orders"), {
+        // Upload payment proof to Cloudinary if exists
+        let paymentProofUrl = "";
+        if (paymentProofFile) {
+          const formData = new FormData();
+          formData.append('file', paymentProofFile);
+          formData.append('upload_preset', uploadPreset);
+          formData.append('cloud_name', cloudName);
+          
+          const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, {
+            method: 'POST',
+            body: formData
+          });
+          
+          if (!response.ok) {
+            throw new Error('Cloudinary upload failed');
+          }
+          
+          const data = await response.json();
+          paymentProofUrl = data.secure_url;
+        }
+
+        // Create order document
+        const orderData = {
           businessId,
           businessOwner,
           name,
@@ -338,15 +610,28 @@
           quantity,
           location,
           deliveryMethod,
-          paymentMethod,
+          paymentOption,
+          paymentMethod: paymentOption === "before" ? selectedPaymentMethod : null,
+          paymentProof: paymentProofUrl,
+          paymentNote: paymentOption === "before" ? paymentNote : "",
           notes,
           seen: false,
           status: "pending",
           timestamp: Date.now()
-        });
+        };
+
+        await addDoc(collection(db, "orders"), orderData);
 
         alert("Order submitted successfully!");
         form.reset();
+        fileNameDisplay.textContent = "";
+        document.querySelectorAll(".payment-method-card").forEach(card => {
+          card.classList.remove("selected");
+        });
+        paymentMethodsContainer.style.display = "none";
+        paymentProofContainer.style.display = "none";
+        paymentBeforeOption.checked = false;
+        paymentAfterOption.checked = false;
       } catch (err) {
         console.error("Failed to submit order:", err);
         alert("An error occurred. Please try again.");
