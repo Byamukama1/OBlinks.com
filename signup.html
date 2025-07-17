@@ -341,17 +341,32 @@
   const strengthMeter = document.getElementById('strengthMeter');
   const referralNotice = document.getElementById('referralNotice');
   const referralMessage = document.getElementById('referralMessage');
-  const referrerInput = document.getElementById('referrer'); // NEW
+  const referrerInput = document.getElementById('referrer');
+  const referrerGroup = document.getElementById('referrerGroup'); // NEW - group container
 
   // Check referral in URL
   const urlParams = new URLSearchParams(window.location.search);
   const refParam = urlParams.get('referrer');
 
-  if (refParam) {
-    referralMessage.textContent += refParam;
+  // NEW: Check session storage for existing referrer
+  const sessionReferrer = sessionStorage.getItem('referrer');
+  
+  if (refParam || sessionReferrer) {
+    const referrerValue = refParam || sessionReferrer;
+    referralMessage.textContent += referrerValue;
     referralNotice.style.display = 'block';
-    // Prefill referrer field with URL parameter
-    referrerInput.value = refParam;
+    
+    // Prefill and hide referrer field
+    referrerInput.value = referrerValue;
+    referrerGroup.style.display = 'none'; // HIDE the field
+    
+    // Store in session storage if from URL
+    if (refParam) {
+      sessionStorage.setItem('referrer', refParam);
+    }
+  } else {
+    // Show referrer field if no referral in URL or session
+    referrerGroup.style.display = 'block'; // SHOW the field
   }
 
   // Commission rates
@@ -400,7 +415,7 @@
     const password = passwordInput.value.trim();
     const confirm = confirmInput.value.trim();
     const phone = document.getElementById('phone').value.trim();
-    const referrerWhatsapp = referrerInput.value.trim() || null; // Use input field value
+    const referrerWhatsapp = referrerInput.value.trim() || null;
 
     // Validation
     if (!email || !phone || !password || !confirm) {
@@ -415,8 +430,8 @@
       return;
     }
 
-    // Validate referrer if provided
-    if (referrerWhatsapp && !/^[0-9]{10,15}$/.test(referrerWhatsapp)) {
+    // Validate referrer if provided and visible
+    if (referrerGroup.style.display !== 'none' && referrerWhatsapp && !/^[0-9]{10,15}$/.test(referrerWhatsapp)) {
       errorMsg.textContent = 'Please enter a valid Referrer WhatsApp number';
       errorMsg.style.display = 'block';
       return;
@@ -442,7 +457,7 @@
     let referrerCommissionRate = 0;
 
     try {
-      // 🔍 If there's a referrer, fetch their user info
+      // If there's a referrer, fetch their user info
       if (referrerWhatsapp) {
         const q = query(collection(db, "users"), where("whatsapp", "==", referrerWhatsapp));
         const refSnapshot = await getDocs(q);
@@ -452,18 +467,19 @@
           referrerUserId = refDoc.id;
           referrerPackage = refData.package || "Starter";
           referrerCommissionRate = commissionRates[referrerPackage] || 0.2;
-        } else {
+        } else if (referrerGroup.style.display !== 'none') {
+          // Only show error if field was visible
           errorMsg.textContent = 'Referrer not found. Please check the WhatsApp number';
           errorMsg.style.display = 'block';
           return;
         }
       }
 
-      // 🔐 Create user in Firebase Auth
+      // Create user in Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // ✅ Save user in Firestore
+      // Save user in Firestore
       await setDoc(doc(db, "users", user.uid), {
         userId: user.uid,
         email: email,
@@ -476,6 +492,9 @@
         createdAt: new Date()
       });
 
+      // Clear session storage
+      sessionStorage.removeItem('referrer');
+      
       errorMsg.textContent = 'Account created successfully! Redirecting...';
       errorMsg.style.color = '#10b981';
       errorMsg.style.display = 'block';
