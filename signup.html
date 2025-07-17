@@ -229,6 +229,12 @@
       transition: width 0.3s ease;
     }
     
+    .optional-tag {
+      color: #64748b;
+      font-weight: normal;
+      font-size: 12px;
+    }
+    
     @media (max-width: 480px) {
       .signup-container {
         padding: 30px 20px;
@@ -240,6 +246,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="signup-container">
     <div class="logo">
@@ -259,9 +266,16 @@
       </div>
       
       <div class="form-group">
-        <label for="phone">WhatsApp Number(Begin with 256..)</label>
+        <label for="phone">WhatsApp Number (Begin with 256..)</label>
         <i class="fas fa-phone input-icon"></i>
         <input type="text" id="phone" placeholder="256700000000" required />
+      </div>
+
+      <!-- NEW REFERRER FIELD -->
+      <div class="form-group">
+        <label for="referrer">Sales Agent Number <span class="optional-tag">(Optional)</span></label>
+        <i class="fas fa-user-plus input-icon"></i>
+        <input type="text" id="referrer" placeholder="256700000000" />
       </div>
 
       <div class="form-group">
@@ -327,15 +341,17 @@
   const strengthMeter = document.getElementById('strengthMeter');
   const referralNotice = document.getElementById('referralNotice');
   const referralMessage = document.getElementById('referralMessage');
+  const referrerInput = document.getElementById('referrer'); // NEW
 
   // Check referral in URL
   const urlParams = new URLSearchParams(window.location.search);
   const refParam = urlParams.get('referrer');
 
   if (refParam) {
-    sessionStorage.setItem('referrer', refParam);
     referralMessage.textContent += refParam;
     referralNotice.style.display = 'block';
+    // Prefill referrer field with URL parameter
+    referrerInput.value = refParam;
   }
 
   // Commission rates
@@ -384,17 +400,24 @@
     const password = passwordInput.value.trim();
     const confirm = confirmInput.value.trim();
     const phone = document.getElementById('phone').value.trim();
-    const referrerWhatsapp = sessionStorage.getItem('referrer') || null;
+    const referrerWhatsapp = referrerInput.value.trim() || null; // Use input field value
 
     // Validation
     if (!email || !phone || !password || !confirm) {
-      errorMsg.textContent = 'Please fill in all fields';
+      errorMsg.textContent = 'Please fill in all required fields';
       errorMsg.style.display = 'block';
       return;
     }
 
     if (!/^[0-9]{10,15}$/.test(phone)) {
       errorMsg.textContent = 'Please enter a valid WhatsApp number';
+      errorMsg.style.display = 'block';
+      return;
+    }
+
+    // Validate referrer if provided
+    if (referrerWhatsapp && !/^[0-9]{10,15}$/.test(referrerWhatsapp)) {
+      errorMsg.textContent = 'Please enter a valid Referrer WhatsApp number';
       errorMsg.style.display = 'block';
       return;
     }
@@ -429,6 +452,10 @@
           referrerUserId = refDoc.id;
           referrerPackage = refData.package || "Starter";
           referrerCommissionRate = commissionRates[referrerPackage] || 0.2;
+        } else {
+          errorMsg.textContent = 'Referrer not found. Please check the WhatsApp number';
+          errorMsg.style.display = 'block';
+          return;
         }
       }
 
@@ -449,7 +476,6 @@
         createdAt: new Date()
       });
 
-      sessionStorage.removeItem('referrer');
       errorMsg.textContent = 'Account created successfully! Redirecting...';
       errorMsg.style.color = '#10b981';
       errorMsg.style.display = 'block';
