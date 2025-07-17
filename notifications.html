@@ -46,6 +46,23 @@ h2 {
 .notification-card p {
   margin: 3px 0;
 }
+.view-proof-btn {
+  background: #1976d2;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  margin-top: 5px;
+  display: inline-block;
+}
+.view-proof-btn:hover {
+  background: #1565c0;
+}
+.status-toggle {
+  margin-right: 5px;
+}
   </style>
 </head>
 <body>
@@ -69,7 +86,7 @@ h2 {
     onAuthStateChanged
   } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
 
-  // ✅ Firebase Config
+  // Firebase Config
   const firebaseConfig = {
     apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
     authDomain: "oblinks-7fdb1.firebaseapp.com",
@@ -79,12 +96,11 @@ h2 {
     appId: "1:587017639779:web:d11b60f40f431cfc202556"
   };
 
-  // ✅ Initialize Firebase
+  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const auth = getAuth(app);
 
-  // ✅ Wait for DOM
   document.addEventListener("DOMContentLoaded", () => {
     const container = document.getElementById("notifications-container");
 
@@ -93,7 +109,6 @@ h2 {
       return;
     }
 
-    // 🔐 Wait for user to log in
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         container.innerHTML = "<p>You must be logged in to view notifications.</p>";
@@ -103,13 +118,25 @@ h2 {
       try {
         const allNotifications = [];
 
-        // 🛒 Get Orders for this business owner
+        // Get Orders for this business owner
         const ordersSnap = await getDocs(
           query(collection(db, "orders"), where("businessOwner", "==", user.uid))
         );
 
         for (const docRef of ordersSnap.docs) {
           const data = docRef.data();
+
+          // Format payment information
+          let paymentInfo = "Pay on delivery";
+          if (data.paymentOption === "before") {
+            paymentInfo = "Prepaid";
+            if (data.paymentProof) {
+              paymentInfo += ` <button class="view-proof-btn" onclick="window.open('${data.paymentProof}', '_blank')">View Payment Proof</button>`;
+            }
+            if (data.paymentNote) {
+              paymentInfo += `<br><small>Note: ${data.paymentNote}</small>`;
+            }
+          }
 
           allNotifications.push({
             id: docRef.id,
@@ -119,31 +146,31 @@ h2 {
             seen: data.seen,
             content: `
               <h4><b>${data.name}</b> ordered <b>${data.item}</b></h4>
-              <p><strong>Qty:</strong> ${data.quantity}</p>
+              <p><strong>Quantity:</strong> ${data.quantity}</p>
               <p><strong>Phone:</strong> ${data.phone}</p>
               <p><strong>Location:</strong> ${data.location}</p>
-              <p><strong>Delivery:</strong> ${data.deliveryMethod || "Not provided"}</p>
-              <p><strong>Payment:</strong> ${data.paymentMethod || "Not provided"}</p>
-              <p><strong>Notes:</strong> ${data.notes || "None"}</p>
+              <p><strong>Delivery Method:</strong> ${data.deliveryMethod || "Not specified"}</p>
+              <p><strong>Payment:</strong> ${paymentInfo}</p>
+              ${data.notes ? `<p><strong>Customer Notes:</strong> ${data.notes}</p>` : ''}
               <p><strong>Status:</strong>
                 <label>
                   <input type="checkbox" class="status-toggle" data-id="${docRef.id}" ${data.status === 'done' ? 'checked' : ''}>
-                  Done
+                  Mark as completed
                 </label>
               </p>
             `
           });
 
-          // 👁️ Mark order as seen
+          // Mark order as seen
           if (data.seen === false) {
             await updateDoc(doc(db, "orders", docRef.id), { seen: true });
           }
         }
 
-        // 📅 Sort by time (latest first)
+        // Sort by time (latest first)
         allNotifications.sort((a, b) => b.timestamp - a.timestamp);
 
-        // 🖼️ Render
+        // Render
         container.innerHTML = "";
         allNotifications.forEach(n => {
           const card = document.createElement("div");
@@ -167,7 +194,7 @@ h2 {
           container.innerHTML = "<p>No notifications found yet.</p>";
         }
 
-        // ✅ Listen for status checkbox updates
+        // Listen for status checkbox updates
         document.querySelectorAll(".status-toggle").forEach(checkbox => {
           checkbox.addEventListener("change", async (e) => {
             const orderId = e.target.getAttribute("data-id");
@@ -175,7 +202,7 @@ h2 {
 
             try {
               await updateDoc(doc(db, "orders", orderId), { status: newStatus });
-              alert("Order marked as " + newStatus);
+              // No alert here to avoid interrupting user experience
             } catch (err) {
               console.error("Failed to update status", err);
               alert("Failed to update order status.");
