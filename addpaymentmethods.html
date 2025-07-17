@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Payment Methods | OBlinks</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #64748b;
+      --light: #f8fafc;
+      --dark: #1e293b;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --accent: #8b5cf6;
+      --bg: #f1f5f9;
+      --border: #e2e8f0;
+      --card-bg: #ffffff;
+      --shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--dark);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* Header Styles */
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      margin-bottom: 25px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-text h1 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .tagline {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+
+    .back-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      padding: 7px 12px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Main Content */
+    .payment-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .payment-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Form Section */
+    .form-section {
+      background: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      height: fit-content;
+    }
+
+    .section-title {
+      font-size: 18px;
+      color: var(--primary-dark);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: var(--dark);
+      font-size: 14px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      background: white;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+    }
+
+    .btn {
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .btn-block {
+      display: block;
+      width: 100%;
+    }
+
+    /* Methods Section */
+    .methods-section {
+      background: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .methods-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .payment-card {
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      position: relative;
+      border: 1px solid var(--border);
+    }
+
+    .payment-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .payment-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #eef2ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      font-size: 16px;
+    }
+
+    .payment-details {
+      margin-top: 8px;
+    }
+
+    .payment-detail {
+      margin-bottom: 6px;
+      display: flex;
+      font-size: 13px;
+    }
+
+    .detail-label {
+      font-weight: 600;
+      min-width: 100px;
+      color: var(--secondary);
+    }
+
+    .default-badge {
+      background: var(--success);
+      color: white;
+      padding: 3px 6px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 8px;
+      display: inline-block;
+    }
+
+    .payment-actions {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .action-btn {
+      background: none;
+      border: none;
+      color: var(--secondary);
+      cursor: pointer;
+      font-size: 13px;
+      transition: color 0.3s;
+    }
+
+    .action-btn:hover {
+      color: var(--primary);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 30px 15px;
+      color: var(--secondary);
+      grid-column: 1 / -1;
+      font-size: 14px;
+    }
+
+    .empty-state i {
+      font-size: 36px;
+      margin-bottom: 12px;
+      color: var(--border);
+    }
+
+    /* Status Message */
+    .status-message {
+      padding: 10px 12px;
+      border-radius: 6px;
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .status-success {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .status-error {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    /* Loading spinner */
+    .spinner {
+      border: 3px solid rgba(0, 0, 0, 0.1);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border-left-color: var(--primary);
+      animation: spin 1s linear infinite;
+      margin: 15px auto;
+      display: none;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+  /* Form Instructions */
+    .form-instructions {
+      color: var(--secondary);
+      font-size: 13px;
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
+    
+    .method-type {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+    
+    .provider-name {
+      font-size: 14px;
+      color: var(--secondary);
+    }
+  </style>
+</head>
+<body>
+    <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">
+        <div class="logo-text">
+          <h1>OBlinks</h1>
+          <p class="tagline">Global Business Platform</p>
+        </div>
+      </div>
+      <button class="back-btn" id="backToAccount">
+        <i class="fas fa-arrow-left"></i> Back to Account
+      </button>
+    </div>
+
+    <div class="payment-container">
+      <!-- Form Section -->
+      <div class="form-section">
+        <div class="section-title">
+          <i class="fas fa-plus-circle"></i>
+          <h2>Add Payment Method</h2>
+        </div>
+        
+        <p class="form-instructions">Add payment methods your customers can use to pay you. You can have up to 3 payment methods.</p>
+        
+        <form id="paymentForm">
+          <div class="form-group">
+            <label for="methodType">Method Type</label>
+            <select id="methodType" class="form-control" required>
+              <option value="">Select payment method</option>
+              <option value="mobile_money">Mobile Money</option>
+              <option value="bank_account">Bank Account</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="provider">Provider</label>
+            <select id="provider" class="form-control" required disabled>
+              <option value="">Select provider</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="accountName">Account Holder Name</label>
+            <input type="text" id="accountName" class="form-control" placeholder="Full name as registered" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="accountNumber">Account Number</label>
+            <input type="text" id="accountNumber" class="form-control" placeholder="Phone number or account number" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="isDefault">
+              <input type="checkbox" id="isDefault" style="margin-right: 6px;">
+              Set as default payment method
+            </label>
+          </div>
+          
+          <button type="submit" class="btn btn-primary btn-block">
+            <i class="fas fa-plus"></i> Add Payment Method
+          </button>
+          
+          <div id="formStatus" class="status-message" style="display: none;"></div>
+          <div class="spinner" id="formSpinner"></div>
+        </form>
+      </div>
+      
+      <!-- Methods Section -->
+      <div class="methods-section">
+        <div class="section-title">
+          <i class="fas fa-credit-card"></i>
+          <h2>Your Payment Methods</h2>
+        </div>
+        
+        <p class="form-instructions">Manage your payment methods. Click the edit icon to update details.</p>
+        
+        <div class="methods-grid" id="paymentMethodsList">
+          <div class="empty-state">
+            <i class="fas fa-credit-card"></i>
+            <h3>No payment methods added</h3>
+            <p>Add your first payment method to get started</p>
+          </div>
+        </div>
+        
+        <div class="spinner" id="methodsSpinner"></div>
+      </div>
+    </div>
+  </div>
+
+  
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { 
+      getFirestore, 
+      doc, 
+      setDoc, 
+      getDoc,
+      collection,
+      query,
+      where,
+      getDocs,
+      deleteDoc,
+      updateDoc
+    } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { 
+      getAuth, 
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
+      authDomain: "oblinks-7fdb1.firebaseapp.com",
+      projectId: "oblinks-7fdb1",
+      storageBucket: "oblinks-7fdb1.appspot.com",
+      messagingSenderId: "587017639779",
+      appId: "1:587017639779:web:d11b60f40f431cfc202556"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // Payment Providers
+    const paymentProviders = {
+      mobile_money: ["MTN Mobile Money", "Airtel Money", "Safaricom M-Pesa"],
+      bank_account: ["Stanbic Bank", "Centenary Bank", "Equity Bank", "Absa Bank", "Standard Chartered"]
+    };
+
+    // DOM Elements
+    const methodTypeSelect = document.getElementById("methodType");
+    const providerSelect = document.getElementById("provider");
+    const paymentForm = document.getElementById("paymentForm");
+    const paymentMethodsList = document.getElementById("paymentMethodsList");
+    const accountNameInput = document.getElementById("accountName");
+    const accountNumberInput = document.getElementById("accountNumber");
+    const isDefaultCheckbox = document.getElementById("isDefault");
+    const formStatus = document.getElementById("formStatus");
+    const formSpinner = document.getElementById("formSpinner");
+    const methodsSpinner = document.getElementById("methodsSpinner");
+    const backToAccount = document.getElementById("backToAccount");
+
+    let currentUserId;
+    let currentUser;
+    let editingMethodId = null;
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', () => {
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          currentUser = user;
+          currentUserId = user.uid;
+          await loadPaymentMethods();
+        } else {
+          window.location.href = "login.html";
+        }
+      });
+    });
+
+    // Update providers based on method type
+    methodTypeSelect.addEventListener("change", () => {
+      const methodType = methodTypeSelect.value;
+      providerSelect.disabled = !methodType;
+      
+      if (methodType) {
+        providerSelect.innerHTML = '<option value="">Select provider</option>';
+        paymentProviders[methodType].forEach(provider => {
+          const option = document.createElement("option");
+          option.value = provider;
+          option.textContent = provider;
+          providerSelect.appendChild(option);
+        });
+      }
+    });
+    
+    // Handle payment form submission
+    paymentForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      
+      const methodType = methodTypeSelect.value;
+      const provider = providerSelect.value;
+      const accountName = accountNameInput.value;
+      const accountNumber = accountNumberInput.value;
+      const isDefault = isDefaultCheckbox.checked;
+      
+      if (!methodType || !provider || !accountName || !accountNumber) {
+        showStatus("Please fill in all required fields", "error");
+        return;
+      }
+      
+      formSpinner.style.display = "block";
+      formStatus.style.display = "none";
+      
+      try {
+        // Check if user has reached the limit of 3 payment methods
+        const paymentMethods = await getPaymentMethods();
+        if (paymentMethods.length >= 3 && !editingMethodId) {
+          showStatus("You can only have up to 3 payment methods. Please delete one before adding another.", "error");
+          formSpinner.style.display = "none";
+          return;
+        }
+        
+        // If setting as default, remove default from others
+        if (isDefault) {
+          await removeDefaultStatus();
+        }
+        
+        if (editingMethodId) {
+          // Update existing payment method
+          await updateDoc(doc(db, "paymentMethods", editingMethodId), {
+            methodType,
+            provider,
+            accountName,
+            accountNumber,
+            isDefault,
+            updatedAt: new Date()
+          });
+          
+          showStatus("✅ Payment method updated successfully!", "success");
+          editingMethodId = null;
+        } else {
+          // Add new payment method
+          const paymentRef = doc(collection(db, "paymentMethods"));
+          await setDoc(paymentRef, {
+            methodType,
+            provider,
+            accountName,
+            accountNumber,
+            isDefault,
+            userId: currentUserId,
+            createdAt: new Date()
+          });
+          
+          showStatus("✅ Payment method added successfully!", "success");
+        }
+        
+        // Reset form
+        paymentForm.reset();
+        providerSelect.disabled = true;
+        document.querySelector('.btn-block').innerHTML = '<i class="fas fa-plus"></i> Add Payment Method';
+        
+        // Reload payment methods
+        loadPaymentMethods();
+      } catch (error) {
+        console.error("Error processing payment method:", error);
+        showStatus("❌ Failed to process payment method. Please try again.", "error");
+      } finally {
+        formSpinner.style.display = "none";
+      }
+    });
+
+    // Show status message
+    function showStatus(message, type) {
+      formStatus.textContent = message;
+      formStatus.className = `status-message status-${type}`;
+      formStatus.style.display = "flex";
+      
+      // Auto hide after 5 seconds
+      setTimeout(() => {
+        formStatus.style.display = "none";
+      }, 5000);
+    }
+
+    // Remove default status from all payment methods
+    async function removeDefaultStatus() {
+      try {
+        const q = query(
+          collection(db, "paymentMethods"),
+          where("userId", "==", currentUserId),
+          where("isDefault", "==", true)
+        );
+        
+        const querySnapshot = await getDocs(q);
+        const updatePromises = [];
+        
+        querySnapshot.forEach(doc => {
+          updatePromises.push(updateDoc(doc.ref, { isDefault: false }));
+        });
+        
+        await Promise.all(updatePromises);
+      } catch (error) {
+        console.error("Error removing default status:", error);
+      }
+    }
+
+    // Get user's payment methods
+    async function getPaymentMethods() {
+      try {
+        const q = query(
+          collection(db, "paymentMethods"),
+          where("userId", "==", currentUserId)
+        );
+        
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      } catch (error) {
+        console.error("Error getting payment methods:", error);
+        return [];
+      }
+    }
+
+    // Load user's payment methods
+    async function loadPaymentMethods() {
+      methodsSpinner.style.display = "block";
+      paymentMethodsList.innerHTML = "";
+      
+      try {
+        const paymentMethods = await getPaymentMethods();
+        
+        if (paymentMethods.length === 0) {
+          paymentMethodsList.innerHTML = `
+            <div class="empty-state">
+              <i class="fas fa-credit-card"></i>
+              <h3>No payment methods added</h3>
+              <p>Add your first payment method to get started</p>
+            </div>
+          `;
+          methodsSpinner.style.display = "none";
+          return;
+        }
+        
+        paymentMethods.forEach(method => {
+          const icon = method.methodType === "mobile_money" 
+            ? "fas fa-mobile-alt" 
+            : "fas fa-university";
+            
+          const methodType = method.methodType === "mobile_money" 
+            ? "Mobile Money" 
+            : "Bank Account";
+            
+          paymentMethodsList.innerHTML += `
+            <div class="payment-card">
+              <div class="payment-card-header">
+                <div class="payment-icon">
+                  <i class="${icon}"></i>
+                </div>
+                <div>
+                  <div class="method-type">${method.provider}</div>
+                  <div class="provider-name">${methodType}</div>
+                </div>
+              </div>
+              
+              <div class="payment-details">
+                <div class="payment-detail">
+                  <span class="detail-label">Account Name:</span>
+                  <span>${method.accountName}</span>
+                </div>
+                <div class="payment-detail">
+                  <span class="detail-label">Account Number:</span>
+                  <span>${method.accountNumber}</span>
+                </div>
+                ${method.isDefault ? '<div class="default-badge">Default Payment Method</div>' : ''}
+              </div>
+              
+              <div class="payment-actions">
+                <button class="action-btn edit-payment" data-id="${method.id}">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="action-btn delete-payment" data-id="${method.id}">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          `;
+        });
+        
+        // Add event listeners to action buttons
+        document.querySelectorAll('.edit-payment').forEach(btn => {
+          btn.addEventListener('click', () => editPaymentMethod(btn.dataset.id));
+        });
+        
+        document.querySelectorAll('.delete-payment').forEach(btn => {
+          btn.addEventListener('click', () => deletePaymentMethod(btn.dataset.id));
+        });
+        
+      } catch (error) {
+        console.error("Error loading payment methods:", error);
+        paymentMethodsList.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>Error loading payment methods</h3>
+            <p>Please try again later</p>
+          </div>
+        `;
+      } finally {
+        methodsSpinner.style.display = "none";
+      }
+    }
+
+    // Edit payment method
+    async function editPaymentMethod(methodId) {
+      try {
+        const methodRef = doc(db, "paymentMethods", methodId);
+        const methodSnap = await getDoc(methodRef);
+        
+        if (methodSnap.exists()) {
+          const method = methodSnap.data();
+          
+          // Pre-fill form
+          methodTypeSelect.value = method.methodType;
+          methodTypeSelect.dispatchEvent(new Event('change'));
+          
+          // Wait for provider options to populate
+          setTimeout(() => {
+            providerSelect.value = method.provider;
+            accountNameInput.value = method.accountName;
+            accountNumberInput.value = method.accountNumber;
+            isDefaultCheckbox.checked = method.isDefault || false;
+            
+            // Change button text
+            document.querySelector('.btn-block').innerHTML = '<i class="fas fa-save"></i> Update Payment Method';
+            
+            // Store method ID for update
+            editingMethodId = methodId;
+            
+            // Scroll to form
+            document.querySelector('.form-section').scrollIntoView({behavior: 'smooth'});
+          }, 300);
+        }
+      } catch (error) {
+        console.error("Error preparing edit:", error);
+        showStatus("Error loading payment details. Please try again.", "error");
+      }
+    }
+
+    // Delete payment method
+    async function deletePaymentMethod(methodId) {
+      if (!confirm("Are you sure you want to delete this payment method?")) return;
+      
+      try {
+        await deleteDoc(doc(db, "paymentMethods", methodId));
+        showStatus("✅ Payment method deleted successfully!", "success");
+        loadPaymentMethods();
+      } catch (error) {
+        console.error("Error deleting payment method:", error);
+        showStatus("❌ Failed to delete payment method", "error");
+      }
+    }
+
+    // Back to account page
+    backToAccount.addEventListener("click", () => {
+      window.location.href = "myaccount.html";
+    });
+  </script>
+</body>
+</html>
