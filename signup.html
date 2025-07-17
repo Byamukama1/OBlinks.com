@@ -235,6 +235,10 @@
       font-size: 12px;
     }
     
+    .hidden {
+      display: none !important;
+    }
+    
     @media (max-width: 480px) {
       .signup-container {
         padding: 30px 20px;
@@ -246,7 +250,6 @@
     }
   </style>
 </head>
-
 
 <body>
   <div class="signup-container">
@@ -272,8 +275,8 @@
         <input type="text" id="phone" placeholder="256700000000" required />
       </div>
 
-      <!-- NEW REFERRER FIELD -->
-      <div class="form-group">
+      <!-- SALES AGENT FIELD WITH ID FOR TOGGLING -->
+      <div class="form-group" id="referrerGroup">
         <label for="referrer">Sales Agent Number <span class="optional-tag">(Optional)</span></label>
         <i class="fas fa-user-plus input-icon"></i>
         <input type="text" id="referrer" placeholder="256700000000" />
@@ -309,6 +312,7 @@
     </div>
   </div>
   
+  
 <script type="module">
   // Import Firebase modules
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
@@ -342,31 +346,32 @@
   const referralNotice = document.getElementById('referralNotice');
   const referralMessage = document.getElementById('referralMessage');
   const referrerInput = document.getElementById('referrer');
-  const referrerGroup = document.getElementById('referrerGroup'); // NEW - group container
+  const referrerGroup = document.getElementById('referrerGroup');
 
   // Check referral in URL
   const urlParams = new URLSearchParams(window.location.search);
   const refParam = urlParams.get('referrer');
 
-  // NEW: Check session storage for existing referrer
+  // Check session storage for existing referrer
   const sessionReferrer = sessionStorage.getItem('referrer');
   
+  // If referral exists in URL or session
   if (refParam || sessionReferrer) {
     const referrerValue = refParam || sessionReferrer;
     referralMessage.textContent += referrerValue;
     referralNotice.style.display = 'block';
     
-    // Prefill and hide referrer field
+    // Prefill and hide the Sales Agent field
     referrerInput.value = referrerValue;
-    referrerGroup.style.display = 'none'; // HIDE the field
+    referrerGroup.classList.add('hidden'); // Hide the field
     
     // Store in session storage if from URL
     if (refParam) {
       sessionStorage.setItem('referrer', refParam);
     }
   } else {
-    // Show referrer field if no referral in URL or session
-    referrerGroup.style.display = 'block'; // SHOW the field
+    // Show Sales Agent field if no referral
+    referrerGroup.classList.remove('hidden'); // Make sure it's visible
   }
 
   // Commission rates
@@ -380,7 +385,7 @@
     Enterprise: 0.8
   };
 
-  // Toggle password visibility
+// Toggle password visibility
   passwordToggle.addEventListener('click', () => {
     const type = passwordInput.type === 'password' ? 'text' : 'password';
     passwordInput.type = type;
@@ -430,9 +435,9 @@
       return;
     }
 
-    // Validate referrer if provided and visible
-    if (referrerGroup.style.display !== 'none' && referrerWhatsapp && !/^[0-9]{10,15}$/.test(referrerWhatsapp)) {
-      errorMsg.textContent = 'Please enter a valid Referrer WhatsApp number';
+    // Validate referrer if field is visible
+    if (!referrerGroup.classList.contains('hidden') && referrerWhatsapp && !/^[0-9]{10,15}$/.test(referrerWhatsapp)) {
+      errorMsg.textContent = 'Please enter a valid Sales Agent WhatsApp number';
       errorMsg.style.display = 'block';
       return;
     }
@@ -467,11 +472,13 @@
           referrerUserId = refDoc.id;
           referrerPackage = refData.package || "Starter";
           referrerCommissionRate = commissionRates[referrerPackage] || 0.2;
-        } else if (referrerGroup.style.display !== 'none') {
-          // Only show error if field was visible
-          errorMsg.textContent = 'Referrer not found. Please check the WhatsApp number';
-          errorMsg.style.display = 'block';
-          return;
+        } else {
+          // Only show error if the field was visible OR if it came from referral
+          if (!referrerGroup.classList.contains('hidden') || refParam || sessionReferrer) {
+            errorMsg.textContent = 'Sales Agent not found. Please check the WhatsApp number';
+            errorMsg.style.display = 'block';
+            return;
+          }
         }
       }
 
