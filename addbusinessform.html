@@ -295,8 +295,7 @@
       padding-left: 28px;
       font-size: 12px;
     }
-    
-     /* Form Styles */
+         /* Form Styles */
     .form-header {
       background: linear-gradient(to right, #f8fafc, #eef2ff);
       padding: 25px 30px;
@@ -440,8 +439,8 @@
       color: var(--secondary);
       margin-top: 5px;
     }
-
-  /* Package Selection Info */
+    
+/* Package Selection Info */
     .package-info {
       background: #eef2ff;
       border-radius: 8px;
@@ -901,9 +900,9 @@
           </thead>
           <tbody>
             <tr>
-              <td><button class="package-btn" data-package="Starter" data-price="0" data-items="2">Starter</button></td>
+              <td><button class="package-btn" data-package="Starter" data-price="0" data-items="6">Starter</button></td>
               <td>0</td>
-              <td>2</td>
+              <td>6</td>
               <td>20%</td>
               <td>-</td>
             </tr>
@@ -959,8 +958,8 @@
         <div class="example-item">
           <div class="example-number">1</div>
           <div>
-            <strong>Basic Plan (10,000 UGX/year):</strong> 
-            A small shop owner can list 10 products, earn 30% commission when referring other businesses, with no pinning benefits.
+            <strong>Starter Plan (Free):</strong> 
+            A small shop owner can list 6 products, earn 20% commission when referring other businesses, with no pinning benefits.
           </div>
         </div>
         <div class="example-item">
@@ -1027,7 +1026,7 @@
           <div class="details">
             <div class="name">Selected Package: <span id="selected-package">Starter</span></div>
             <div class="price">Price: <span id="selected-price">0</span> UGX/year</div>
-            <div>Items Allowed: <span id="selected-items">2</span></div>
+            <div>Items Allowed: <span id="selected-items">6</span></div>
           </div>
           <button class="change-btn" onclick="changePackage()">Change Package</button>
         </div>
@@ -1101,7 +1100,7 @@
         <div class="form-section">
           <div class="section-header">
             <i class="fas fa-box-open"></i>
-            <h3>Items & Services <span id="item-counter" class="item-counter">0/2</span></h3>
+            <h3>Items & Services <span id="item-counter" class="item-counter">0/6</span></h3>
           </div>
           
           <div class="items-header">
@@ -1173,7 +1172,7 @@
     // Global state
     let selectedPackage = null;
     let paymentComplete = false;
-    let maxItems = 2;
+    let maxItems = 6;  // Changed from 2 to 6
     let currentItems = 0;
     let currentUser = null;
     let isEditMode = false;
@@ -1312,7 +1311,6 @@
         alert("Could not load business data: " + error.message);
       }
     }
-
     // Save form state to sessionStorage
     function saveFormState() {
       const formData = {
@@ -1332,7 +1330,8 @@
       document.querySelectorAll('.item-card').forEach(card => {
         const title = card.querySelector('.item-title').value;
         const price = card.querySelector('.item-price').value;
-        const mediaUrl = card.querySelector('.media-url')?.value;
+        const mediaInput = card.querySelector('.media-url');
+        const mediaUrl = mediaInput ? mediaInput.value : null;
         const itemId = card.dataset.itemId;
         
         if (title && price) {
@@ -1439,8 +1438,8 @@
         const packageName = this.dataset.package;
         const packagePrice = parseInt(this.dataset.price);
         const packageItems = parseInt(this.dataset.items);
-
-  // Store selected package
+        
+        // Store selected package
         selectedPackage = {
           name: packageName,
           price: packagePrice,
@@ -1790,8 +1789,8 @@
         alert('Business description must be at least 10 words');
         return;
       }
-
-  // Collect items
+      
+      // Collect items
       const items = [];
       document.querySelectorAll(".item-card").forEach(card => {
         const title = card.querySelector(".item-title").value;
@@ -1840,7 +1839,7 @@
         businessData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
       }
 
-      // Save to sessionStorage for payment page
+    // Save to sessionStorage for payment page
       sessionStorage.setItem("businessData", JSON.stringify(businessData));
       sessionStorage.setItem("itemsData", JSON.stringify(items));
       
