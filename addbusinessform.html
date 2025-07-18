@@ -187,17 +187,15 @@
       font-size: 12px;
     }
     
-  
-/* Add to existing styles */
-.package-btn.selected {
-  background: var(--success) !important;
-  box-shadow: 0 0 0 2px var(--success) inset;
-  transform: scale(1.05);
-}
+    .package-btn.selected {
+      background: var(--success) !important;
+      box-shadow: 0 0 0 2px var(--success) inset;
+      transform: scale(1.05);
+    }
 
-.package-btn.selected:hover {
-  background: var(--success) !important;
-}
+    .package-btn.selected:hover {
+      background: var(--success) !important;
+    }
 
     .packages-table tr:nth-child(even) {
       background-color: #f8fafc;
@@ -298,7 +296,7 @@
       font-size: 12px;
     }
     
-    /* Form Styles */
+     /* Form Styles */
     .form-header {
       background: linear-gradient(to right, #f8fafc, #eef2ff);
       padding: 25px 30px;
@@ -442,8 +440,8 @@
       color: var(--secondary);
       margin-top: 5px;
     }
-    
-    /* Package Selection Info */
+
+  /* Package Selection Info */
     .package-info {
       background: #eef2ff;
       border-radius: 8px;
@@ -609,8 +607,8 @@
       transform: translateY(-2px);
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
-
- /* Form Footer */
+    
+    /* Form Footer */
     .form-footer {
       display: flex;
       justify-content: flex-end;
@@ -863,6 +861,7 @@
     }
   </style>
 </head>
+
 <body>
   <!-- Header -->
   <header>
@@ -1032,7 +1031,8 @@
           </div>
           <button class="change-btn" onclick="changePackage()">Change Package</button>
         </div>
- <!-- Scroll targets -->
+        
+        <!-- Scroll targets -->
         <div class="scroll-target" id="business-info"></div>
         
         <!-- Section 1: Business Information -->
@@ -1068,7 +1068,7 @@
                 <option value="entertainment">Entertainment</option>
                 <option value="travel">Travel</option>
                 <option value="sports">Sports</option>
-                <option value="all">Other Businesses</option>
+                <option value="all">All Businesses</option>
               </select>
             </div>
           </div>
@@ -1087,7 +1087,7 @@
             </div>
             
             <div class="form-group">
-              <label class="required">WhatsApp Number(Begin with 256...)</label>
+              <label class="required">WhatsApp Number</label>
               <input type="tel" id="whatsapp-number" class="form-control" placeholder="256712345678">
               <div class="form-note">Customers will contact you via WhatsApp using this number</div>
             </div>
@@ -1148,8 +1148,7 @@
     <div class="lightbox-content" id="lightbox-content"></div>
   </div>
   
-  
- <script>
+<script>
     // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
@@ -1181,6 +1180,16 @@
     let editingBusinessId = null;
     let editingItems = [];
     let deletedItems = [];
+
+    // Generate a Firestore-like ID (20 characters)
+    function generateBusinessId() {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let autoId = '';
+      for (let i = 0; i < 20; i++) {
+        autoId += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return autoId;
+    }
 
     // Check authentication
     auth.onAuthStateChanged(user => {
@@ -1430,8 +1439,8 @@
         const packageName = this.dataset.package;
         const packagePrice = parseInt(this.dataset.price);
         const packageItems = parseInt(this.dataset.items);
-        
-        // Store selected package
+
+  // Store selected package
         selectedPackage = {
           name: packageName,
           price: packagePrice,
@@ -1464,7 +1473,7 @@
           paymentComplete = false;
         }
         
- // Hide package reminder
+        // Hide package reminder
         document.getElementById('package-reminder').classList.add('hidden');
         
         saveFormState();
@@ -1562,6 +1571,7 @@
             saveFormState();
           }
         });
+        
         // If we have a media URL, create preview
         if (mediaUrl) {
           const wrapper = newItem.querySelector('.file-input-wrapper');
@@ -1606,7 +1616,8 @@
           urlInput.type = "hidden";
           urlInput.className = "media-url";
           urlInput.value = mediaUrl;
-             // Assemble
+          
+          // Assemble
           controlsDiv.appendChild(mediaElement);
           controlsDiv.appendChild(zoomBtn);
           wrapper.appendChild(controlsDiv);
@@ -1779,7 +1790,8 @@
         alert('Business description must be at least 10 words');
         return;
       }
-        // Collect items
+
+  // Collect items
       const items = [];
       document.querySelectorAll(".item-card").forEach(card => {
         const title = card.querySelector(".item-title").value;
@@ -1828,7 +1840,7 @@
         businessData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
       }
 
- // Save to sessionStorage for payment page
+      // Save to sessionStorage for payment page
       sessionStorage.setItem("businessData", JSON.stringify(businessData));
       sessionStorage.setItem("itemsData", JSON.stringify(items));
       
@@ -1910,15 +1922,17 @@
         this.disabled = true;
         this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
         
-        let businessId = editingBusinessId || crypto.randomUUID();
+        // Generate a new business ID if not in edit mode
+        let businessId = editingBusinessId || generateBusinessId();
         
         // STARTER PACKAGE OR EDIT MODE FLOW
         if (selectedPackage.name === 'Starter' || isEditMode) {
           // For new businesses
           if (!isEditMode) {
+            // Create document with custom businessId field
             await db.collection("businesses").doc(businessId).set({
               ...businessData,
-              businessId
+              businessId  // Add custom businessId field
             });
           } 
           // For existing businesses
@@ -1946,7 +1960,9 @@
                   title,
                   price: parseInt(price),
                   mediaUrl,
-                  lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                  lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+                  // Add timestamp for existing items
+                  timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
               } 
               // Delete marked items
@@ -1964,7 +1980,9 @@
                 mediaUrl,
                 businessId,
                 userId: currentUser.uid,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                // Add timestamp for new items
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
               });
             }
           });
@@ -2034,8 +2052,8 @@
         } else if(sectionId === 'review-submit') {
           document.querySelectorAll('.progress-step')[2].classList.add('active');
         }
-
- // Scroll to target
+        
+        // Scroll to target
         window.scrollTo({
           top: target.offsetTop - 100,
           behavior: 'smooth'
