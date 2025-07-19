@@ -231,8 +231,8 @@
             line-height: 1.5;
             color: #555;
         }
-
-   /* Action Buttons */
+        
+        /* Action Buttons */
         .action-bar {
             position: fixed;
             bottom: 0;
@@ -258,6 +258,9 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            border: none;
+            cursor: pointer;
+            font: inherit;
         }
         
         .action-button i {
@@ -292,7 +295,7 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* No Results */
+              /* No Results */
         .no-results {
             grid-column: 1 / -1;
             text-align: center;
@@ -357,7 +360,7 @@
             font-size: 14px;
         }
         
-        /* Responsive adjustments */
+ /* Responsive adjustments */
         @media (max-width: 480px) {
             .product-grid {
                 gap: 10px;
@@ -387,6 +390,15 @@
             .modal-content {
                 max-width: 95%;
             }
+        }
+        
+        /* Add this CSS for the new buttons */
+        .share-button {
+            background: linear-gradient(to right, #FF9800, #F57C00); /* Orange gradient */
+        }
+        
+        .call-button {
+            background: linear-gradient(to right, #4285F4, #1a73e8); /* Blue gradient */
         }
     </style>
 </head>
@@ -533,28 +545,33 @@
             `;  
         }  
 
-        function renderActionButtons(business) {  
-            if (!business.whatsapp && !business.businessLink) return;  
+        function renderActionButtons(business) {
+            // We want to show at least the share button
+            let buttons = "";
 
-            let buttons = "";  
+            if (business.whatsapp) {
+                buttons += `<a href="https://wa.me/${business.whatsapp}" class="action-button chat-button" target="_blank">
+                    <i class="fab fa-whatsapp"></i> Chat</a>`;
 
-            if (business.whatsapp) {  
-                buttons += `<a href="https://wa.me/${business.whatsapp}" class="action-button chat-button" target="_blank">  
-                    <i class="fab fa-whatsapp"></i> Chat via WhatsApp</a>`;  
-            }  
+                buttons += `<a href="tel:+${business.whatsapp}" class="action-button call-button">
+                    <i class="fas fa-phone"></i> Call</a>`;
+            }
 
-            if (business.businessLink) {  
-                const link = business.businessLink.startsWith("http")  
-                    ? business.businessLink  
-                    : "https://" + business.businessLink;  
+            if (business.businessLink) {
+                const link = business.businessLink.startsWith("http")
+                    ? business.businessLink
+                    : "https://" + business.businessLink;
 
-                buttons += `<a href="${link}" class="action-button link-button" target="_blank">  
-                    <i class="fas fa-external-link-alt"></i> Visit Business</a>`;  
-            }  
+                buttons += `<a href="${link}" class="action-button link-button" target="_blank">
+                    <i class="fas fa-external-link-alt"></i> Visit</a>`;
+            }
 
-            actionBar.innerHTML = buttons;  
-            actionBar.style.display = 'flex';  
-        }  
+            buttons += `<button class="action-button share-button" onclick="shareBusiness()">
+                <i class="fas fa-share-alt"></i> Share</button>`;
+
+            actionBar.innerHTML = buttons;
+            actionBar.style.display = 'flex';
+        }
 
         function renderItems(items) {  
             if (!items.length) {  
@@ -622,7 +639,7 @@
                 });
             });
             
-            // Close modal when clicking close button
+         // Close modal when clicking close button
             closeModal.addEventListener('click', function() {
                 closeLightbox();
             });
@@ -634,7 +651,7 @@
                 }
             });
             
-            // Close on ESC key
+                        // Close on ESC key
             document.addEventListener('keydown', function(e) {
                 if (e.key === "Escape" && lightboxModal.style.display === 'flex') {
                     closeLightbox();
@@ -678,6 +695,33 @@
         }  
 
         document.addEventListener('DOMContentLoaded', loadBusiness);  
+    </script>
+
+    <!-- Share Business Function -->
+    <script>
+        function shareBusiness() {
+            // Get business ID directly from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const businessId = urlParams.get('id');
+            
+            if (!businessId) {
+                alert("❌ No business ID found in URL.");
+                return;
+            }
+            
+            // Construct shareable URL
+            const shareUrl = `${window.location.origin}${window.location.pathname}?id=${businessId}`;
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(shareUrl)
+                .then(() => {
+                    alert("✅ Business link copied! Share it with your friends.");
+                })
+                .catch(err => {
+                    console.error('❌ Failed to copy:', err);
+                    alert("❌ Failed to copy link. Please try again.");
+                });
+        }
     </script>
 </body>
 </html>
