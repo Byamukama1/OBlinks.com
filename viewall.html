@@ -366,6 +366,10 @@
                 gap: 10px;
             }
             
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
             .product-image {
                 height: 100px;
             }
@@ -698,30 +702,103 @@
     </script>
 
     <!-- Share Business Function -->
-    <script>
-        function shareBusiness() {
-            // Get business ID directly from URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const businessId = urlParams.get('id');
-            
-            if (!businessId) {
-                alert("❌ No business ID found in URL.");
-                return;
-            }
-            
-            // Construct shareable URL
-            const shareUrl = `${window.location.origin}${window.location.pathname}?id=${businessId}`;
-            
-            // Copy to clipboard
-            navigator.clipboard.writeText(shareUrl)
-                .then(() => {
-                    alert("✅ Business link copied! Share it with your friends.");
-                })
-                .catch(err => {
-                    console.error('❌ Failed to copy:', err);
-                    alert("❌ Failed to copy link. Please try again.");
-                });
+   
+<script>
+// Function to show custom styled alert
+function showCustomAlert(message) {
+    // Create alert container
+    const alertContainer = document.createElement('div');
+    alertContainer.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    `;
+    
+    // Create alert box
+    const alertBox = document.createElement('div');
+    alertBox.style.cssText = `
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        text-align: center;
+        max-width: 80%;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        animation: fadeIn 0.3s ease-out;
+    `;
+    
+    // Create message
+    const messageElement = document.createElement('div');
+    messageElement.style.cssText = `
+        font-size: 18px;
+        color: #333;
+        line-height: 1.6;
+        margin-bottom: 25px;
+    `;
+    messageElement.innerHTML = message.replace(/\n/g, '<br>');
+    
+    // Create OK button
+    const okButton = document.createElement('button');
+    okButton.style.cssText = `
+        background: linear-gradient(to right, #1a73e8, #0d47a1);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 30px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 10px rgba(26, 115, 232, 0.3);
+    `;
+    okButton.textContent = 'OK';
+    okButton.onclick = () => document.body.removeChild(alertContainer);
+    
+    // Add elements to the DOM
+    alertBox.appendChild(messageElement);
+    alertBox.appendChild(okButton);
+    alertContainer.appendChild(alertBox);
+    document.body.appendChild(alertContainer);
+    
+    // Add keypress listener (Enter or Escape to close)
+    document.addEventListener('keydown', function handleKey(e) {
+        if (e.key === 'Enter' || e.key === 'Escape' || e.key === ' ') {
+            document.body.removeChild(alertContainer);
+            document.removeEventListener('keydown', handleKey);
         }
-    </script>
+    });
+}
+
+// Share Business Function
+function shareBusiness() {
+    // Get business ID directly from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const businessId = urlParams.get('id');
+    
+    if (!businessId) {
+        showCustomAlert("❌ No business ID found in URL.");
+        return;
+    }
+    
+    // Construct shareable URL
+    const shareUrl = `${window.location.origin}${window.location.pathname}?id=${businessId}`;
+    
+    // Copy to clipboard
+    navigator.clipboard.writeText(shareUrl)
+        .then(() => {
+            showCustomAlert("✅ Business link copied!\n\nShare it to your customers, friends, and on social media.");
+        })
+        .catch(err => {
+            console.error('❌ Failed to copy:', err);
+            showCustomAlert("❌ Failed to copy link. Please try again.");
+        });
+}
+</script>
 </body>
 </html>
