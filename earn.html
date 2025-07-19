@@ -133,7 +133,7 @@
             margin-bottom: 30px;
         }
         
-        .stat-card {
+  .stat-card {
             background: var(--card-bg);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
@@ -531,7 +531,7 @@
             display: none;
         }
         
-        .success-message {
+    .success-message {
             background: #e8f5e9;
             color: #2e7d32;
             padding: 15px;
@@ -541,7 +541,7 @@
             display: none;
         }
         
- @keyframes spin {
+        @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
@@ -625,6 +625,16 @@
         .stat-card.package-stat {
             border-top: 4px solid var(--secondary);
         }
+        
+        /* New debug info */
+        .debug-info {
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #64748b;
+        }
     </style>
 </head>
 <body>
@@ -705,8 +715,8 @@
                 <div class="stat-subtitle">Amount withdrawn</div>
             </div>
         </div>
-
-   <div class="referral-explainer">
+        
+        <div class="referral-explainer">
             <h3 class="section-title"><i class="fas fa-handshake"></i> How Referral Earnings Work</h3>
             <p class="info-text">
                 OBlinks rewards you for helping other businesses grow. When you refer a business owner to our platform, 
@@ -807,7 +817,7 @@
             </div>
         </div>
         
-        <div class="withdrawal-form">
+     <div class="withdrawal-form">
             <h3 class="form-title"><i class="fas fa-money-check-alt"></i> Request Withdrawal</h3>
             <form id="withdrawalForm">
                 <div class="form-grid">
@@ -916,8 +926,8 @@
                         Referral Commission: <span class="feature-value">50%</span>
                     </div>
                 </div>
-
-  <!-- Professional Package -->
+                
+                <!-- Professional Package -->
                 <div class="package-card">
                     <div class="package-name">Professional</div>
                     <div class="package-price">100,000 UGX/year</div>
@@ -933,7 +943,8 @@
                         Referral Commission: <span class="feature-value">60%</span>
                     </div>
                 </div>
-                !-- Premium Package -->
+                
+                <!-- Premium Package -->
                 <div class="package-card">
                     <div class="package-name">Premium</div>
                     <div class="package-price">150,000 UGX/year</div>
@@ -969,14 +980,17 @@
             </div>
         </div>
         
+        <div class="debug-info">
+            <p><strong>Debug Info:</strong> Commission rate is determined by your most recent business package</p>
+        </div>
+        
         <footer>
             <p>© 2023 OBlinks - The Global Business Platform. All rights reserved.</p>
             <p>Helping businesses grow through effective online advertising</p>
         </footer>
     </div>
 
-  
-<script>
+   <script>
     // Firebase configuration
     const firebaseConfig = {
         apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
@@ -991,9 +1005,6 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const auth = firebase.auth();
-
-    // Set your server URL
-    const SERVER_URL = 'https://oblinks-payment-server.onrender.com';
 
     // DOM elements
     const userInitial = document.getElementById('userInitial');
@@ -1051,24 +1062,6 @@
         setTimeout(() => {
             successMessage.style.display = 'none';
         }, 5000);
-    }
-
-    // Phone number validation and formatting function
-    function validateAndFormatPhone(phone) {
-        // Remove all non-digit characters
-        const cleaned = phone.replace(/\D/g, '');
-        
-        // Check for Uganda numbers (07 or +256 prefix)
-        if (cleaned.startsWith('07') && cleaned.length === 10) {
-            return '256' + cleaned.substring(1); // Convert 07... to 256...
-        } 
-        else if (cleaned.startsWith('2567') && cleaned.length === 12) {
-            return cleaned; // Already in correct format
-        }
-        else if (cleaned.startsWith('+2567') && cleaned.length === 13) {
-            return cleaned.substring(1); // Remove the '+'
-        }
-        return null; // Invalid format
     }
 
     // Check authentication state
@@ -1155,49 +1148,23 @@
 
     // Fetch all dashboard data
     function fetchDashboardData() {
-        // 1. Get paid earnings data
-        const earningsPromise = db.collection("earnings")
+        // 1. Get earnings data
+        db.collection("earnings")
             .where("referrerId", "==", currentUser.uid)
-            .get();
-        
-        // 2. Get starter referrals from users collection
-        const starterPromise = userData.whatsapp 
-            ? db.collection("users")
-                .where("referrerWhatsapp", "==", userData.whatsapp)
-                .where("package", "==", "Starter")
-                .get()
-            : Promise.resolve({ empty: true, forEach: () => {} }); // Empty promise if no whatsapp
-
-        Promise.all([earningsPromise, starterPromise])
-            .then(([earningsSnapshot, starterSnapshot]) => {
+            .get()
+            .then(earningsSnapshot => {
                 let totalEarnings = 0;
                 earningsData = [];
                 
-                // Process paid earnings
                 earningsSnapshot.forEach(doc => {
                     const earning = doc.data();
                     earningsData.push(earning);
                     totalEarnings += earning.commission;
                 });
                 
-                // Process starter referrals
-                starterSnapshot.forEach(doc => {
-                    const user = doc.data();
-                    earningsData.push({
-                        refereeWhatsapp: user.whatsapp,
-                        packageBought: "Starter",
-                        amountPaid: 0,
-                        commission: 0,
-                        timestamp: doc.createTime // Use document creation time
-                    });
-                });
-                
-                // Sort by timestamp (newest first)
-                earningsData.sort((a, b) => b.timestamp.toMillis() - a.timestamp.toMillis());
-                
                 // Update earnings data
                 totalEarned.textContent = `UGX ${totalEarnings.toLocaleString()}`;
-                referralCount.textContent = earningsData.length; // Includes both paid and starter
+                referralCount.textContent = earningsSnapshot.size;
                 
                 // Build earnings table
                 buildEarningsTable();
@@ -1229,8 +1196,7 @@
                     };
                     withdrawalsData.push(withdrawal);
                     
-                    // ONLY COUNT APPROVED WITHDRAWALS
-                    if (data.status === 'approved') {
+                    if (data.status === 'completed') {
                         totalWithdrawnAmount += data.amount;
                     } else if (data.status === 'pending') {
                         pendingWithdrawnAmount += data.amount;
@@ -1278,8 +1244,8 @@
                     <tr>
                         <td>${earning.refereeWhatsapp || 'N/A'}</td>
                         <td>${earning.packageBought || 'N/A'}</td>
-                        <td>UGX ${(earning.amountPaid || 0).toLocaleString()}</td>
-                        <td>UGX ${(earning.commission || 0).toLocaleString()}</td>
+                        <td>UGX ${earning.amountPaid.toLocaleString()}</td>
+                        <td>UGX ${earning.commission.toLocaleString()}</td>
                         <td>${formattedDate}</td>
                     </tr>
                 `);
@@ -1293,7 +1259,7 @@
         earningsLoading.style.display = 'none';
         earningsTable.style.display = 'table';
     }
-    
+
     // Build withdrawals table
     function buildWithdrawalsTable() {
         const withdrawalsRows = [];
@@ -1313,8 +1279,8 @@
                 const date = withdrawal.timestamp.toDate();
                 const formattedDate = `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
                 
-                // Status badge with 'approved' status
-                const statusClass = withdrawal.status === 'approved' ? 'status-paid' : 
+                // Status badge
+                const statusClass = withdrawal.status === 'completed' ? 'status-paid' : 
                                   withdrawal.status === 'pending' ? 'status-pending' : 'status-default';
                 const statusText = withdrawal.status.charAt(0).toUpperCase() + withdrawal.status.slice(1);
                 
@@ -1355,114 +1321,53 @@
         showSuccess("Referral link copied to clipboard!");
     }
     
-  // Handle withdrawal form submission
-withdrawalForm.addEventListener('submit', async function(e) {
-    e.preventDefault();
-
-    const amountInput = document.getElementById('amount');
-    const methodInput = document.getElementById('method');
-    const detailsInput = document.getElementById('details');
-
-    const amount = parseFloat(amountInput.value);
-    const method = methodInput.value;
-    let details = detailsInput.value;
-
-    // Validate amount
-    if (isNaN(amount) || amount < 5000) {
-        showError('Minimum withdrawal amount is 5,000 UGX');
-        amountInput.focus();
-        return;
-    }
-
-    // Check sufficient balance
-    if (amount > currentBalance) {
-        showError(`Insufficient balance. Your available balance is UGX ${currentBalance.toLocaleString()}`);
-        return;
-    }
-
-    // Validate and format phone number for Mobile Money
-    if (method === 'mobile_money') {
-        const formattedPhone = validateAndFormatPhone(details);
-        if (!formattedPhone) {
-            showError('Invalid phone number. Please use a valid Uganda number (07XXXXXXXX or +2567XXXXXXXX)');
-            detailsInput.focus();
+    // Handle withdrawal form submission
+    withdrawalForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const amount = parseFloat(document.getElementById('amount').value);
+        const method = document.getElementById('method').value;
+        const details = document.getElementById('details').value;
+        
+        // Validate amount
+        if (amount < 5000) {
+            showError('Minimum withdrawal amount is 5,000 UGX');
             return;
         }
-        details = formattedPhone;
-    }
-
-    let withdrawalId = null;
-    try {
-        // Disable button during processing
-        const submitBtn = withdrawalForm.querySelector('.withdraw-btn');
-        submitBtn.disabled = true;
-        const originalBtnText = submitBtn.textContent;
-        submitBtn.textContent = 'Processing...';
-
-        // Show early message
-        showSuccess(`Withdrawal request for UGX ${amount.toLocaleString()} submitted! Processing...`);
-
-        // Create Firestore withdrawal record
+        
+        // Check sufficient balance
+        if (amount > currentBalance) {
+            showError(`Insufficient balance. Your available balance is UGX ${currentBalance.toLocaleString()}`);
+            return;
+        }
+        
+        // Create withdrawal record
         const withdrawalData = {
             userId: currentUser.uid,
             whatsapp: userData.whatsapp,
-            emailAddress: currentUser.email,
             amount: amount,
             method: method,
-            account: details,
+            details: details,
             status: 'pending',
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         };
-
-        const withdrawalRef = await db.collection("withdrawals").add(withdrawalData);
-        withdrawalId = withdrawalRef.id;
-
-        // Call backend to process this withdrawal
-        const response = await fetch(`${SERVER_URL}/process-single-withdrawal`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ withdrawalId })
-        });
-
-        const result = await response.json();
-
-        if (response.ok && result.success) {
-            showSuccess(`Withdrawal for UGX ${amount.toLocaleString()} processed successfully!`);
-            withdrawalForm.reset();
-            fetchDashboardData();
-        } else {
-            throw new Error(result.error || 'Withdrawal processing failed');
-        }
-
-    } catch (error) {
-        console.error("Withdrawal error:", error);
-        showError(`Withdrawal failed: ${error.message}`);
-
-        // Mark in Firestore as failed
-        if (withdrawalId) {
-            await db.collection("withdrawals").doc(withdrawalId).update({
-                status: 'failed',
-                errorMessage: error.message
-            });
-        }
-    } finally {
-        // Re-enable button
-        const submitBtn = withdrawalForm.querySelector('.withdraw-btn');
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Request Withdrawal';
-    }
-});
-
-    // Initialize dashboard when page loads
-    document.addEventListener('DOMContentLoaded', () => {
-        // Refresh dashboard every 60 seconds
-        setInterval(() => {
-            if (currentUser) {
+        
+        // Add to Firestore
+        db.collection("withdrawals").add(withdrawalData)
+            .then(() => {
+                // Show success message
+                showSuccess(`Withdrawal request for UGX ${amount.toLocaleString()} has been submitted!`);
+                
+                // Reset form
+                withdrawalForm.reset();
+                
+                // Refresh data
                 fetchDashboardData();
-            }
-        }, 60000);
+            })
+            .catch(error => {
+                console.error("Error adding withdrawal: ", error);
+                showError('Failed to submit withdrawal request. Please try again.');
+            });
     });
 </script>
 </body>
