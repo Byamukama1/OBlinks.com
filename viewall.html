@@ -1,804 +1,1482 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OBlinks - View All Items</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: #f5f9fc;
-            color: #333;
-            padding: 15px;
-            max-width: 100%;
-            overflow-x: hidden;
-            padding-bottom: 70px; /* Space for action buttons */
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        /* Header Styles */
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-        
-        .back-button {
-            background-color: #1a73e8;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            font-size: 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            text-decoration: none;
-        }
-        
-        .back-button i {
-            font-size: 10px;
-        }
-        
-        .search-container {
-            width: 100%;
-            margin: 15px 0;
-        }
-        
-        .search-bar {
-            width: 100%;
-            padding: 10px 15px;
-            border: 2px solid #1a73e8;
-            border-radius: 30px;
-            font-size: 12px;
-            background-color: white;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        
-        .search-bar:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.3);
-        }
-        
-        /* Title Styles */
-        .page-title {
-            color: #1a73e8;
-            text-align: center;
-            margin: 15px 0;
-            font-size: 18px;
-            font-weight: 600;
-        }
-        
-        /* Product Grid */
-        .product-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        
-        .product-card {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-            transition: transform 0.2s;
-        }
-        
-        .product-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .product-image {
-            width: 100%;
-            height: 120px;
-            background: linear-gradient(135deg, #e0f0ff, #b3d7ff);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-        }
-        
-        .product-image img, .product-image video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s;
-        }
-        
-        .product-image:hover img,
-        .product-image:hover video {
-            transform: scale(1.05);
-        }
-        
-        .product-image i {
-            font-size: 40px;
-            color: #1a73e8;
-            opacity: 0.7;
-        }
-        
-        .play-icon {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.6);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2;
-        }
-        
-        .play-icon i {
-            color: white;
-            font-size: 20px;
-        }
-        
-        .discount-badge {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background-color: #e53935;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 15px;
-            font-size: 10px;
-            font-weight: bold;
-            z-index: 2;
-        }
-        
-        .product-info {
-            padding: 12px;
-        }
-        
-        .product-name {
-            font-size: 11px;
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: #1a237e;
-            height: 32px;
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-        }
-        
-        .product-price {
-            font-size: 13px;
-            font-weight: bold;
-            color: #e53935;
-            margin: 8px 0;
-        }
-        
-        .order-button {
-            display: block;
-            width: 100%;
-            background: linear-gradient(to right, #1a73e8, #0d47a1);
-            color: white;
-            text-align: center;
-            padding: 8px;
-            border-radius: 5px;
-            font-size: 11px;
-            font-weight: bold;
-            text-decoration: none;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-        }
-        
-        .order-button:hover {
-            background: linear-gradient(to right, #0d47a1, #1a73e8);
-            transform: scale(1.02);
-        }
-               /* Business Description */
-        .business-description {
-            margin-top: 30px;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-        }
-        
-        .business-description h2 {
-            color: #1a73e8;
-            margin-bottom: 10px;
-            font-size: 16px;
-        }
-        
-        .business-description p {
-            font-size: 14px;
-            line-height: 1.5;
-            color: #555;
-        }
-        
-        /* Action Buttons */
-        .action-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            background: white;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            z-index: 1000;
-            padding: 10px;
-            gap: 10px;
-        }
-        
-        .action-button {
-            flex: 1;
-            text-align: center;
-            padding: 12px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            border: none;
-            cursor: pointer;
-            font: inherit;
-        }
-        
-        .action-button i {
-            font-size: 16px;
-        }
-        
-        .chat-button {
-            background: #25D366; /* WhatsApp green */
-        }
-        
-        .link-button {
-            background: #1a73e8; /* OBlinks blue */
-        }
-        
-        /* Loading State */
-        .loading {
-            text-align: center;
-            padding: 30px;
-            font-size: 14px;
-            color: #666;
-        }
-        
-        .loading i {
-            font-size: 24px;
-            margin-bottom: 10px;
-            color: #1a73e8;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-              /* No Results */
-        .no-results {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 30px;
-            font-size: 14px;
-            color: #666;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OBlinks | Global Business Platform</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-        /* Lightbox Modal */
-        .lightbox-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal-content {
-            max-width: 90%;
-            max-height: 90%;
-            position: relative;
-        }
-        
-        .modal-content img,
-        .modal-content video {
-            max-width: 100%;
-            max-height: 80vh;
-            display: block;
-            margin: 0 auto;
-            border-radius: 8px;
-        }
-        
-        .close-modal {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            color: white;
-            font-size: 30px;
-            cursor: pointer;
-            z-index: 3;
-            background: rgba(0,0,0,0.5);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal-controls {
-            position: absolute;
-            bottom: 20px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            color: white;
-            font-size: 14px;
-        }
-        
- /* Responsive adjustments */
-        @media (max-width: 480px) {
-            .product-grid {
-                gap: 10px;
-            }
-            
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #64748b;
+      --light: #f8fafc;
+      --dark: #1e293b;
+      --whatsapp: #25D366;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --bg: #ffffff;
+      --border: #e2e8f0;
+      --accent: #8b5cf6;
+      --panel-bg: rgba(255, 255, 255, 0.95);
+      --overlay: rgba(0, 0, 0, 0.5);
+       --call: #4285F4;}
+
+    body {
+      background-color: #f1f5f9;
+      color: var(--dark);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Header Styles */
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 15px 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      z-index: 100;
+      position: sticky;
+      top: 0;
+    }
+.btn-call {
+  background: var(--call);
+  color: white;
 }
-            .product-image {
-                height: 100px;
-            }
-            
-            .product-info {
-                padding: 8px;
-            }
-            
-            .product-name {
-                font-size: 10px;
-            }
-            
-            .action-button {
-                font-size: 12px;
-                padding: 10px;
-            }
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
 
-            .lightbox-modal {
-                padding: 10px;
-            }
-            
-            .modal-content {
-                max-width: 95%;
-            }
-        }
-        
-        /* Add this CSS for the new buttons */
-        .share-button {
-            background: linear-gradient(to right, #FF9800, #F57C00); /* Orange gradient */
-        }
-        
-        .call-button {
-            background: linear-gradient(to right, #4285F4, #1a73e8); /* Blue gradient */
-        }
-    </style>
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-text h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .tagline {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .search-container {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 30px;
+      padding: 8px 15px;
+      width: 250px;
+    }
+
+    .search-input {
+      background: transparent;
+      border: none;
+      color: white;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .search-input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .search-input:focus {
+      outline: none;
+    }
+
+.carousel-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1rem;
+}
+
+.carousel-slides {
+  display: flex;
+  transition: transform 0.5s ease;
+}
+
+.carousel-slide {
+  min-width: 100%;
+}
+
+.carousel-slide img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      position: relative;
+    }
+
+    .icon-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: var(--error);
+      color: white;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+   /* Carousel Section */
+/* Carousel Section */
+.carousel-container {
+  max-width: 1200px;
+  margin: 20px auto;
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  height: 300px;  /* height untouched */
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.carousel-slides {
+  display: flex;
+  height: 100%;
+  transition: transform 0.5s ease-in-out;
+  /* No width here at all — JS will control it */
+}
+
+.carousel-slide {
+  flex: 0 0 100%;
+  height: 100%;
+  position: relative;
+}
+
+.carousel-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.carousel-indicators {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.carousel-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  cursor: pointer;
+}
+
+.carousel-indicator.active {
+  background: white;
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.3);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+.carousel-btn:hover {
+  background: rgba(255,255,255,0.5);
+}
+
+.carousel-prev {
+  left: 20px;
+}
+
+.carousel-next {
+  right: 20px;
+}
+    
+      /* Main Content */
+    .main-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      flex-grow: 1;
+      padding-bottom: 70px;
+    }
+
+    .content-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .content-header h2 {
+      color: var(--dark);
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .business-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+    }
+
+    .card-media {
+      height: 200px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-media img, .card-media video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .card-media:hover img, .card-media:hover video {
+      transform: scale(1.05);
+    }
+
+    .media-scroll {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      height: 100%;
+    }
+
+    .media-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .media-item {
+      scroll-snap-align: start;
+      min-width: 100%;
+      height: 200px;
+      position: relative;
+    }
+
+    .media-indicators {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 5px;
+      z-index: 10;
+    }
+
+    .media-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+    }
+
+    .media-indicator.active {
+      background: white;
+    }
+
+    .card-header {
+      padding: 15px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(to right, #f8fafc, #f1f5f9);
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--primary-dark);
+      text-align: center;
+    }
+
+    .card-meta {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      font-size: 12px;
+      color: var(--secondary);
+      margin-bottom: 5px;
+    }
+
+    .card-country {
+      font-size: 12px;
+      color: var(--dark);
+      background: rgba(37, 99, 235, 0.1);
+      padding: 3px 8px;
+      border-radius: 12px;
+      display: inline-block;
+      margin: 0 auto;
+    }
+
+    .card-body {
+      padding: 15px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-description {
+      color: #475569;
+      font-size: 14px;
+      margin-bottom: 15px;
+      line-height: 1.6;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      overflow: hidden;
+      min-height: 66px;
+      transition: all 0.3s ease;
+    }
+
+    .card-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--secondary);
+      padding: 8px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 15px;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .like-btn {
+      color: #ef4444;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .like-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .btn-container {
+      display: flex;
+      gap: 4px;
+      margin-top: auto;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .btn-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    .btn {
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+      min-width: 60px;
+      justify-content: center;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .btn-order {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-chat {
+      background: var(--whatsapp);
+      color: white;
+    }
+
+    .btn-link {
+  background: none;
+  border: none;
+  color: var(--secondary);
+  box-shadow: none;
+}
+
+    .btn-view {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn i {
+      font-size: 14px;
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+      z-index: 100;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      text-decoration: none;
+      color: var(--secondary);
+      font-size: 12px;
+      transition: color 0.3s ease;
+      flex: 1;
+      position: relative;
+    }
+
+    .nav-item.active {
+      color: var(--primary);
+    }
+
+    .nav-item i {
+      font-size: 20px;
+    }
+
+    .nav-item.add-btn {
+      position: absolute;
+      top: -25px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      z-index: 101;
+    }
+
+    .nav-item.add-btn i {
+      font-size: 24px;
+    }
+
+    .nav-item.add-btn span {
+      display: none;
+    }
+
+    /* Category Panel */
+    .category-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--overlay);
+      z-index: 1000;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .category-panel {
+      position: fixed;
+      bottom: -100%;
+      left: 0;
+      right: 0;
+      background: var(--panel-bg);
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+      z-index: 1001;
+      transition: bottom 0.4s ease;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 15px;
+      margin-bottom: 15px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-title {
+      font-size: 22px;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .close-panel {
+      background: #f1f5f9;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .close-panel:hover {
+      background: #e2e8f0;
+      transform: rotate(90deg);
+    }
+
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 15px;
+    }
+
+    .category-card {
+      background: white;
+      border-radius: 12px;
+      padding: 15px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+      border: 1px solid var(--border);
+      cursor: pointer;
+    }
+
+    .category-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      border-color: var(--primary);
+    }
+
+    .category-icon {
+      width: 60px;
+      height: 60px;
+      background: rgba(37, 99, 235, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 10px;
+      color: var(--primary);
+      font-size: 24px;
+    }
+
+    .category-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--dark);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-wrap: wrap;
+      }
+
+      .search-container {
+        order: 3;
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      .business-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .carousel-container {
+        height: 250px;
+      }
+
+      .nav-item.add-btn {
+        width: 50px;
+        height: 50px;
+      }
+
+      .categories-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      }
+    }
+
+    @media (max-width: 480px) {
+      .carousel-container {
+        height: 200px;
+      }
+
+      .btn-container {
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        min-width: auto;
+        flex: none;
+      }
+
+      .nav-item.add-btn {
+        width: 45px;
+        height: 45px;
+      }
+
+      .category-card {
+        padding: 12px;
+      }
+
+      .category-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+      }
+    }
+    /* Loading spinner */
+    .loading-spinner {
+      display: flex;
+      justify-content: center;
+      padding: 40px;
+      grid-column: 1 / -1;
+    }
+
+    .loading-spinner i {
+      font-size: 40px;
+      color: var(--primary);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Lightbox styles */
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .lightbox-content {
+      max-width: 90%;
+      max-height: 90%;
+      position: relative;
+    }
+
+    .lightbox-content img, 
+    .lightbox-content video {
+      max-width: 100%;
+      max-height: 80vh;
+      border-radius: 8px;
+    }
+
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: red;
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 2px 5px;
+  border-radius: 50%;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+    .close-lightbox {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+      z-index: 10001;
+    }
+  </style>
+  <!-- Add this to your CSS -->
+<style>
+  /* Fixed carousel styles */
+  .carousel-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    height: 260px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+
+  .carousel-slides {
+    display: flex;
+    height: 100%;
+    transition: transform 0.5s ease-in-out;
+    width: 100%; /* Crucial fix */
+  }
+
+  .carousel-slide {
+    flex: 0 0 100%;
+    min-width: 100%; /* Ensures slides don't shrink */
+    height: 100%;
+    position: relative;
+  }
+</style>
 </head>
 
 <body>
-    <div class="container">
-        <!-- Header with back button -->
-        <div class="header">
-            <a href="index.html? id=${docId}" class="back-button">
-                <i class="fas fa-arrow-left"></i> Back
-            </a>
+<!-- Header -->  
+<header>  
+  <div class="header-content">  
+    <div class="logo">  
+      <div class="logo-text">  
+        <h1>OnlineMarket-Ug</h1>  
+        <p class="tagline">Powered By OBlinks<br>The Global Business Platform </p>  
+      </div>  
+    </div>  
+
+    <div class="search-container">  
+      <input type="text" class="search-input" placeholder="🔍 Search item on OBlinks" id="search-input">  
+      <i class="fas fa-search"></i>  
+    </div>
+
+    <div class="dropdown" id="notification-dropdown" style="position: relative; cursor: pointer;">  
+      <a href="notifications.html" class="icon-btn" style="text-decoration: none; color: inherit;">  
+        <i class="fas fa-bell"></i>  
+        <span id="notification-badge" class="badge" style="display: none;">0</span>  
+      </a>  
+    </div>  
+
+  <div class="dropdown" id="profile-dropdown" style="cursor: pointer;">
+  <a href="myaccount.html" class="icon-btn">
+    <img id="navUserImage" 
+         src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23FFFFFF' viewBox='0 0 24 24'%3E%3Cpath d='M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z'/%3E%3C/svg%3E"
+         alt="User" 
+         style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; display: block;">
+  </a>
+</div>
+  </div>  
+</header>
+
+  <!-- Carousel Section - Announcements --><div class="carousel-container" style="margin-top: 1px; padding-top: 0;position: relative; overflow: hidden; height: 260px;">
+<div class="carousel-slides" id="announcement-slides">
+    <!-- Slides will be inserted dynamically from Firestore -->
+  </div>
+</div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="content-header">
+      <h2><i class="fas fa-briefcase"></i> Featured Businesses</h2>
+    </div>
+
+    <div class="business-cards" id="business-cards-container">
+      <div class="loading-spinner">
+        <i class="fas fa-spinner"></i>
+      </div>
+    </div>
+  </main>
+
+  <!-- Category Panel -->
+  <div class="category-overlay" id="category-overlay"></div>
+
+  <div class="category-panel" id="category-panel">
+    <div class="panel-header">
+      <h2 class="panel-title"><i class="fas fa-layer-group"></i> Business Categories</h2>
+      <button class="close-panel" id="close-panel">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="categories-grid">
+      <div class="category-card" data-category="electronics">
+        <div class="category-icon">
+          <i class="fas fa-laptop"></i>
         </div>
-        
-        <!-- Search bar -->
-        <div class="search-container">
-            <input type="text" class="search-bar" placeholder="Search with OBlinks...">
+        <div class="category-name">Electronics</div>
+      </div>
+
+      <div class="category-card" data-category="fashion">
+        <div class="category-icon">
+          <i class="fas fa-tshirt"></i>
         </div>
-        
-        <!-- Page title -->
-        <h1 class="page-title">VIEW ALL ITEMS</h1>
-        
-        <!-- Product grid -->
-        <div class="product-grid" id="productGrid">
-            <!-- Items will be loaded dynamically -->
-            <div class="loading">
-                <i class="fas fa-spinner"></i>
-                <p>Loading items...</p>
+        <div class="category-name">Fashion</div>
+      </div>
+
+      <div class="category-card" data-category="food">
+        <div class="category-icon">
+          <i class="fas fa-utensils"></i>
+        </div>
+        <div class="category-name">Food & Dining</div>
+      </div>
+
+      <div class="category-card" data-category="services">
+        <div class="category-icon">
+          <i class="fas fa-concierge-bell"></i>
+        </div>
+        <div class="category-name">Services</div>
+      </div>
+
+      <div class="category-card" data-category="home">
+        <div class="category-icon">
+          <i class="fas fa-home"></i>
+        </div>
+        <div class="category-name">Home & Garden</div>
+      </div>
+
+      <div class="category-card" data-category="health">
+        <div class="category-icon">
+          <i class="fas fa-heartbeat"></i>
+        </div>
+        <div class="category-name">Health & Beauty</div>
+      </div>
+
+      <div class="category-card" data-category="auto">
+        <div class="category-icon">
+          <i class="fas fa-car"></i>
+        </div>
+        <div class="category-name">Automotive</div>
+      </div>
+
+      <div class="category-card" data-category="education">
+        <div class="category-icon">
+          <i class="fas fa-graduation-cap"></i>
+        </div>
+        <div class="category-name">Education</div>
+      </div>
+
+      <div class="category-card" data-category="entertainment">
+        <div class="category-icon">
+          <i class="fas fa-film"></i>
+        </div>
+        <div class="category-name">Entertainment</div>
+      </div>
+
+      <div class="category-card" data-category="travel">
+        <div class="category-icon">
+          <i class="fas fa-plane"></i>
+        </div>
+        <div class="category-name">Travel</div>
+      </div>
+
+      <div class="category-card" data-category="sports">
+        <div class="category-icon">
+          <i class="fas fa-basketball-ball"></i>
+        </div>
+        <div class="category-name">Sports</div>
+      </div>
+
+      <div class="category-card" data-category="all">
+        <div class="category-icon">
+          <i class="fas fa-store"></i>
+        </div>
+        <div class="category-name">All Businesses</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="#" class="nav-item active">
+      <i class="fas fa-home"></i>
+      <span>Home</span>
+    </a>
+    <a href="#" class="nav-item" id="category-nav">
+      <i class="fas fa-layer-group"></i>
+      <span>Category</span>
+    </a>
+    <a href="addbusinessform.html" class="nav-item add-btn">
+      <i class="fas fa-plus"></i>
+      <span>Add</span>
+    </a>
+    <a href="earn.html" class="nav-item">
+      <i class="fas fa-money-bill-wave"></i>
+      <span>Earn</span>
+    </a>
+    <a href="myaccount.html" class="nav-item">
+      <i class="fas fa-user"></i>
+      <span>Account</span>
+    </a>
+  </nav>
+
+  <!-- Lightbox for media -->
+  <div class="lightbox" id="lightbox">
+    <div class="close-lightbox" id="close-lightbox">
+      <i class="fas fa-times"></i>
+    </div>
+    <div class="lightbox-content" id="lightbox-content"></div>
+  </div>
+  <script>
+    // Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
+  authDomain: "oblinks-7fdb1.firebaseapp.com",
+  projectId: "oblinks-7fdb1",
+  storageBucket: "oblinks-7fdb1.appspot.com",
+  messagingSenderId: "587017639779",
+  appId: "1:587017639779:web:d11b60f40f431cfc202556"
+};
+
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // DOM elements
+    const container = document.getElementById('business-cards-container');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxContent = document.getElementById('lightbox-content');
+    const closeLightbox = document.getElementById('close-lightbox');
+
+    // Load businesses from Firestore
+    function loadBusinesses() {
+      container.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner"></i></div>';
+
+      const q = db.collection("businesses").orderBy("timestamp", "desc");
+q.get()
+        .then((querySnapshot) => {
+          container.innerHTML = '';
+
+          if (querySnapshot.empty) {
+            container.innerHTML = '<p class="no-results">No businesses found. Be the first to add one!</p>';
+            return;
+          }
+
+          querySnapshot.forEach((doc) => {
+            const business = doc.data();
+            createBusinessCard(business, doc.id);
+          });
+          // Initialize carousels after cards are created
+          initCarousels();
+        })
+        .catch((error) => {
+          console.error("Error loading businesses: ", error);
+          container.innerHTML = '<p class="error">Failed to load businesses. Please try again later.</p>';
+        });
+    }
+
+    // Create business card element
+    function createBusinessCard(business, docId) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.dataset.category = business.category || 'all';
+
+      // Create media HTML
+      let mediaHTML = '';
+      if (business.mediaUrls && business.mediaUrls.length > 0) {
+        mediaHTML = '<div class="media-scroll">';
+        business.mediaUrls.forEach((url, index) => {
+          const isVideo = url.endsWith('.mp4') || url.endsWith('.webm');
+          mediaHTML += `
+            <div class="media-item" data-index="${index}">
+              ${isVideo 
+                ? `<video src="${url}" muted playsinline></video>`
+                : `<img src="${url}" alt="${business.title}">`}
             </div>
-        </div>
-        
-        <!-- Business Description -->
-        <div class="business-description" id="businessDescription">
-            <!-- Business description will be loaded dynamically -->
-        </div>
-        
-        <!-- Footer -->
-        <div class="footer">
-            <p>OBlinks &copy; 2023 - Your Trusted Shopping Partner</p>
-        </div>
-    </div>
+          `;
+        });
+        mediaHTML += '</div>';
 
-    <!-- Action Buttons -->
-    <div class="action-bar" id="actionBar" style="display: none;">
-        <!-- Buttons will be added dynamically -->
-    </div>
-
-    <!-- Lightbox Modal -->
-    <div class="lightbox-modal" id="lightboxModal">
-        <span class="close-modal" id="closeModal">&times;</span>
-        <div class="modal-content" id="modalContent"></div>
-        <div class="modal-controls" id="modalControls"></div>
-    </div>
-
-    <script type="module">  
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";  
-        import {  
-            getFirestore,  
-            doc,  
-            getDoc,  
-            collection,  
-            query,  
-            where,  
-            orderBy,  
-            getDocs  
-        } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";  
-
-        const firebaseConfig = {  
-            apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",  
-            authDomain: "oblinks-7fdb1.firebaseapp.com",  
-            projectId: "oblinks-7fdb1",  
-            storageBucket: "oblinks-7fdb1.appspot.com",  
-            messagingSenderId: "79327968002",  
-            appId: "1:79327968002:web:8c5b0c44e9f9f2e67c04b3",  
-            measurementId: "G-HF4PZ4C83N"  
-        };  
-
-        const app = initializeApp(firebaseConfig);  
-        const db = getFirestore(app);  
-
-        const urlParams = new URLSearchParams(window.location.search);  
-        const businessDocId = urlParams.get('id');  
-
-        const productGrid = document.getElementById('productGrid');  
-        const businessDescription = document.getElementById('businessDescription');  
-        const actionBar = document.getElementById('actionBar');  
-        const searchBar = document.querySelector('.search-bar');  
-        const lightboxModal = document.getElementById('lightboxModal');  
-        const modalContent = document.getElementById('modalContent');  
-        const closeModal = document.getElementById('closeModal');  
-        const modalControls = document.getElementById('modalControls');  
-
-        let currentBusiness = null;  
-
-        async function loadBusiness() {  
-            if (!businessDocId) return showError('❌ No business ID provided.');  
-
-            try {  
-                const businessSnap = await getDoc(doc(db, "businesses", businessDocId));  
-                if (!businessSnap.exists()) return showError("❌ Business not found.");  
-
-                currentBusiness = businessSnap.data();  
-
-                const customBusinessId = currentBusiness.businessId;  
-                if (!customBusinessId) return showError("❌ Business ID missing.");  
-
-                console.log("✅ Business:", currentBusiness.title, "ID:", customBusinessId);  
-
-                renderBusinessDescription(currentBusiness);  
-                renderActionButtons(currentBusiness);  
-
-                // Load items
-                const itemsQuery = query(  
-                    collection(db, "items"),  
-                    where("businessId", "==", customBusinessId),  
-                    orderBy("timestamp", "desc")  
-                );  
-
-                const itemsSnap = await getDocs(itemsQuery);  
-                const items = itemsSnap.docs.map(doc => doc.data());  
-
-                console.log("✅ Items loaded:", items.length);  
-                renderItems(items);  
-                setupSearch(items);  
-
-                // Setup media zoom functionality
-                setupMediaZoom();
-
-            } catch (err) {  
-                console.error("❌ Error:", err);  
-                showError("❌ Failed to load data.");  
-            }  
-        }  
-
-        function renderBusinessDescription(business) {  
-            if (!business.description) {  
-                businessDescription.style.display = 'none';  
-                return;  
-            }  
-
-            businessDescription.innerHTML = `  
-                <hr style="margin: 20px 0;">  
-                <h2>About ${business.title || "the Business"}</h2>  
-                <p>${business.description}</p>  
-            `;  
-        }  
-
-        function renderActionButtons(business) {
-            // We want to show at least the share button
-            let buttons = "";
-
-            if (business.whatsapp) {
-                buttons += `<a href="https://wa.me/${business.whatsapp}" class="action-button chat-button" target="_blank">
-                    <i class="fab fa-whatsapp"></i> Chat</a>`;
-
-                buttons += `<a href="tel:+${business.whatsapp}" class="action-button call-button">
-                    <i class="fas fa-phone"></i> Call</a>`;
-            }
-
-            if (business.businessLink) {
-                const link = business.businessLink.startsWith("http")
-                    ? business.businessLink
-                    : "https://" + business.businessLink;
-
-                buttons += `<a href="${link}" class="action-button link-button" target="_blank">
-                    <i class="fas fa-external-link-alt"></i> Visit</a>`;
-            }
-
-            buttons += `<button class="action-button share-button" onclick="shareBusiness()">
-                <i class="fas fa-share-alt"></i> Share</button>`;
-
-            actionBar.innerHTML = buttons;
-            actionBar.style.display = 'flex';
+  // Add media indicators
+        mediaHTML += '<div class="media-indicators">';
+        for (let i = 0; i < business.mediaUrls.length; i++) {
+          mediaHTML += `<div class="media-indicator ${i === 0 ? 'active' : ''}"></div>`;
         }
+        mediaHTML += '</div>';
+      } else {
+        // Default placeholder if no media
+        mediaHTML = `
+          <div class="media-scroll">
+            <div class="media-item">
+              <img src="https://via.placeholder.com/300x200?text=No+Image" alt="No image">
+            </div>
+          </div>
+          <div class="media-indicators">
+            <div class="media-indicator active"></div>
+          </div>
+        `;
+      }
+//creating business card buttons
+const buttonsHTML = `
+  <div class="btn-container">
+    <button class="btn btn-order" data-id="${docId}">
+      <i class="fas fa-shopping-cart"></i> Order
+    </button>
 
-        function renderItems(items) {  
-            if (!items.length) {  
-                productGrid.innerHTML = '<div class="no-results">No items available for this business</div>';  
-                return;  
-            }  
+    <a href="https://wa.me/${business.whatsapp || ''}" class="btn btn-chat" target="_blank">
+      <i class="fab fa-whatsapp"></i> Chat
+    </a>
 
-            productGrid.innerHTML = items.map(item => {  
-                const url = item.mediaUrl || "";  
-                const formattedPrice = 'UGX ' + parseInt(item.price || 0).toLocaleString();  
-                const isVideo = url.endsWith('.mp4');  
+    ${business.whatsapp ? `
+      <a href="tel:+${business.whatsapp}" class="btn btn-call">
+        <i class="fas fa-phone"></i> Call
+      </a>` : ''}
 
-                return `  
-                    <div class="product-card" data-name="${(item.title || '').toLowerCase()}">  
-                        <div class="product-image" data-media-type="${isVideo ? 'video' : 'image'}" data-media-url="${url}">  
-                            ${isVideo  
-                                ? `<video muted loop playsinline style="width: 100%; border-radius: 8px;">  
-                                    <source src="${url}" type="video/mp4">  
-                                </video>  
-                                <div class="play-icon">  
-                                    <i class="fas fa-play"></i>  
-                                </div>`  
-                                : `<img src="${url}" alt="${item.title || 'Item'}" style="width: 100%; border-radius: 8px;">`}  
-                        </div>  
-                        <div class="product-info">  
-                            <div class="product-name">${item.title || 'No title'}</div>  
-                            <div class="product-price">${formattedPrice}</div>  
-                            <a href="order_form.html?businessId=${businessDocId}&itemName=${encodeURIComponent(item.title || '')}" class="order-button">ORDER NOW</a>  
-                        </div>  
-                    </div>  
-                `;  
-            }).join('');  
-        }  
-
-        function setupSearch(items) {  
-            searchBar.addEventListener("input", function (e) {  
-                const term = e.target.value.toLowerCase();  
-                const cards = document.querySelectorAll(".product-card");  
-                let count = 0;  
-
-                cards.forEach(card => {  
-                    const name = card.dataset.name;  
-                    const show = name.includes(term);  
-                    card.style.display = show ? "block" : "none";  
-                    if (show) count++;  
-                });  
-
-                if (count === 0) {  
-                    productGrid.innerHTML = '<div class="no-results">No items match your search</div>';  
-                }  
-            });  
-        }  
-
-        function setupMediaZoom() {
-            // Add click event to all product images
-            document.querySelectorAll('.product-image').forEach(media => {
-                media.addEventListener('click', function(e) {
-                    // Prevent triggering if clicked on play icon
-                    if (e.target.closest('.play-icon')) return;
-                    
-                    const mediaType = this.dataset.mediaType;
-                    const mediaUrl = this.dataset.mediaUrl;
-                    
-                    openLightbox(mediaType, mediaUrl);
-                });
-            });
-            
-         // Close modal when clicking close button
-            closeModal.addEventListener('click', function() {
-                closeLightbox();
-            });
-            
-            // Close modal when clicking outside content
-            lightboxModal.addEventListener('click', function(e) {
-                if (e.target === lightboxModal) {
-                    closeLightbox();
-                }
-            });
-            
-                        // Close on ESC key
-            document.addEventListener('keydown', function(e) {
-                if (e.key === "Escape" && lightboxModal.style.display === 'flex') {
-                    closeLightbox();
-                }
-            });
-        }
-
-        function openLightbox(mediaType, mediaUrl) {
-            modalContent.innerHTML = '';
-            modalControls.innerHTML = '';
-            
-            if (mediaType === 'video') {
-                modalContent.innerHTML = `
-                    <video controls autoplay style="width: 100%; max-height: 80vh;">
-                        <source src="${mediaUrl}" type="video/mp4">
-                    </video>
-                `;
-                modalControls.innerHTML = 'Click anywhere outside or press ESC to close';
-            } else {
-                modalContent.innerHTML = `<img src="${mediaUrl}" alt="Zoomed view" style="max-width: 100%; max-height: 80vh;">`;
-                modalControls.innerHTML = 'Click to close or press ESC';
-            }
-            
-            lightboxModal.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeLightbox() {
-            // Pause any playing videos
-            const video = modalContent.querySelector('video');
-            if (video) {
-                video.pause();
-            }
-            
-            lightboxModal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-
-        function showError(message) {  
-            productGrid.innerHTML = `<div class="no-results">${message}</div>`;  
-        }  
-
-        document.addEventListener('DOMContentLoaded', loadBusiness);  
-    </script>
-
-    <!-- Share Business Function -->
-   
-<script>
-// Function to show custom styled alert
-function showCustomAlert(message) {
-    // Create alert container
-    const alertContainer = document.createElement('div');
-    alertContainer.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.7);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-    `;
+    <a href="viewall.html?id=${docId}" class="btn btn-view">
+      <i class="fas fa-eye"></i> Details
+    </a>
     
-    // Create alert box
-    const alertBox = document.createElement('div');
-    alertBox.style.cssText = `
-        background: white;
-        padding: 30px;
-        border-radius: 15px;
-        text-align: center;
-        max-width: 80%;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-        animation: fadeIn 0.3s ease-out;
-    `;
-    
-    // Create message
-    const messageElement = document.createElement('div');
-    messageElement.style.cssText = `
-        font-size: 18px;
-        color: #333;
-        line-height: 1.6;
-        margin-bottom: 25px;
-    `;
-    messageElement.innerHTML = message.replace(/\n/g, '<br>');
-    
-    // Create OK button
-    const okButton = document.createElement('button');
-    okButton.style.cssText = `
-        background: linear-gradient(to right, #1a73e8, #0d47a1);
-        color: white;
-        border: none;
-        padding: 12px 30px;
-        border-radius: 30px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s;
-        box-shadow: 0 4px 10px rgba(26, 115, 232, 0.3);
-    `;
-    okButton.textContent = 'OK';
-    okButton.onclick = () => document.body.removeChild(alertContainer);
-    
-    // Add elements to the DOM
-    alertBox.appendChild(messageElement);
-    alertBox.appendChild(okButton);
-    alertContainer.appendChild(alertBox);
-    document.body.appendChild(alertContainer);
-    
-    // Add keypress listener (Enter or Escape to close)
-    document.addEventListener('keydown', function handleKey(e) {
-        if (e.key === 'Enter' || e.key === 'Escape' || e.key === ' ') {
-            document.body.removeChild(alertContainer);
-            document.removeEventListener('keydown', handleKey);
-        }
-    });
+      ${business.businessLink ? `
+      <a href="${business.businessLink}" class="btn btn-link" target="_blank">
+        <i class="fas fa-link"></i>
+      </a>` : ''}
+
+  </div>
+`;
+
+     // Card content
+card.innerHTML = `
+  <div class="card-media">
+    ${mediaHTML}
+  </div>
+  <div class="card-header">
+    <h2 class="card-title" onclick="window.location.href='viewall.html?id=${docId}'" style="cursor: pointer;">
+      ${business.title || 'Untitled Business'}
+    </h2>
+    <div class="card-country">${business.location || 'Location not specified'}</div>
+  </div>
+  <div class="card-body">
+    <p class="card-description" onclick="window.location.href='viewall.html?id=${docId}'" style="cursor: pointer;">
+      ${business.description || 'No description provided'}
+    </p>
+    ${buttonsHTML}
+  </div>
+`;
+
+      container.appendChild(card);
+      const orderBtn = card.querySelector(".btn-order");
+if (orderBtn) {
+  orderBtn.addEventListener("click", () => {
+    const businessId = orderBtn.getAttribute("data-id");
+    window.location.href = `order_form.html?id=${businessId}`;
+  });
 }
+    }
 
-// Share Business Function
-function shareBusiness() {
-    // Get business ID directly from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const businessId = urlParams.get('id');
-    
-    if (!businessId) {
-        showCustomAlert("❌ No business ID found in URL.");
-        return;
+    // Initialize carousel functionality
+    function initCarousels() {
+      // Auto-scroll carousels every 2 seconds
+      setInterval(() => {
+        document.querySelectorAll('.media-scroll').forEach(carousel => {
+          const scrollWidth = carousel.scrollWidth;
+          const scrollLeft = carousel.scrollLeft;
+          const clientWidth = carousel.clientWidth;
+
+          // Calculate next position
+          let nextPos = scrollLeft + clientWidth;
+          if (nextPos >= scrollWidth) {
+            nextPos = 0; // Loop back to start
+          }
+
+          // Update scroll position
+          carousel.scrollTo({
+            left: nextPos,
+            behavior: 'smooth'
+          });
+
+          // Update indicators
+          const itemCount = carousel.querySelectorAll('.media-item').length;
+          const currentIndex = Math.round(nextPos / clientWidth);
+          const indicators = carousel.nextElementSibling.querySelectorAll('.media-indicator');
+
+          indicators.forEach((indicator, index) => {
+            if (index === currentIndex % itemCount) {
+              indicator.classList.add('active');
+            } else {
+              indicator.classList.remove('active');
+            }
+          });
+        });
+      }, 2000);
     }
     
-    // Construct shareable URL
-    const shareUrl = `${window.location.origin}${window.location.pathname}?id=${businessId}`;
-    
-    // Copy to clipboard
-    navigator.clipboard.writeText(shareUrl)
-        .then(() => {
-            showCustomAlert("✅ Business link copied!\n\nShare it to your customers, friends, and on social media.");
-        })
-        .catch(err => {
-            console.error('❌ Failed to copy:', err);
-            showCustomAlert("❌ Failed to copy link. Please try again.");
+      // Lightbox functionality
+    function initLightbox() {
+      // Close lightbox
+      closeLightbox.addEventListener('click', () => {
+        lightbox.style.display = 'none';
+      });
+
+      // Open lightbox when media is clicked
+      document.addEventListener('click', (e) => {
+        const mediaItem = e.target.closest('.media-item img, .media-item video');
+        if (mediaItem) {
+          const mediaType = mediaItem.tagName.toLowerCase();
+          const mediaSrc = mediaItem.src;
+
+          lightboxContent.innerHTML = `
+            ${mediaType === 'video' 
+              ? `<video src="${mediaSrc}" controls autoplay></video>` 
+              : `<img src="${mediaSrc}" alt="Business media">`}
+          `;
+
+          lightbox.style.display = 'flex';
+        }
+      });
+    }
+
+    // Initialize everything when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      loadBusinesses();
+      initLightbox();
+
+      // Carousel functionality for announcements
+      const carousel = document.querySelector('.carousel-slides');
+      const slides = document.querySelectorAll('.carousel-slide');
+      const prevBtn = document.querySelector('.carousel-prev');
+      const nextBtn = document.querySelector('.carousel-next');
+      const indicators = document.querySelectorAll('.carousel-indicator');
+
+      let currentIndex = 0;
+      const slideCount = slides.length;
+      const slideWidth = slides[0].clientWidth;
+
+      function updateCarousel() {
+        carousel.style.transform = `translateX(${-currentIndex * slideWidth}px)`;
+        indicators.forEach((indicator, index) => {
+          indicator.classList.toggle('active', index === currentIndex);
         });
-}
+      }
+
+      function nextSlide() {
+        currentIndex = (currentIndex + 1) % slideCount;
+        updateCarousel();
+      }
+
+      function prevSlide() {
+        currentIndex = (currentIndex - 1 + slideCount) % slideCount;
+        updateCarousel();
+      }
+
+      prevBtn.addEventListener('click', prevSlide);
+      nextBtn.addEventListener('click', nextSlide);
+
+      indicators.forEach((indicator, index) => {
+        indicator.addEventListener('click', () => {
+          currentIndex = index;
+          updateCarousel();
+        });
+      });
+
+      setInterval(nextSlide, 5000);
+    });
+  </script>
+  
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
+    authDomain: "oblinks-7fdb1.firebaseapp.com",
+    projectId: "oblinks-7fdb1",
+    storageBucket: "oblinks-7fdb1.appspot.com",
+    messagingSenderId: "587017639779",
+    appId: "1:587017639779:web:d11b60f40f431cfc202556"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  const profileImg = document.getElementById("navUserImage");
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (data.profileImage) {
+          profileImg.src = data.profileImage;
+        }
+      }
+    }
+  });
+</script>
+<script>
+  function initSearch() {
+    const searchInput = document.getElementById('search-input');
+    if (!searchInput) return;
+
+    searchInput.addEventListener('input', function () {
+      const keyword = this.value.toLowerCase().trim();
+      const cards = document.querySelectorAll('.card');
+
+      cards.forEach(card => {
+        const title = card.querySelector('.card-title')?.textContent.toLowerCase() || '';
+        const description = card.querySelector('.card-description')?.textContent.toLowerCase() || '';
+
+        const matches = title.includes(keyword) || description.includes(keyword);
+        card.style.display = matches ? 'flex' : 'none';
+      });
+    });
+  }
+
+  // Call this after DOM and cards are loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    initSearch(); // 👈 Activate search after businesses load
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const categoryNav = document.getElementById("category-nav");
+    const categoryPanel = document.getElementById("category-panel");
+    const categoryOverlay = document.getElementById("category-overlay");
+    const closePanel = document.getElementById("close-panel");
+    const container = document.getElementById("business-container"); // Make sure this ID is correct
+
+    // Open the panel
+    categoryNav.addEventListener("click", () => {
+      categoryPanel.style.bottom = "0";
+      categoryOverlay.style.display = "block";
+      setTimeout(() => {
+        categoryOverlay.style.opacity = "1";
+      }, 10);
+    });
+
+    // Close the panel
+    const closeCategoryPanel = () => {
+      categoryPanel.style.bottom = "-100%";
+      categoryOverlay.style.opacity = "0";
+      setTimeout(() => {
+        categoryOverlay.style.display = "none";
+      }, 300);
+    };
+
+    closePanel.addEventListener("click", closeCategoryPanel);
+    categoryOverlay.addEventListener("click", closeCategoryPanel);
+
+    // Category card logic
+    document.querySelectorAll('.category-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const selectedCategory = card.dataset.category;
+        closeCategoryPanel();
+
+        if (typeof allBusinesses !== "undefined" && Array.isArray(allBusinesses)) {
+          const filtered = selectedCategory === "all"
+            ? allBusinesses
+            : allBusinesses.filter(biz =>
+                (biz.category || "").toLowerCase() === selectedCategory.toLowerCase()
+              );
+
+          if (filtered.length === 0) {
+            container.innerHTML = `<p class="no-results">No business has been found under this category.</p>`;
+            setTimeout(() => {
+              renderBusinesses(allBusinesses);
+              initCarousels();
+            }, 4000);
+          } else {
+            renderBusinesses(filtered);
+            initCarousels();
+          }
+        }
+      });
+    });
+  });
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
+    authDomain: "oblinks-7fdb1.firebaseapp.com",
+    projectId: "oblinks-7fdb1",
+    storageBucket: "oblinks-7fdb1.appspot.com",
+    messagingSenderId: "587017639779",
+    appId: "1:587017639779:web:d11b60f40f431cfc202556"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  let currentSlide = 0;
+  let totalSlides = 0;
+  let slidesContainer;
+
+  async function loadAnnouncements() {
+    slidesContainer = document.getElementById("announcement-slides");
+    const snapshot = await getDocs(collection(db, "announcements"));
+
+    const announcements = [];
+    snapshot.forEach(doc => announcements.push(doc.data()));
+    totalSlides = announcements.length;
+
+    if (totalSlides === 0) return;
+
+    slidesContainer.innerHTML = '';
+
+    announcements.forEach((item) => {
+      const slide = document.createElement("div");
+      slide.className = "carousel-slide";
+      slide.innerHTML = `
+        <img src="${item.url}" alt="${item.title || 'Paid Announcements'}"
+             style="width: 100%; height: 100%; object-fit: cover;">
+      `;
+      slidesContainer.appendChild(slide);
+    });
+
+    enableSwipe(slidesContainer);
+    updateSlide();
+    startAutoSlide();
+  }
+
+  function updateSlide() {
+    if (!slidesContainer) return;
+    slidesContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+  }
+
+  function nextSlide() {
+    currentSlide = (currentSlide + 1) % totalSlides;
+    updateSlide();
+  }
+
+  function prevSlide() {
+    currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+    updateSlide();
+  }
+
+  function startAutoSlide() {
+    if (totalSlides <= 1) return;
+    setInterval(() => {
+      nextSlide();
+    }, 5000);
+  }
+
+  function enableSwipe(container) {
+    let startX = 0;
+
+    container.addEventListener("touchstart", (e) => {
+      startX = e.touches[0].clientX;
+    });
+
+    container.addEventListener("touchend", (e) => {
+      const endX = e.changedTouches[0].clientX;
+      const diff = startX - endX;
+
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) {
+          nextSlide();
+        } else {
+          prevSlide();
+        }
+      }
+    });
+  }
+
+  loadAnnouncements();
+</script>
 </script>
 </body>
 </html>
