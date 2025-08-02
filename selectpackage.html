@@ -359,209 +359,159 @@
   </div>
 
   <script>
-    // Package data in UGX (base currency)
-    const basePrices = {
-      'Starter': 0,
-      'Basic': 10000,
-      'Standard': 30000,
-      'Advanced': 50000,
-      'Professional': 100000,
-      'Premium': 150000,
-      'Enterprise': 200000
-    };
-    
-    // Commission rates
-    const commissions = {
-      'Starter': '20%',
-      'Basic': '30%',
-      'Standard': '40%',
-      'Advanced': '50%',
-      'Professional': '60%',
-      'Premium': '70%',
-      'Enterprise': '80%'
-    };
-    
-    // Max items
-    const maxItems = {
-      'Starter': 6,
-      'Basic': 10,
-      'Standard': 30,
-      'Advanced': 50,
-      'Professional': 70,
-      'Premium': 90,
-      'Enterprise': 100
-    };
+  // Package data in UGX (base currency)
+  const basePrices = {
+    'Starter': 0,
+    'Basic': 10000,
+    'Standard': 30000,
+    'Advanced': 50000,
+    'Professional': 100000,
+    'Premium': 150000,
+    'Enterprise': 200000
+  };
 
-    // Currency symbols and conversion rates
-    const currencyData = {
-      UG: { 
-        name: 'Uganda', 
-        symbol: 'UGX', 
-        flag: '🇺🇬',
-        conversionRate: 1,
-        format: (amount) => `UGX ${amount.toLocaleString()}`
-      },
-      TZ: { 
-        name: 'Tanzania', 
-        symbol: 'TZS', 
-        flag: '🇹🇿',
-        conversionRate: 0.63,  // 1 UGX = 0.63 TZS
-        format: (amount) => `TZS ${Math.round(amount).toLocaleString()}`
-      },
-      GH: { 
-        name: 'Ghana', 
-        symbol: 'GH₵', 
-        flag: '🇬🇭',
-        conversionRate: 0.00034,  // 1 UGX = 0.00034 GHS
-        format: (amount) => `GH₵ ${amount.toFixed(2)}`
-      },
-      NG: { 
-        name: 'Nigeria', 
-        symbol: '₦', 
-        flag: '🇳🇬',
-        conversionRate: 0.42,  // 1 UGX = 0.42 NGN
-        format: (amount) => `₦${Math.round(amount).toLocaleString()}`
-      }
-    };
+  // Commission rates
+  const commissions = {
+    'Starter': '20%',
+    'Basic': '30%',
+    'Standard': '40%',
+    'Advanced': '50%',
+    'Professional': '60%',
+    'Premium': '70%',
+    'Enterprise': '80%'
+  };
 
-    // DOM elements
-    const countrySelect = document.getElementById('country');
-    const packageTable = document.getElementById('package-table');
-    const summaryDiv = document.getElementById('summary');
-    const selectedCountrySpan = document.getElementById('selected-country');
-    const selectedPackageNameSpan = document.getElementById('selected-package-name');
-    const selectedPackagePriceSpan = document.getElementById('selected-package-price');
-    const selectedPackageCommissionSpan = document.getElementById('selected-package-commission');
-    const selectedPackageMaxItemsSpan = document.getElementById('selected-package-max-items');
-    const continueBtn = document.getElementById('continue-btn');
+  // Max items
+  const maxItems = {
+    'Starter': 6,
+    'Basic': 10,
+    'Standard': 30,
+    'Advanced': 50,
+    'Professional': 70,
+    'Premium': 90,
+    'Enterprise': 100
+  };
 
-    // Current selection
-    let selectedCountry = null;
-    let selectedPackage = null;
+  // Currency symbols and conversion rates
+  const currencyData = {
+    UG: { name: 'Uganda', symbol: 'UGX', flag: '🇺🇬', conversionRate: 1, format: amount => `UGX ${amount.toLocaleString()}` },
+    TZ: { name: 'Tanzania', symbol: 'TZS', flag: '🇹🇿', conversionRate: 0.63, format: amount => `TZS ${Math.round(amount).toLocaleString()}` },
+    GH: { name: 'Ghana', symbol: 'GH₵', flag: '🇬🇭', conversionRate: 0.00034, format: amount => `GH₵ ${amount.toFixed(2)}` },
+    NG: { name: 'Nigeria', symbol: '₦', flag: '🇳🇬', conversionRate: 0.42, format: amount => `₦${Math.round(amount).toLocaleString()}` }
+  };
 
-    // Event listener for country selection
-    countrySelect.addEventListener('change', function() {
-      const countryCode = this.value;
-      if (countryCode) {
-        selectedCountry = countryCode;
-        updatePackagePrices(countryCode);
-        clearSelection();
-        updateSummary();
-        updateContinueButton();
-      } else {
-        selectedCountry = null;
-        selectedPackage = null;
-        summaryDiv.classList.add('hidden');
-        updateContinueButton();
-      }
-    });
+  // DOM elements
+  const countrySelect = document.getElementById('country');
+  const packageTable = document.getElementById('package-table');
+  const summaryDiv = document.getElementById('summary');
+  const selectedCountrySpan = document.getElementById('selected-country');
+  const selectedPackageNameSpan = document.getElementById('selected-package-name');
+  const selectedPackagePriceSpan = document.getElementById('selected-package-price');
+  const selectedPackageCommissionSpan = document.getElementById('selected-package-commission');
+  const selectedPackageMaxItemsSpan = document.getElementById('selected-package-max-items');
+  const continueBtn = document.getElementById('continue-btn');
 
-    // Update package prices based on country
-    function updatePackagePrices(countryCode) {
-      const currency = currencyData[countryCode];
-      
-      // Update all package prices
-      for (const [packageName, basePrice] of Object.entries(basePrices)) {
-        const priceElement = document.getElementById(`${packageName.toLowerCase()}-price`);
-        if (priceElement) {
-          const convertedPrice = basePrice * currency.conversionRate;
-          if (basePrice === 0) {
-            priceElement.textContent = 'Free';
-          } else {
-            priceElement.textContent = currency.format(convertedPrice);
-          }
-        }
-      }
-      
-      // Add click events to package names
-      document.querySelectorAll('.package-name').forEach(name => {
-        name.addEventListener('click', () => {
-          selectPackage(name.dataset.package);
-        });
-      });
-    }
+  // Current selection
+  let selectedCountry = null;
+  let selectedPackage = null;
 
-    // Select a package
-    function selectPackage(packageName) {
-      // Remove any existing selection
+  // Event listener for country selection
+  countrySelect.addEventListener('change', function () {
+    const countryCode = this.value;
+    if (countryCode) {
+      selectedCountry = countryCode;
+      updatePackagePrices(countryCode);
       clearSelection();
-      
-      // Find the row and highlight it
-      const packageNames = document.querySelectorAll('.package-name');
-      for (const name of packageNames) {
-        if (name.dataset.package === packageName) {
-          name.closest('tr').classList.add('selected');
-          break;
-        }
-      }
-      
-      // Set selected package
-      selectedPackage = packageName;
       updateSummary();
       updateContinueButton();
-    }
-
-    // Function to clear selected row
-    function clearSelection() {
-      const rows = packageTable.querySelectorAll('tr');
-      rows.forEach(row => row.classList.remove('selected'));
+    } else {
+      selectedCountry = null;
       selectedPackage = null;
+      summaryDiv.classList.add('hidden');
+      updateContinueButton();
     }
+  });
 
-    // Function to update the summary
-    function updateSummary() {
-      if (selectedCountry && selectedPackage) {
-        const currency = currencyData[selectedCountry];
-        const basePrice = basePrices[selectedPackage];
+  // Update package prices based on country
+  function updatePackagePrices(countryCode) {
+    const currency = currencyData[countryCode];
+
+    for (const [packageName, basePrice] of Object.entries(basePrices)) {
+      const priceElement = document.getElementById(`${packageName.toLowerCase()}-price`);
+      if (priceElement) {
         const convertedPrice = basePrice * currency.conversionRate;
-        
-        selectedCountrySpan.innerHTML = `<span class="country-flag">${currency.flag}</span> ${currency.name}`;
-        selectedPackageNameSpan.textContent = selectedPackage;
-        
-        if (basePrice === 0) {
-          selectedPackagePriceSpan.textContent = 'Free';
-        } else {
-          selectedPackagePriceSpan.textContent = currency.format(convertedPrice);
-        }
-        
-        selectedPackageCommissionSpan.textContent = commissions[selectedPackage];
-        selectedPackageMaxItemsSpan.textContent = maxItems[selectedPackage];
-        summaryDiv.classList.remove('hidden');
-      } else {
-        summaryDiv.classList.add('hidden');
+        priceElement.textContent = basePrice === 0 ? 'Free' : currency.format(convertedPrice);
       }
     }
 
-    // Function to update the continue button state
-    function updateContinueButton() {
-      if (selectedCountry && selectedPackage) {
-        continueBtn.disabled = false;
-      } else {
-        continueBtn.disabled = true;
+    document.querySelectorAll('.package-name').forEach(name => {
+      name.addEventListener('click', () => {
+        selectPackage(name.dataset.package);
+      });
+    });
+  }
+
+  function selectPackage(packageName) {
+    clearSelection();
+
+    document.querySelectorAll('.package-name').forEach(name => {
+      if (name.dataset.package === packageName) {
+        name.closest('tr').classList.add('selected');
       }
+    });
+
+    selectedPackage = packageName;
+    updateSummary();
+    updateContinueButton();
+  }
+
+  function clearSelection() {
+    document.querySelectorAll('#package-table tr').forEach(row => row.classList.remove('selected'));
+    selectedPackage = null;
+  }
+
+  function updateSummary() {
+    if (selectedCountry && selectedPackage) {
+      const currency = currencyData[selectedCountry];
+      const basePrice = basePrices[selectedPackage];
+      const convertedPrice = basePrice * currency.conversionRate;
+
+      selectedCountrySpan.innerHTML = `<span class="country-flag">${currency.flag}</span> ${currency.name}`;
+      selectedPackageNameSpan.textContent = selectedPackage;
+      selectedPackagePriceSpan.textContent = basePrice === 0 ? 'Free' : currency.format(convertedPrice);
+      selectedPackageCommissionSpan.textContent = commissions[selectedPackage];
+      selectedPackageMaxItemsSpan.textContent = maxItems[selectedPackage];
+      summaryDiv.classList.remove('hidden');
+    } else {
+      summaryDiv.classList.add('hidden');
     }
+  }
 
-    // Event listener for continue button
-    continueBtn.addEventListener('click', function() {
-      // Save to sessionStorage
-      sessionStorage.setItem("selectedCountry", selectedCountry);
-      sessionStorage.setItem("selectedPackage", JSON.stringify({
-        name: selectedPackage,
-        price: basePrices[selectedPackage],
-        commission: commissions[selectedPackage],
-        maxItems: maxItems[selectedPackage]
-      }));
+  function updateContinueButton() {
+    continueBtn.disabled = !(selectedCountry && selectedPackage);
+  }
 
-      // Redirect to next page
-      window.location.href = "businessinformation.html";
-    });
+  continueBtn.addEventListener('click', function () {
+    const countryDetails = currencyData[selectedCountry];
+    const packageDetails = {
+      name: selectedPackage,
+      price: basePrices[selectedPackage],
+      commission: commissions[selectedPackage],
+      items: maxItems[selectedPackage]
+    };
 
-    // Initialize the page
-    document.addEventListener('DOMContentLoaded', function() {
-      // Set initial country to Uganda
-      countrySelect.value = 'UG';
-      countrySelect.dispatchEvent(new Event('change'));
-    });
-  </script>
+    sessionStorage.setItem("businessSelections", JSON.stringify({
+      country: countryDetails.name,
+      package: packageDetails
+    }));
+
+    window.location.href = "businessinformation.html";
+  });
+
+  document.addEventListener('DOMContentLoaded', function () {
+    countrySelect.value = 'UG';
+    countrySelect.dispatchEvent(new Event('change'));
+  });
+</script>
 </body>
 </html>
