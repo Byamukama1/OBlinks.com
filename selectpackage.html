@@ -87,13 +87,16 @@
       border-radius: 8px;
       font-size: 14px;
       background: white;
+      cursor: pointer;
     }
     
     .table-container {
       overflow-x: auto;
       margin: 10px 0;
-      max-height: 50vh;
+      max-height: 65vh; /* Increased from 50vh to 65vh */
       overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
     }
     
     .packages-table {
@@ -244,6 +247,12 @@
         padding: 10px;
       }
     }
+    
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 10px 0;
+    }
   </style>
 </head>
 
@@ -266,6 +275,23 @@
           <option value="NG">Nigeria 🇳🇬</option>
         </select>
       </div>
+      
+      <!-- New package dropdown -->
+      <div class="form-group">
+        <label for="package">Select Package:</label>
+        <select id="package">
+          <option value="">-- Select Package --</option>
+          <option value="Starter">Starter</option>
+          <option value="Basic">Basic</option>
+          <option value="Standard">Standard</option>
+          <option value="Advanced">Advanced</option>
+          <option value="Professional">Professional</option>
+          <option value="Premium">Premium</option>
+          <option value="Enterprise">Enterprise</option>
+        </select>
+      </div>
+      
+      <div class="divider"></div>
       
       <div class="table-container">
         <table class="packages-table">
@@ -358,7 +384,7 @@
     </footer>
   </div>
 
-  <script>
+<script>
   // Package data in UGX (base currency)
   const basePrices = {
     'Starter': 0,
@@ -402,6 +428,7 @@
 
   // DOM elements
   const countrySelect = document.getElementById('country');
+  const packageSelect = document.getElementById('package');
   const packageTable = document.getElementById('package-table');
   const summaryDiv = document.getElementById('summary');
   const selectedCountrySpan = document.getElementById('selected-country');
@@ -428,6 +455,17 @@
       selectedCountry = null;
       selectedPackage = null;
       summaryDiv.classList.add('hidden');
+      updateContinueButton();
+    }
+  });
+
+  // Event listener for package selection
+  packageSelect.addEventListener('change', function() {
+    if (this.value) {
+      selectPackage(this.value);
+    } else {
+      clearSelection();
+      updateSummary();
       updateContinueButton();
     }
   });
@@ -460,6 +498,9 @@
       }
     });
 
+    // Update the package dropdown
+    packageSelect.value = packageName;
+    
     selectedPackage = packageName;
     updateSummary();
     updateContinueButton();
@@ -467,6 +508,7 @@
 
   function clearSelection() {
     document.querySelectorAll('#package-table tr').forEach(row => row.classList.remove('selected'));
+    packageSelect.value = '';
     selectedPackage = null;
   }
 
