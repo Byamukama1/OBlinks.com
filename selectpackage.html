@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Select Business Package</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #64748b;
+      --light: #f8fafc;
+      --dark: #1e293b;
+      --success: #10b981;
+      --error: #ef4444;
+      --warning: #f59e0b;
+      --accent: #8b5cf6;
+      --border: #e2e8f0;
+      --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    
+    body {
+      background: #f1f5f9;
+      color: var(--dark);
+      line-height: 1.4;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 15px;
+    }
+    
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 15px;
+      padding: 15px 0;
+    }
+    
+    header h1 {
+      font-size: 22px;
+      color: var(--primary-dark);
+      margin-bottom: 8px;
+    }
+    
+    header p {
+      color: var(--secondary);
+      font-size: 14px;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: var(--card-shadow);
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--dark);
+    }
+    
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      background: white;
+    }
+    
+    .table-container {
+      overflow-x: auto;
+      margin: 10px 0;
+      max-height: 50vh;
+      overflow-y: auto;
+    }
+    
+    .packages-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    
+    .packages-table th {
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+      text-align: left;
+      padding: 8px;
+      font-size: 11px;
+      position: sticky;
+      top: 0;
+    }
+    
+    .packages-table td {
+      padding: 8px;
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+    }
+    
+    .packages-table tr:nth-child(even) {
+      background-color: #f8fafc;
+    }
+    
+    .packages-table tr:hover {
+      background-color: #f0f7ff;
+    }
+    
+    .package-name {
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--primary);
+      display: block;
+      padding: 4px 0;
+    }
+    
+    .package-name:hover {
+      color: var(--primary-dark);
+    }
+    
+    .selected {
+      background-color: #dbeafe !important;
+      font-weight: 600;
+    }
+    
+    .summary {
+      margin-top: 15px;
+      padding: 12px;
+      background: #eef2ff;
+      border-radius: 8px;
+      border-left: 4px solid var(--primary);
+      font-size: 12px;
+    }
+    
+    .summary h3 {
+      margin-bottom: 8px;
+      color: var(--primary-dark);
+      font-size: 13px;
+    }
+    
+    .summary-item {
+      display: flex;
+      margin-bottom: 5px;
+    }
+    
+    .summary-label {
+      font-weight: 600;
+      min-width: 80px;
+      color: var(--dark);
+    }
+    
+    .btn {
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      display: block;
+      width: 100%;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s ease;
+      text-align: center;
+      text-decoration: none;
+      margin-top: 10px;
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+    
+    .btn-primary:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    footer {
+      text-align: center;
+      margin-top: 15px;
+      padding-top: 10px;
+      color: var(--secondary);
+      font-size: 11px;
+    }
+    
+    .country-flag {
+      margin-right: 5px;
+      font-size: 16px;
+    }
+    
+    .currency-symbol {
+      font-size: 10px;
+      margin-right: 2px;
+    }
+    
+    @media (max-width: 480px) {
+      .card {
+        padding: 12px;
+      }
+      
+      .packages-table {
+        font-size: 10px;
+      }
+      
+      .packages-table th, .packages-table td {
+        padding: 6px 4px;
+      }
+      
+      .btn {
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+      
+      .summary {
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+
+
+<body>
+  <div class="container">
+    <header>
+      <h1>Select Your Business Package</h1>
+      <p>Choose your country and preferred package</p>
+    </header>
+    
+    <div class="card">
+      <div class="form-group">
+        <label for="country">Select Country:</label>
+        <select id="country">
+          <option value="">-- Select Country --</option>
+          <option value="UG">Uganda 🇺🇬</option>
+          <option value="TZ">Tanzania 🇹🇿</option>
+          <option value="GH">Ghana 🇬🇭</option>
+          <option value="NG">Nigeria 🇳🇬</option>
+        </select>
+      </div>
+      
+      <div class="table-container">
+        <table class="packages-table">
+          <thead>
+            <tr>
+              <th>Package</th>
+              <th>Price</th>
+              <th>Commission</th>
+              <th>Max Items</th>
+            </tr>
+          </thead>
+          <tbody id="package-table">
+            <tr>
+              <td><span class="package-name" data-package="Starter">Starter</span></td>
+              <td id="starter-price">-</td>
+              <td>20%</td>
+              <td>6</td>
+            </tr>
+            <tr>
+              <td><span class="package-name" data-package="Basic">Basic</span></td>
+              <td id="basic-price">-</td>
+              <td>30%</td>
+              <td>10</td>
+            </tr>
+            <tr>
+              <td><span class="package-name" data-package="Standard">Standard</span></td>
+              <td id="standard-price">-</td>
+              <td>40%</td>
+              <td>30</td>
+            </tr>
+            <tr>
+              <td><span class="package-name" data-package="Advanced">Advanced</span></td>
+              <td id="advanced-price">-</td>
+              <td>50%</td>
+              <td>50</td>
+            </tr>
+            <tr>
+              <td><span class="package-name" data-package="Professional">Professional</span></td>
+              <td id="professional-price">-</td>
+              <td>60%</td>
+              <td>70</td>
+            </tr>
+            <tr>
+              <td><span class="package-name" data-package="Premium">Premium</span></td>
+              <td id="premium-price">-</td>
+              <td>70%</td>
+              <td>90</td>
+            </tr>
+            <tr>
+              <td><span class="package-name" data-package="Enterprise">Enterprise</span></td>
+              <td id="enterprise-price">-</td>
+              <td>80%</td>
+              <td>100</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div id="summary" class="summary hidden">
+        <h3>Selected Package</h3>
+        <div class="summary-item">
+          <span class="summary-label">Country:</span>
+          <span id="selected-country">None</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Package:</span>
+          <span id="selected-package-name">None</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Price:</span>
+          <span id="selected-package-price">-</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Commission:</span>
+          <span id="selected-package-commission">-</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Max Items:</span>
+          <span id="selected-package-max-items">-</span>
+        </div>
+      </div>
+      
+      <button id="continue-btn" class="btn btn-primary" disabled>
+        Continue to Business Information
+      </button>
+    </div>
+    
+    <footer>
+      <p>© 2023 OBlinks Business Platform. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script>
+    // Package data in UGX (base currency)
+    const basePrices = {
+      'Starter': 0,
+      'Basic': 10000,
+      'Standard': 30000,
+      'Advanced': 50000,
+      'Professional': 100000,
+      'Premium': 150000,
+      'Enterprise': 200000
+    };
+    
+    // Commission rates
+    const commissions = {
+      'Starter': '20%',
+      'Basic': '30%',
+      'Standard': '40%',
+      'Advanced': '50%',
+      'Professional': '60%',
+      'Premium': '70%',
+      'Enterprise': '80%'
+    };
+    
+    // Max items
+    const maxItems = {
+      'Starter': 6,
+      'Basic': 10,
+      'Standard': 30,
+      'Advanced': 50,
+      'Professional': 70,
+      'Premium': 90,
+      'Enterprise': 100
+    };
+
+    // Currency symbols and conversion rates
+    const currencyData = {
+      UG: { 
+        name: 'Uganda', 
+        symbol: 'UGX', 
+        flag: '🇺🇬',
+        conversionRate: 1,
+        format: (amount) => `UGX ${amount.toLocaleString()}`
+      },
+      TZ: { 
+        name: 'Tanzania', 
+        symbol: 'TZS', 
+        flag: '🇹🇿',
+        conversionRate: 0.63,  // 1 UGX = 0.63 TZS
+        format: (amount) => `TZS ${Math.round(amount).toLocaleString()}`
+      },
+      GH: { 
+        name: 'Ghana', 
+        symbol: 'GH₵', 
+        flag: '🇬🇭',
+        conversionRate: 0.00034,  // 1 UGX = 0.00034 GHS
+        format: (amount) => `GH₵ ${amount.toFixed(2)}`
+      },
+      NG: { 
+        name: 'Nigeria', 
+        symbol: '₦', 
+        flag: '🇳🇬',
+        conversionRate: 0.42,  // 1 UGX = 0.42 NGN
+        format: (amount) => `₦${Math.round(amount).toLocaleString()}`
+      }
+    };
+
+    // DOM elements
+    const countrySelect = document.getElementById('country');
+    const packageTable = document.getElementById('package-table');
+    const summaryDiv = document.getElementById('summary');
+    const selectedCountrySpan = document.getElementById('selected-country');
+    const selectedPackageNameSpan = document.getElementById('selected-package-name');
+    const selectedPackagePriceSpan = document.getElementById('selected-package-price');
+    const selectedPackageCommissionSpan = document.getElementById('selected-package-commission');
+    const selectedPackageMaxItemsSpan = document.getElementById('selected-package-max-items');
+    const continueBtn = document.getElementById('continue-btn');
+
+    // Current selection
+    let selectedCountry = null;
+    let selectedPackage = null;
+
+    // Event listener for country selection
+    countrySelect.addEventListener('change', function() {
+      const countryCode = this.value;
+      if (countryCode) {
+        selectedCountry = countryCode;
+        updatePackagePrices(countryCode);
+        clearSelection();
+        updateSummary();
+        updateContinueButton();
+      } else {
+        selectedCountry = null;
+        selectedPackage = null;
+        summaryDiv.classList.add('hidden');
+        updateContinueButton();
+      }
+    });
+
+    // Update package prices based on country
+    function updatePackagePrices(countryCode) {
+      const currency = currencyData[countryCode];
+      
+      // Update all package prices
+      for (const [packageName, basePrice] of Object.entries(basePrices)) {
+        const priceElement = document.getElementById(`${packageName.toLowerCase()}-price`);
+        if (priceElement) {
+          const convertedPrice = basePrice * currency.conversionRate;
+          if (basePrice === 0) {
+            priceElement.textContent = 'Free';
+          } else {
+            priceElement.textContent = currency.format(convertedPrice);
+          }
+        }
+      }
+      
+      // Add click events to package names
+      document.querySelectorAll('.package-name').forEach(name => {
+        name.addEventListener('click', () => {
+          selectPackage(name.dataset.package);
+        });
+      });
+    }
+
+    // Select a package
+    function selectPackage(packageName) {
+      // Remove any existing selection
+      clearSelection();
+      
+      // Find the row and highlight it
+      const packageNames = document.querySelectorAll('.package-name');
+      for (const name of packageNames) {
+        if (name.dataset.package === packageName) {
+          name.closest('tr').classList.add('selected');
+          break;
+        }
+      }
+      
+      // Set selected package
+      selectedPackage = packageName;
+      updateSummary();
+      updateContinueButton();
+    }
+
+    // Function to clear selected row
+    function clearSelection() {
+      const rows = packageTable.querySelectorAll('tr');
+      rows.forEach(row => row.classList.remove('selected'));
+      selectedPackage = null;
+    }
+
+    // Function to update the summary
+    function updateSummary() {
+      if (selectedCountry && selectedPackage) {
+        const currency = currencyData[selectedCountry];
+        const basePrice = basePrices[selectedPackage];
+        const convertedPrice = basePrice * currency.conversionRate;
+        
+        selectedCountrySpan.innerHTML = `<span class="country-flag">${currency.flag}</span> ${currency.name}`;
+        selectedPackageNameSpan.textContent = selectedPackage;
+        
+        if (basePrice === 0) {
+          selectedPackagePriceSpan.textContent = 'Free';
+        } else {
+          selectedPackagePriceSpan.textContent = currency.format(convertedPrice);
+        }
+        
+        selectedPackageCommissionSpan.textContent = commissions[selectedPackage];
+        selectedPackageMaxItemsSpan.textContent = maxItems[selectedPackage];
+        summaryDiv.classList.remove('hidden');
+      } else {
+        summaryDiv.classList.add('hidden');
+      }
+    }
+
+    // Function to update the continue button state
+    function updateContinueButton() {
+      if (selectedCountry && selectedPackage) {
+        continueBtn.disabled = false;
+      } else {
+        continueBtn.disabled = true;
+      }
+    }
+
+    // Event listener for continue button
+    continueBtn.addEventListener('click', function() {
+      // Save to sessionStorage
+      sessionStorage.setItem("selectedCountry", selectedCountry);
+      sessionStorage.setItem("selectedPackage", JSON.stringify({
+        name: selectedPackage,
+        price: basePrices[selectedPackage],
+        commission: commissions[selectedPackage],
+        maxItems: maxItems[selectedPackage]
+      }));
+
+      // Redirect to next page
+      window.location.href = "businessinformation.html";
+    });
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set initial country to Uganda
+      countrySelect.value = 'UG';
+      countrySelect.dispatchEvent(new Event('change'));
+    });
+  </script>
+</body>
+</html>
