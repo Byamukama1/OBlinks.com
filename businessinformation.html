@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OBlinks - Business Information</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #64748b;
+      --light: #f8fafc;
+      --dark: #1e293b;
+      --success: #10b981;
+      --error: #ef4444;
+      --warning: #f59e0b;
+      --accent: #8b5cf6;
+      --border: #e2e8f0;
+      --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    
+    body {
+      background: #f1f5f9;
+      color: var(--dark);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Header Styles */
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 15px 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      z-index: 100;
+      position: sticky;
+      top: 0;
+    }
+    
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .logo-text h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    
+    .tagline {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+    
+    /* Progress Bar */
+    .progress-container {
+      max-width: 1200px;
+      margin: 15px auto 0;
+      padding: 0 20px;
+    }
+    
+    .progress-steps {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+    }
+    
+    .progress-steps::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+      height: 4px;
+      width: 100%;
+      background-color: var(--border);
+      z-index: 0;
+    }
+    
+    .progress-bar {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+      height: 4px;
+      width: 66%;
+      background-color: var(--success);
+      z-index: 1;
+      transition: width 0.4s ease;
+    }
+    
+    .step {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .step-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: white;
+      border: 3px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: var(--secondary);
+      transition: all 0.3s ease;
+    }
+    
+    .step.active .step-circle {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    
+    .step.completed .step-circle {
+      background: var(--success);
+      color: white;
+      border-color: var(--success);
+    }
+    
+    .step-label {
+      margin-top: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      text-align: center;
+      color: var(--secondary);
+      max-width: 100px;
+    }
+    
+    .step.active .step-label {
+      color: var(--primary-dark);
+      font-weight: 600;
+    }
+    
+    /* Main Content */
+    .container {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+      flex-grow: 1;
+      width: 100%;
+    }
+    
+    .registration-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+    
+    .card-header {
+      background: linear-gradient(to right, #f8fafc, #eef2ff);
+      padding: 25px 30px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .card-header h1 {
+      font-size: 28px;
+      color: var(--primary-dark);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .card-header p {
+      color: var(--secondary);
+      max-width: 700px;
+      font-size: 14px;
+    }
+    
+    /* Package & Country Info */
+    .selection-info {
+      background: #eef2ff;
+      border-radius: 8px;
+      padding: 15px 20px;
+      margin: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-left: 4px solid var(--primary);
+    }
+    
+    .selection-info .details {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      font-size: 14px;
+    }
+    
+    .selection-info .country {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+    
+    .selection-info .country-flag {
+      font-size: 24px;
+    }
+    
+    .selection-info .package {
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+    
+    .selection-info .price {
+      font-weight: 600;
+      color: var(--dark);
+    }
+    
+    .selection-info .change-btn {
+      background: white;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.3s ease;
+    }
+    
+    .selection-info .change-btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+    
+    /* Form Content */
+    .form-content {
+      padding: 30px;
+    }
+    
+    .form-section {
+      margin-bottom: 40px;
+      padding: 20px;
+      border-radius: 10px;
+      background: #f8fafc;
+    }
+    
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .section-header h3 {
+      font-size: 20px;
+      color: var(--primary);
+    }
+    
+    .section-header i {
+      background: rgba(37, 99, 235, 0.1);
+      color: var(--primary);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-bottom: 25px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--dark);
+      font-size: 14px;
+    }
+    
+    .form-group .required::after {
+      content: "*";
+      color: #ef4444;
+      margin-left: 4px;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      background: white;
+    }
+    
+    .form-control:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    textarea.form-control {
+      min-height: 120px;
+      resize: vertical;
+    }
+    
+    .form-note {
+      font-size: 13px;
+      color: var(--secondary);
+      margin-top: 5px;
+    }
+    
+    /* Items Section */
+    .items-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .items-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .item-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .item-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+    
+    .item-media {
+      height: 160px;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    
+    .item-media img, .item-media video {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      transition: transform 0.3s ease;
+    }
+    
+    .item-media .placeholder {
+      color: var(--secondary);
+      text-align: center;
+      padding: 15px;
+      font-size: 13px;
+    }
+    
+    .item-body {
+      padding: 15px;
+    }
+    
+    .item-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--dark);
+    }
+    
+    .item-price {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--success);
+      margin-bottom: 15px;
+    }
+    
+    .add-item-btn {
+      background: var(--accent);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      border: none;
+      margin: 0 auto;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+    
+    .add-item-btn:hover {
+      background: #7c3aed;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .item-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .edit-btn {
+      background: var(--primary);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      transition: all 0.2s ease;
+    }
+    
+    .edit-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+    
+    .delete-btn {
+      background: var(--error);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      transition: all 0.2s ease;
+    }
+    
+    .delete-btn:hover {
+      background: #dc2626;
+      transform: translateY(-2px);
+    }
+    
+    /* Form Footer */
+    .form-footer {
+      display: flex;
+      justify-content: space-between;
+      padding: 25px 30px;
+      border-top: 1px solid var(--border);
+      background: #f8fafc;
+    }
+    
+    .btn {
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    
+    .btn-back {
+      background: white;
+      color: var(--secondary);
+      border: 1px solid var(--border);
+    }
+    
+    .btn-back:hover {
+      background: #f1f5f9;
+    }
+    
+    .btn-submit {
+      background: var(--primary);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-submit:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .btn-submit:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    /* Lightbox for zooming */
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .lightbox-content {
+      max-width: 90%;
+      max-height: 90%;
+    }
+    
+    .lightbox-content img, .lightbox-content video {
+      max-width: 100%;
+      max-height: 90vh;
+      object-fit: contain;
+    }
+    
+    .close-lightbox {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+    }
+    
+    /* File Input */
+    .file-input-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .file-input-wrapper input[type="file"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+    
+    /* Video Controls */
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    
+    /* Notification */
+    .notification {
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-weight: 500;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+    }
+    
+    .notification-error {
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+    
+    .notification-success {
+      background: #f0fdf4;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+    
+    .notification i {
+      font-size: 1.2rem;
+    }
+    
+    .item-counter {
+      background: var(--primary);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 14px;
+      margin-left: 8px;
+    }
+    
+    .saving-notice {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--success);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 2000;
+      animation: fadeInOut 3s forwards;
+    }
+    
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.8);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+      display: none;
+    }
+    
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(37, 99, 235, 0.2);
+      border-top: 5px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    .loading-text {
+      margin-top: 15px;
+      font-weight: 600;
+      color: var(--primary-dark);
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateX(20px); }
+      20% { opacity: 1; transform: translateX(0); }
+      80% { opacity: 1; transform: translateX(0); }
+      100% { opacity: 0; transform: translateX(20px); }
+    }
+  </style>
+</head>
+
+
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-content">
+      <div class="logo">
+        <div class="logo-text">
+          <h1>OBlinks</h1>
+          <p class="tagline">Global Business Platform</p>
+        </div>
+      </div>
+    </div>
+  </header>
+  
+  <!-- Progress Bar -->
+  <div class="progress-container">
+    <div class="progress-steps">
+      <div class="step completed">
+        <div class="step-circle"><i class="fas fa-check"></i></div>
+        <div class="step-label">Country & Package</div>
+      </div>
+      <div class="step active">
+        <div class="step-circle">2</div>
+        <div class="step-label">Business Details</div>
+      </div>
+      <div class="step">
+        <div class="step-circle">3</div>
+        <div class="step-label">Payment</div>
+      </div>
+      <div class="progress-bar" id="progress-bar" style="width: 66%;"></div>
+    </div>
+  </div>
+  
+  <!-- Main Content -->
+  <div class="container">
+    <div class="registration-card">
+      <div class="card-header">
+        <h1><i class="fas fa-store"></i> Business Information</h1>
+        <p>Complete your business details and list your products or services to finalize your listing.</p>
+      </div>
+      
+      <!-- Selected Package & Country -->
+      <div class="selection-info">
+        <div class="details">
+          <div class="country">
+            <span class="country-flag" id="country-flag">🇺🇬</span>
+            <span id="selected-country">Uganda</span>
+          </div>
+          <div class="package">Package: <span id="selected-package">Starter</span></div>
+          <div class="price">Price: <span id="selected-price">0</span> <span id="selected-currency">UGX</span>/year</div>
+        </div>
+        <button class="change-btn" onclick="changePackage()">
+          <i class="fas fa-edit"></i> Change
+        </button>
+      </div>
+      
+      <!-- Form Content -->
+      <div class="form-content">
+        <!-- Section 1: Business Information -->
+        <div class="form-section">
+          <div class="section-header">
+            <i class="fas fa-info-circle"></i>
+            <h3>Business Information</h3>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="required">Business Title</label>
+              <input type="text" id="business-title" class="form-control" placeholder="Enter your business name">
+            </div>
+
+            <div class="form-group">
+              <label class="required">Business Location</label>
+              <input type="text" id="business-location" class="form-control" placeholder="Country, District, City etc.">
+            </div>
+
+            <div class="form-group">
+              <label for="business-category" class="required">Business Category</label>
+              <select id="business-category" class="form-control" required>
+                <option value="" disabled selected>Select a category</option>
+                <option value="electronics">Electronics</option>
+                <option value="fashion">Fashion</option>
+                <option value="food">Food & Dining</option>
+                <option value="services">Services</option>
+                <option value="home">Home & Garden</option>
+                <option value="health">Health & Beauty</option>
+                <option value="auto">Automotive</option>
+                <option value="education">Education</option>
+                <option value="entertainment">Entertainment</option>
+                <option value="travel">Travel</option>
+                <option value="sports">Sports</option>
+                <option value="all">Other Businesses</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="required">Business Description</label>
+            <textarea id="business-description" class="form-control" placeholder="Describe your business, products/services, and what makes it unique..."></textarea>
+            <div class="form-note">Minimum 10 words. Describe what your business offers and why customers should choose you.</div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Business Link (Optional)</label>
+              <input type="url" id="business-link" class="form-control" placeholder="https://yourbusiness.com">
+              <div class="form-note">Your website, social media page, or online store</div>
+            </div>
+
+            <div class="form-group">
+              <label class="required">WhatsApp Number</label>
+              <input type="tel" id="whatsapp-number" class="form-control" placeholder="start with country code eg 256712345678">
+              <div class="form-note">Customers will contact you via WhatsApp using this number</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Items & Services -->
+        <div class="form-section">
+          <div class="section-header">
+            <i class="fas fa-box-open"></i>
+            <h3>Items & Services <span id="item-counter" class="item-counter">0/6</span></h3>
+          </div>
+
+          <div class="items-header">
+            <h4>Add your products or services</h4>
+            <div class="form-note">Add items that customers can order directly from your business</div>
+          </div>
+
+          <div class="items-container" id="items-container">
+            <!-- Items will be added here dynamically -->
+            <div class="item-card">
+              <div class="item-media">
+                <div class="file-input-wrapper">
+                  <input type="file" class="media-input" accept="image/*,video/*">
+                  <div class="placeholder">
+                    <i class="fas fa-image fa-2x"></i>
+                    <p>Click to upload image or video</p>
+                  </div>
+                </div>
+              </div>
+              <div class="item-body">
+                <input type="text" class="form-control item-title" placeholder="Item Title" style="margin-bottom: 10px;">
+                <input type="text" class="form-control item-price" placeholder="Price (UGX)" style="margin-bottom: 15px;">
+                <div class="item-actions">
+                  <button class="edit-btn edit-item">
+                    <i class="fas fa-edit"></i> Edit
+                  </button>
+                  <button class="delete-btn delete-item">
+                    <i class="fas fa-trash"></i> Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="item-card">
+              <div class="item-media">
+                <div class="file-input-wrapper">
+                  <input type="file" class="media-input" accept="image/*,video/*">
+                  <div class="placeholder">
+                    <i class="fas fa-image fa-2x"></i>
+                    <p>Click to upload image or video</p>
+                  </div>
+                </div>
+              </div>
+              <div class="item-body">
+                <input type="text" class="form-control item-title" placeholder="Item Title" style="margin-bottom: 10px;">
+                <input type="text" class="form-control item-price" placeholder="Price (UGX)" style="margin-bottom: 15px;">
+                <div class="item-actions">
+                  <button class="edit-btn edit-item">
+                    <i class="fas fa-edit"></i> Edit
+                  </button>
+                  <button class="delete-btn delete-item">
+                    <i class="fas fa-trash"></i> Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button class="add-item-btn" id="add-item-btn">
+            <i class="fas fa-plus"></i> Add Another Item
+          </button>
+        </div>
+      </div>
+      
+      <!-- Form Footer -->
+      <div class="form-footer">
+        <button class="btn btn-back" onclick="window.history.back()">
+          <i class="fas fa-arrow-left"></i> Back
+        </button>
+        <button class="btn-submit" id="submit-btn">
+          <i class="fas fa-credit-card"></i> Continue to Payment
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Loading overlay -->
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Saving your business information...</div>
+  </div>
+  
+  <!-- Lightbox for zooming -->
+  <div class="lightbox" id="lightbox">
+    <span class="close-lightbox">&times;</span>
+    <div class="lightbox-content" id="lightbox-content"></div>
+  </div>
+  
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
+      authDomain: "oblinks-7fdb1.firebaseapp.com",
+      projectId: "oblinks-7fdb1",
+      storageBucket: "oblinks-7fdb1.appspot.com",
+      messagingSenderId: "587017639779",
+      appId: "1:587017639779:web:d11b60f40f431cfc202556"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth();
+
+    // Cloudinary configuration
+    const cloudinaryConfig = {
+      cloudName: 'dp81zzxlh',
+      uploadPreset: 'Unsigned upload'
+    };
+
+    // Global state
+    let selectedCountry = null;
+    let selectedPackage = null;
+    let maxItems = 6;
+    let currentItems = 2; // Starting with 2 items
+    let currentUser = null;
+    
+    // Supported countries and currencies
+    const COUNTRIES = {
+      'Uganda': { 
+        currency: 'UGX', 
+        symbol: 'UGX', 
+        conversionRate: 1,
+        flag: '🇺🇬'
+      },
+      'Tanzania': { 
+        currency: 'TZS', 
+        symbol: 'TZS', 
+        conversionRate: 0.63,
+        flag: '🇹🇿'
+      },
+      'Nigeria': { 
+        currency: 'NGN', 
+        symbol: '₦', 
+        conversionRate: 0.42,
+        flag: '🇳🇬'
+      },
+      'Ghana': { 
+        currency: 'GHS', 
+        symbol: 'GH₵', 
+        conversionRate: 0.00034,
+        flag: '🇬🇭'
+      }
+    };
+    
+    // Package prices in UGX (base currency)
+    const PACKAGE_PRICES = {
+      'Starter': 0,
+      'Basic': 10000,
+      'Standard': 30000,
+      'Advanced': 50000,
+      'Professional': 100000,
+      'Premium': 150000,
+      'Enterprise': 200000
+    };
+    
+    // Format currency based on country
+    function formatPrice(amount, country) {
+      const countryData = COUNTRIES[country];
+      const converted = amount * countryData.conversionRate;
+      
+      if (country === 'Ghana') {
+        return countryData.symbol + ' ' + converted.toFixed(2);
+      } else {
+        return countryData.symbol + ' ' + Math.round(converted).toLocaleString();
+      }
+    }
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+      // Listen for auth state changes
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          currentUser = user;
+        } else {
+          alert("You need to be logged in to submit a business");
+          window.location.href = "login.html";
+        }
+      });
+
+      // Get selections from session storage
+      const selections = JSON.parse(sessionStorage.getItem('businessSelections'));
+      
+      if (selections) {
+        selectedCountry = selections.country;
+        selectedPackage = selections.package;
+        
+        // Update UI with selections
+        document.getElementById('selected-country').textContent = selectedCountry;
+        document.getElementById('country-flag').textContent = COUNTRIES[selectedCountry].flag;
+        document.getElementById('selected-package').textContent = selectedPackage.name;
+        document.getElementById('selected-price').textContent = formatPrice(selectedPackage.price, selectedCountry);
+        document.getElementById('selected-currency').textContent = COUNTRIES[selectedCountry].currency;
+        
+        // Set max items based on package
+        maxItems = selectedPackage.items;
+        updateItemCounter();
+        
+        // Update button text for Starter package
+        if (selectedPackage.name === "Starter") {
+          document.getElementById('submit-btn').innerHTML = '<i class="fas fa-check-circle"></i> Submit Business';
+        }
+      } else {
+        // Redirect if no selections found
+        alert('Please select a country and package first');
+        window.location.href = 'selectpackage.html';
+      }
+      
+      // Set up media uploads
+      document.querySelectorAll('.media-input').forEach(input => {
+        input.addEventListener('change', handleMediaUpload);
+      });
+      
+      // Set up edit buttons
+      document.querySelectorAll('.edit-item').forEach(button => {
+        button.addEventListener('click', function(e) {
+          e.preventDefault();
+          const card = this.closest('.item-card');
+          toggleItemEditMode(card);
+        });
+      });
+      
+     // Set up delete buttons
+      document.querySelectorAll('.delete-item').forEach(button => {
+        button.addEventListener('click', function(e) {
+          e.preventDefault();
+          const card = this.closest('.item-card');
+          if (confirm('Are you sure you want to delete this item?')) {
+            card.remove();
+            currentItems--;
+            updateItemCounter();
+          }
+        });
+      });
+      
+      // Add new item button
+      document.getElementById('add-item-btn').addEventListener('click', function() {
+        if (currentItems < maxItems) {
+          addItemToForm();
+        } else {
+          alert(`You've reached the maximum of ${maxItems} items for your package`);
+        }
+      });
+      
+      // Submit button handler
+      document.getElementById('submit-btn').addEventListener('click', async function() {
+        if (!validateForm()) return;
+        
+        try {
+          // Show loading overlay
+          document.getElementById('loading-overlay').style.display = 'flex';
+          
+          if (selectedPackage.name === "Starter") {
+            // Directly submit business without payment
+            await saveBusinessToFirestore(true);
+            showSavingNotice("Business submitted successfully!");
+            setTimeout(() => {
+              window.location.href = "dashboard.html";
+            }, 2000);
+          } else {
+            // Save to sessionStorage and redirect to payment
+            saveFormData();
+            window.location.href = 'paynow.html';
+          }
+        } catch (error) {
+          console.error("Error processing business:", error);
+          alert("An error occurred: " + error.message);
+        } finally {
+          // Hide loading overlay
+          document.getElementById('loading-overlay').style.display = 'none';
+        }
+      });
+    });
+    
+    // Toggle item edit mode
+    function toggleItemEditMode(itemCard) {
+      const titleInput = itemCard.querySelector('.item-title');
+      const priceInput = itemCard.querySelector('.item-price');
+      const editBtn = itemCard.querySelector('.edit-item');
+
+      if (titleInput.readOnly) {
+        // Enable editing
+        titleInput.readOnly = false;
+        priceInput.readOnly = false;
+        editBtn.innerHTML = '<i class="fas fa-save"></i> Save';
+      } else {
+        // Save changes
+        titleInput.readOnly = true;
+        priceInput.readOnly = true;
+        editBtn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+        showSavingNotice("Changes saved successfully!");
+      }
+    }
+    
+    // Add new item to form
+    function addItemToForm() {
+      if (currentItems < maxItems) {
+        const itemsContainer = document.getElementById('items-container');
+        const newItem = document.createElement('div');
+        newItem.className = 'item-card';
+        
+        newItem.innerHTML = `
+          <div class="item-media">
+            <div class="file-input-wrapper">
+              <input type="file" class="media-input" accept="image/*,video/*">
+              <div class="placeholder">
+                <i class="fas fa-image fa-2x"></i>
+                <p>Click to upload image or video</p>
+              </div>
+            </div>
+          </div>
+          <div class="item-body">
+            <input type="text" class="form-control item-title" placeholder="Item Title" style="margin-bottom: 10px;">
+            <input type="text" class="form-control item-price" placeholder="Price (UGX)" style="margin-bottom: 15px;">
+            <div class="item-actions">
+              <button class="edit-btn edit-item">
+                <i class="fas fa-edit"></i> Edit
+              </button>
+              <button class="delete-btn delete-item">
+                <i class="fas fa-trash"></i> Delete
+              </button>
+            </div>
+          </div>
+        `;
+        
+        itemsContainer.appendChild(newItem);
+        currentItems++;
+        
+        // Add event listeners to new item
+        newItem.querySelector('.media-input').addEventListener('change', handleMediaUpload);
+        newItem.querySelector('.edit-item').addEventListener('click', function(e) {
+          e.preventDefault();
+          toggleItemEditMode(newItem);
+        });
+        newItem.querySelector('.delete-item').addEventListener('click', function(e) {
+          e.preventDefault();
+          if (confirm('Are you sure you want to delete this item?')) {
+            newItem.remove();
+            currentItems--;
+            updateItemCounter();
+          }
+        });
+        
+        updateItemCounter();
+      }
+    }
+    
+    // Update item counter
+    function updateItemCounter() {
+      document.getElementById('item-counter').textContent = `${currentItems}/${maxItems}`;
+    }
+    
+    // Handle media upload to Cloudinary
+    async function handleMediaUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'video/webm'];
+      if (!validTypes.includes(file.type)) {
+        alert('Only images (JPEG, PNG, GIF) and videos (MP4, WebM) are allowed');
+        return;
+      }
+
+      if (file.size > 10 * 1024 * 1024) {
+        alert('File size must be less than 10MB');
+        return;
+      }
+
+      const wrapper = e.target.parentElement;
+      wrapper.innerHTML = `<div style="padding: 20px; text-align: center;"><i class="fas fa-spinner fa-spin"></i> Uploading...</div>`;
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "Unsigned upload");
+
+      try {
+        const response = await fetch(
+          "https://api.cloudinary.com/v1_1/dp81zzxlh/auto/upload",
+          {
+            method: "POST",
+            body: formData
+          }
+        );
+        const data = await response.json();
+
+        wrapper.innerHTML = "";
+
+        const isVideo = data.resource_type === "video";
+
+        // Create preview container
+        const controlsDiv = document.createElement("div");
+        controlsDiv.style.position = "relative";
+        controlsDiv.style.width = "100%";
+        controlsDiv.style.borderRadius = "10px";
+        controlsDiv.style.overflow = "hidden";
+
+        // Create media element
+        let mediaElement;
+        if (isVideo) {
+          mediaElement = document.createElement("video");
+          mediaElement.src = data.secure_url;
+          mediaElement.controls = true;
+          mediaElement.muted = true;
+          mediaElement.style.width = "100%";
+          mediaElement.style.maxHeight = "200px";
+          mediaElement.style.borderRadius = "10px";
+          mediaElement.style.objectFit = "cover";
+        } else {
+          mediaElement = document.createElement("img");
+          mediaElement.src = data.secure_url;
+          mediaElement.alt = "Uploaded image";
+          mediaElement.style.width = "100%";
+          mediaElement.style.maxHeight = "200px";
+          mediaElement.style.borderRadius = "10px";
+          mediaElement.style.objectFit = "contain";
+        }
+
+        // Zoom button
+        const zoomBtn = document.createElement("button");
+        zoomBtn.innerHTML = `<i class="fas fa-search-plus"></i>`;
+        zoomBtn.className = "zoom-btn";
+        zoomBtn.onclick = () => openLightbox(data.secure_url, isVideo ? 'video' : 'image');
+
+        // Hidden input to store URL
+        const urlInput = document.createElement("input");
+        urlInput.type = "hidden";
+        urlInput.className = "media-url";
+        urlInput.value = data.secure_url;
+
+        // Assemble
+        controlsDiv.appendChild(mediaElement);
+        controlsDiv.appendChild(zoomBtn);
+        wrapper.appendChild(controlsDiv);
+        wrapper.appendChild(urlInput);
+
+        showSavingNotice("Media uploaded successfully!");
+      } catch (error) {
+        wrapper.innerHTML = `<div style="padding: 20px; color: var(--error);"><i class="fas fa-exclamation-triangle"></i> Upload failed: ${error.message}</div>`;
+      }
+    }
+    
+    // Open lightbox for zooming
+    function openLightbox(src, type) {
+      const lightbox = document.getElementById('lightbox');
+      const content = document.getElementById('lightbox-content');
+
+      if (type === 'image') {
+        content.innerHTML = `<img src="${src}" alt="Zoomed product image">`;
+      } else {
+        content.innerHTML = `<video src="${src}" controls autoplay></video>`;
+      }
+
+      lightbox.style.display = 'flex';
+    }
+    
+    // Close lightbox
+    document.querySelector('.close-lightbox').addEventListener('click', function() {
+      document.getElementById('lightbox').style.display = 'none';
+    });
+    
+    // Close lightbox when clicking outside content
+    document.getElementById('lightbox').addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.style.display = 'none';
+      }
+    });
+    
+    // Validate form
+    function validateForm() {
+      const businessTitle = document.getElementById('business-title').value;
+      const businessLocation = document.getElementById('business-location').value;
+      const businessCategory = document.getElementById('business-category').value;
+      const businessDescription = document.getElementById('business-description').value;
+      const whatsappNumber = document.getElementById('whatsapp-number').value;
+      
+      if (!businessTitle) {
+        alert('Please enter a business title');
+        return false;
+      }
+      
+      if (!businessLocation) {
+        alert('Please enter a business location');
+        return false;
+      }
+      
+      if (!businessCategory) {
+        alert('Please select a business category');
+        return false;
+      }
+      
+      if (!businessDescription || businessDescription.split(' ').length < 10) {
+        alert('Please enter a business description with at least 10 words');
+        return false;
+      }
+      
+      if (!whatsappNumber) {
+        alert('Please enter a WhatsApp number');
+        return false;
+      }
+      
+      // Validate items
+      const items = document.querySelectorAll('.item-card');
+      if (items.length === 0) {
+        alert('Please add at least one item or service');
+        return false;
+      }
+      
+      let allItemsValid = true;
+      items.forEach(item => {
+        const title = item.querySelector('.item-title').value;
+        const price = item.querySelector('.item-price').value;
+        
+        if (!title || !price) {
+          allItemsValid = false;
+        }
+      });
+      
+      if (!allItemsValid) {
+        alert('Please complete all item titles and prices');
+        return false;
+      }
+      
+      return true;
+    }
+    
+    // Save form data to session storage
+    function saveFormData() {
+      const businessData = {
+        title: document.getElementById('business-title').value,
+        location: document.getElementById('business-location').value,
+        category: document.getElementById('business-category').value,
+        description: document.getElementById('business-description').value,
+        whatsapp: document.getElementById('whatsapp-number').value,
+        businessLink: document.getElementById('business-link').value || '',
+        country: selectedCountry,
+        package: selectedPackage.name
+      };
+
+      // Collect items
+      const items = [];
+      document.querySelectorAll('.item-card').forEach(card => {
+        const title = card.querySelector('.item-title').value;
+        const price = card.querySelector('.item-price').value;
+        const mediaInput = card.querySelector('.media-url');
+        const mediaUrl = mediaInput ? mediaInput.value : null;
+        
+        items.push({
+          title,
+          price,
+          mediaUrl
+        });
+      });
+      
+      // Extract media URLs for business
+      const mediaUrls = items.map(item => item.mediaUrl).filter(url => url);
+      businessData.mediaUrls = mediaUrls;
+
+      // Save to sessionStorage
+      sessionStorage.setItem("businessData", JSON.stringify(businessData));
+      sessionStorage.setItem("itemsData", JSON.stringify(items));
+    }
+    
+    // Save business and items to Firestore
+    async function saveBusinessToFirestore(isApproved) {
+      if (!currentUser) {
+        throw new Error("User not authenticated");
+      }
+      
+      const businessData = {
+        title: document.getElementById('business-title').value,
+        location: document.getElementById('business-location').value,
+        category: document.getElementById('business-category').value,
+        description: document.getElementById('business-description').value,
+        whatsapp: document.getElementById('whatsapp-number').value,
+        businessLink: document.getElementById('business-link').value || '',
+        country: selectedCountry,
+        package: selectedPackage.name,
+        userId: currentUser.uid,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        paymentStatus: isApproved ? "not_required" : "new",
+        status: isApproved ? "approved" : "pending",
+        views: 0
+      };
+
+      // Collect items
+      const items = [];
+      document.querySelectorAll('.item-card').forEach(card => {
+        const title = card.querySelector('.item-title').value;
+        const price = card.querySelector('.item-price').value;
+        const mediaInput = card.querySelector('.media-url');
+        const mediaUrl = mediaInput ? mediaInput.value : null;
+        
+        items.push({
+          title,
+          price,
+          mediaUrl
+        });
+      });
+      
+      // Extract media URLs for business
+      const mediaUrls = items.map(item => item.mediaUrl).filter(url => url);
+      businessData.mediaUrls = mediaUrls;
+      
+      // Choose collection based on approval status
+      const businessCollection = isApproved ? "businesses" : "pendingBusinesses";
+      
+      // Save business
+      const businessDocRef = await addDoc(collection(db, businessCollection), businessData);
+      const businessId = businessDocRef.id;
+      
+      // Save items
+      for (let item of items) {
+        await addDoc(collection(db, "items"), {
+          ...item,
+          businessId: businessId,
+          createdAt: serverTimestamp()
+        });
+      }
+      
+      return businessId;
+    }
+    
+    // Change package
+    function changePackage() {
+      sessionStorage.removeItem('businessSelections');
+      window.location.href = 'selectpackage.html';
+    }
+    
+    // Show saving notice
+    function showSavingNotice(message = "Changes saved successfully!") {
+      const notice = document.createElement('div');
+      notice.className = 'saving-notice';
+      notice.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+      document.body.appendChild(notice);
+
+      setTimeout(() => {
+        notice.remove();
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
