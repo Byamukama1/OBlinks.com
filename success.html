@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Starter Package Success - OBlinks</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    :root {
+      --primary: #2563eb;
+      --success: #22c55e;
+      --bg: #f9fafb;
+      --text: #1f2937;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      margin: 0;
+      padding: 30px 15px;
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .card {
+      background: #fff;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .card i {
+      font-size: 70px;
+      color: var(--success);
+      margin-bottom: 20px;
+    }
+
+    .card h2 {
+      color: var(--success);
+      margin-bottom: 10px;
+    }
+
+    .highlight {
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    .info {
+      text-align: left;
+      margin-top: 20px;
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .btn {
+      margin-top: 30px;
+      display: inline-block;
+      padding: 12px 20px;
+      background: var(--primary);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: #1e40af;
+    }
+
+    .id-box {
+      background: #e0f2fe;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 14px;
+      color: #2563eb;
+      margin-top: 15px;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <i class="fas fa-check-circle"></i>
+    <h2>Success! Your Business is Live 🎉</h2>
+
+    <div id="idBox" class="id-box" style="display: none;"></div>
+
+    <div class="info">
+      <p>Thank you for choosing the <span class="highlight">Free Starter Package</span> on OBlinks. Your business has been successfully published and is now visible to thousands of users across Uganda and beyond.</p>
+
+      <h3>🌱 What You Get with Starter:</h3>
+      <ul>
+        <li>✔️ 100% Free Listing</li>
+        <li>✔️ Up to <b>6 items</b> added under your business</li>
+        <li>✔️ WhatsApp Chat button for direct orders</li>
+        <li>✔️ Viewers can see your description, title, media and location</li>
+      </ul>
+
+      <h3>💼 How to Earn From OBlinks:</h3>
+      <p>
+        Even with the Starter Package, you can begin earning real money on OBlinks:
+      </p>
+      <ul>
+        <li>💰 <b>Refer others</b> to OBlinks using your referral link and earn commission when they list their businesses</li>
+        <li>📢 Share your business link on WhatsApp, Facebook, TikTok, etc. to reach more buyers</li>
+        <li>🔁 Stay active by responding quickly to chats and updating your items when needed</li>
+      </ul>
+
+      <h3>🚀 Want More?</h3>
+      <p>Upgrade your listing any time to unlock:</p>
+      <ul>
+        <li>➕ Add up to 100 items</li>
+        <li>🎯 Higher visibility in search results</li>
+        <li>📊 Statistics on views and orders</li>
+        <li>💬 More contact options and features</li>
+      </ul>
+
+      <p style="margin-top: 10px;">You’ve made the first step — now let’s grow your hustle 💼💸</p>
+    </div>
+
+    <a href="index.html" class="btn">Go to Homepage</a>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get("id");
+    const status = urlParams.get("status");
+
+    if (status === "free" && id) {
+      document.getElementById("idBox").innerText = `Your Business ID: ${id}`;
+      document.getElementById("idBox").style.display = "block";
+    }
+  </script>
+
+</body>
+</html>
