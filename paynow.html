@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Complete Payment - OBlinks</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -18,15 +18,9 @@
       --shadow: 0 4px 20px rgba(0,0,0,0.08);
       --radius: 12px;
     }
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
       min-height: 100vh;
       padding: 20px;
@@ -35,7 +29,6 @@
       justify-content: center;
       align-items: center;
     }
-    
     .container {
       max-width: 520px;
       width: 100%;
@@ -44,20 +37,17 @@
       box-shadow: var(--shadow);
       overflow: hidden;
     }
-    
     .header {
       background: linear-gradient(135deg, var(--primary), #3b82f6);
       color: white;
       padding: 25px 30px;
       text-align: center;
     }
-    
     .logo {
       display: flex;
       justify-content: center;
       margin-bottom: 15px;
     }
-    
     .logo-icon {
       background: rgba(255, 255, 255, 0.2);
       width: 60px;
@@ -68,68 +58,22 @@
       justify-content: center;
       font-size: 28px;
     }
-    
-    .header h1 {
-      font-weight: 600;
-      font-size: 1.8rem;
-      margin-bottom: 5px;
-    }
-    
-    .header p {
-      opacity: 0.9;
-      font-size: 1rem;
-    }
-    
-    .content {
-      padding: 30px;
-    }
-    
-    .payment-info {
-      background: var(--light);
-      border-radius: var(--radius);
-      padding: 20px;
-      margin-bottom: 25px;
-      border: 1px solid var(--border);
-    }
-    
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    
-    .info-row:last-child {
-      border-bottom: none;
-    }
-    
+    .header h1 { font-weight: 600; font-size: 1.8rem; margin-bottom: 5px; }
+    .header p { opacity: 0.9; font-size: 1rem; }
+    .content { padding: 30px; }
     .info-label {
       color: var(--secondary);
-      font-weight: 500;
-    }
-    
-    .info-value {
       font-weight: 600;
-      color: #1e293b;
+      margin-bottom: 5px;
+      display: block;
     }
-    
-    .currency-box {
-      background: #fef9c3;
-      border-left: 4px solid var(--warning);
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 15px;
-      font-size: 14px;
       margin-bottom: 25px;
-      display: flex;
-      align-items: center;
     }
-    
-    .currency-icon {
-      margin-right: 12px;
-      color: var(--warning);
-      font-size: 18px;
-    }
-    
     .instructions {
       background: #e0f7fa;
       border-left: 4px solid var(--primary);
@@ -137,7 +81,6 @@
       padding: 18px;
       margin-bottom: 25px;
     }
-    
     .instructions h3 {
       font-size: 1.1rem;
       margin-bottom: 12px;
@@ -145,52 +88,13 @@
       display: flex;
       align-items: center;
     }
-    
-    .instructions h3 i {
-      margin-right: 10px;
-    }
-    
-    .steps {
-      padding-left: 25px;
-    }
-    
-    .steps li {
-      margin-bottom: 8px;
-      line-height: 1.5;
-    }
-    
-    .payment-method {
-      background: #f0fdfa;
-      border-radius: var(--radius);
-      padding: 20px;
-      text-align: center;
-      margin-bottom: 25px;
-      border: 1px solid var(--border);
-    }
-    
-    .method-logo {
-      width: 120px;
-      height: 40px;
-      background: #fff;
-      border-radius: 6px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      margin: 10px 0 20px;
-      border: 1px solid var(--border);
-      padding: 0 15px;
-    }
-    
-    .method-logo span {
-      font-weight: 700;
-      color: var(--primary);
-      letter-spacing: -0.5px;
-    }
-    
+    .instructions h3 i { margin-right: 10px; }
+    .steps { padding-left: 25px; }
+    .steps li { margin-bottom: 8px; line-height: 1.5; }
+
     .btn-container {
       position: relative;
     }
-    
     button {
       width: 100%;
       background: linear-gradient(to right, var(--primary), var(--primary-dark));
@@ -202,82 +106,13 @@
       font-weight: 600;
       cursor: pointer;
       box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-      transition: all 0.3s ease;
       display: flex;
       align-items: center;
       justify-content: center;
-      position: relative;
-      overflow: hidden;
     }
-    
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
-    }
-    
-    button:active {
-      transform: translateY(1px);
-    }
-    
     button i {
       margin-right: 10px;
       font-size: 1.2rem;
-    }
-    
-    .security {
-      text-align: center;
-      margin-top: 25px;
-      font-size: 0.85rem;
-      color: var(--secondary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .security i {
-      color: var(--success);
-      margin-right: 8px;
-    }
-    
-    .footer {
-      text-align: center;
-      padding: 20px;
-      color: var(--secondary);
-      font-size: 0.9rem;
-      border-top: 1px solid var(--border);
-    }
-    
-    .footer a {
-      color: var(--primary);
-      text-decoration: none;
-    }
-    
-    .footer a:hover {
-      text-decoration: underline;
-    }
-    
-    @media (max-width: 480px) {
-      .header {
-        padding: 20px;
-      }
-      
-      .content {
-        padding: 20px;
-      }
-      
-      .logo-icon {
-        width: 50px;
-        height: 50px;
-        font-size: 24px;
-      }
-      
-      .header h1 {
-        font-size: 1.5rem;
-      }
-      
-      button {
-        padding: 16px;
-      }
     }
   </style>
 </head>
@@ -292,13 +127,14 @@
       <h1>Complete Payment</h1>
       <p>Secure payment processing with Eversend</p>
     </div>
-    
-  
-      <div class="currency-box">
-        <i class="fas fa-money-bill-wave currency-icon"></i>
-        <div>Accepted currencies: UGX, TZS, GHS, NGN. Please ensure correct currency selection during payment.</div>
-      </div>
-      
+
+    <div class="content">
+      <label class="info-label">Amount to Pay:</label>
+      <div id="amountDisplay" style="margin-bottom: 20px; font-size: 1.1rem; font-weight: bold;">Loading...</div>
+
+      <label for="paymentPhone" class="info-label">Payment Phone:</label>
+      <input type="text" id="paymentPhone" placeholder="Enter payment phone number" />
+
       <div class="instructions">
         <h3><i class="fas fa-info-circle"></i> Payment Instructions</h3>
         <ol class="steps">
@@ -309,16 +145,85 @@
           <li>Confirm payment with PIN on your phone</li>
         </ol>
       </div>
-      
-    
+
       <div class="btn-container">
-        <a href="https://eversend.me/oblinks" target="_blank">
-          <button id="payBtn">
-            <i class="fas fa-lock"></i> Click to Pay Securely with Eversend
-          </button>
-        </a>
+        <button onclick="submitPayment()">
+          <i class="fas fa-lock"></i> Pay Securely with Eversend
+        </button>
       </div>
-  
-  
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
+      authDomain: "oblinks-7fdb1.firebaseapp.com",
+      projectId: "oblinks-7fdb1",
+      storageBucket: "oblinks-7fdb1.appspot.com",
+      messagingSenderId: "587017639779",
+      appId: "1:587017639779:web:d11b60f40f431cfc202556"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let businessRef = null;
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        db.collection("pendingBusinesses")
+          .where("userId", "==", user.uid)
+          .where("status", "==", "pending")
+          .limit(1)
+          .get()
+          .then(snapshot => {
+            if (!snapshot.empty) {
+              businessRef = snapshot.docs[0].ref;
+              const data = snapshot.docs[0].data();
+              document.getElementById("amountDisplay").innerText = data.price + " UGX";
+              document.getElementById("paymentPhone").value = data.paymentPhone || "";
+            } else {
+              alert("No pending business found.");
+            }
+          })
+          .catch(error => console.error("Error loading business:", error));
+      } else {
+        alert("Please log in first.");
+        window.location.href = "login.html";
+      }
+    });
+
+    function submitPayment() {
+      const phone = document.getElementById("paymentPhone").value.trim();
+      if (!phone || !businessRef) return alert("Enter your payment phone number.");
+
+      businessRef.get().then(doc => {
+        if (doc.exists) {
+          const data = doc.data();
+          db.collection("payments").add({
+            amountPaid: data.price,
+            businessTitle: data.title,
+            packageName: data.package,
+            paymentPhone: phone,
+            status: "pending",
+            timestamp: new Date(),
+            whatsappNumber: data.whatsapp,
+            userId: data.userId,
+            businessId: data.businessId
+          }).then(() => {
+            businessRef.update({ paymentPhone: phone });
+            window.location.href = "https://eversend.me/oblinks";
+          }).catch(err => {
+            console.error("Error saving payment:", err);
+            alert("Error saving payment.");
+          });
+        }
+      });
+    }
+  </script>
 </body>
 </html>
