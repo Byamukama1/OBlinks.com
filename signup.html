@@ -19,13 +19,13 @@
       --card-bg: #fff;
       --shadow: 0 20px 40px rgba(0,0,0,0.1);
     }
-    
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
-    
+
     body {
       margin: 0;
       font-family: 'Inter', sans-serif;
@@ -41,7 +41,7 @@
       background-size: 100% 100%;
       background-repeat: no-repeat;
     }
-    
+
     .signup-container {
       background: var(--card-bg);
       padding: 40px;
@@ -52,7 +52,7 @@
       position: relative;
       overflow: hidden;
     }
-    
+
     .signup-container::before {
       content: '';
       position: absolute;
@@ -62,19 +62,19 @@
       height: 4px;
       background: linear-gradient(90deg, var(--primary), var(--secondary));
     }
-    
+
     h2 {
       text-align: center;
       margin-bottom: 24px;
       color: var(--dark);
       font-size: 28px;
     }
-    
+
     .form-group {
       margin-bottom: 20px;
       position: relative;
     }
-    
+
     label {
       display: block;
       font-weight: 600;
@@ -82,22 +82,26 @@
       color: var(--dark);
       font-size: 14px;
     }
-    
-    input {
+
+    input, select {
       width: 100%;
       padding: 14px 14px 14px 44px;
       border: 1px solid var(--gray);
       border-radius: 10px;
       font-size: 15px;
       transition: all 0.3s ease;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background-color: white;
     }
-    
-    input:focus {
+
+    input:focus, select:focus {
       border-color: var(--primary);
       outline: none;
       box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
     }
-    
+
     .input-icon {
       position: absolute;
       left: 16px;
@@ -105,7 +109,24 @@
       color: var(--primary);
       font-size: 18px;
     }
-    
+
+    .country-icon {
+      position: absolute;
+      left: 16px;
+      top: 40px;
+      color: var(--primary);
+      font-size: 18px;
+    }
+
+    .country-arrow {
+      position: absolute;
+      right: 16px;
+      top: 40px;
+      color: var(--gray);
+      font-size: 14px;
+      pointer-events: none;
+    }
+
     .password-toggle {
       position: absolute;
       right: 16px;
@@ -114,11 +135,11 @@
       cursor: pointer;
       font-size: 18px;
     }
-    
+
     .password-toggle:hover {
       color: var(--primary);
     }
-    
+
     .btn {
       width: 100%;
       padding: 14px;
@@ -134,7 +155,7 @@
       position: relative;
       overflow: hidden;
     }
-    
+
     .btn::after {
       content: '';
       position: absolute;
@@ -146,46 +167,46 @@
       transform: rotate(25deg);
       transition: all 0.4s;
     }
-    
+
     .btn:hover::after {
       left: 120%;
     }
-    
+
     .btn:hover {
       background: linear-gradient(135deg, var(--primary-dark), #7c3aed);
       transform: translateY(-2px);
       box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
     }
-    
+
     .btn:active {
       transform: translateY(0);
     }
-    
+
     .error {
       color: var(--danger);
       font-size: 14px;
       margin-top: 8px;
       display: none;
     }
-    
+
     .login-link {
       text-align: center;
       margin-top: 24px;
       font-size: 15px;
       color: #64748b;
     }
-    
+
     .login-link a {
       color: var(--primary);
       font-weight: 600;
       text-decoration: none;
       transition: 0.3s;
     }
-    
+
     .login-link a:hover {
       text-decoration: underline;
     }
-    
+
     .referral-notice {
       background-color: rgba(99, 102, 241, 0.1);
       border-radius: 8px;
@@ -196,16 +217,16 @@
       color: var(--primary);
       display: none;
     }
-    
+
     .referral-notice i {
       margin-right: 8px;
     }
-    
+
     .logo {
       text-align: center;
       margin-bottom: 20px;
     }
-    
+
     .logo-text {
       font-weight: 700;
       font-size: 28px;
@@ -214,7 +235,7 @@
       -webkit-text-fill-color: transparent;
       display: inline-block;
     }
-    
+
     .password-strength {
       height: 4px;
       border-radius: 2px;
@@ -222,28 +243,28 @@
       margin-top: 8px;
       overflow: hidden;
     }
-    
+
     .strength-meter {
       height: 100%;
       width: 0%;
       transition: width 0.3s ease;
     }
-    
+
     .optional-tag {
       color: #64748b;
       font-weight: normal;
       font-size: 12px;
     }
-    
+
     .hidden {
       display: none !important;
     }
-    
+
     @media (max-width: 480px) {
       .signup-container {
         padding: 30px 20px;
       }
-      
+
       h2 {
         font-size: 24px;
       }
@@ -257,25 +278,40 @@
       <span class="logo-text">OBlinks</span>
     </div>
     <h2>Create Your Account</h2>
-    
+
     <div class="referral-notice" id="referralNotice">
       <i class="fas fa-gift"></i> <span id="referralMessage">Signing up with sales agent: </span>
     </div>
-    
+
     <form id="signupForm">
       <div class="form-group">
         <label for="email">Email Address</label>
         <i class="fas fa-envelope input-icon"></i>
         <input type="email" id="email" placeholder="your@email.com" required />
       </div>
-      
+
+      <!-- Country Selection Field -->
       <div class="form-group">
-        <label for="phone">WhatsApp Number (Begin with 256..)</label>
+        <label for="country">Country</label>
+        <i class="fas fa-globe-africa country-icon"></i>
+        <select id="country" required>
+          <option value="" disabled selected>Select your country</option>
+          <option value="Uganda">Uganda</option>
+          <option value="Tanzania">Tanzania</option>
+          <option value="Ghana">Ghana</option>
+          <option value="Nigeria">Nigeria</option>
+        </select>
+        <i class="fas fa-chevron-down country-arrow"></i>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">WhatsApp Number</label>
         <i class="fas fa-phone input-icon"></i>
         <input type="text" id="phone" placeholder="256700000000" required />
       </div>
 
-      <!-- SALES AGENT FIELD WITH ID FOR TOGGLING -->
+
+   <!-- SALES AGENT FIELD WITH ID FOR TOGGLING -->
       <div class="form-group" id="referrerGroup">
         <label for="referrer">Sales Agent Number <span class="optional-tag">(Optional)</span></label>
         <i class="fas fa-user-plus input-icon"></i>
@@ -293,7 +329,7 @@
           <div class="strength-meter" id="strengthMeter"></div>
         </div>
       </div>
-      
+
       <div class="form-group">
         <label for="confirm">Confirm Password</label>
         <i class="fas fa-lock input-icon"></i>
@@ -302,17 +338,16 @@
           <i class="far fa-eye"></i>
         </span>
       </div>
-      
+
       <div class="error" id="errorMsg">Error message</div>
       <button type="submit" class="btn">Sign Up</button>
     </form>
-    
+
     <div class="login-link">
       Already have an account? <a href="login.html">Log In</a>
     </div>
   </div>
-  
-  
+
 <script type="module">
   // Import Firebase modules
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
@@ -347,6 +382,7 @@
   const referralMessage = document.getElementById('referralMessage');
   const referrerInput = document.getElementById('referrer');
   const referrerGroup = document.getElementById('referrerGroup');
+  const countrySelect = document.getElementById('country');
 
   // Check referral in URL
   const urlParams = new URLSearchParams(window.location.search);
@@ -354,17 +390,17 @@
 
   // Check session storage for existing referrer
   const sessionReferrer = sessionStorage.getItem('referrer');
-  
+
   // If referral exists in URL or session
   if (refParam || sessionReferrer) {
     const referrerValue = refParam || sessionReferrer;
     referralMessage.textContent += referrerValue;
     referralNotice.style.display = 'block';
-    
+
     // Prefill and hide the Sales Agent field
     referrerInput.value = referrerValue;
     referrerGroup.classList.add('hidden'); // Hide the field
-    
+
     // Store in session storage if from URL
     if (refParam) {
       sessionStorage.setItem('referrer', refParam);
@@ -385,7 +421,7 @@
     Enterprise: 0.8
   };
 
-// Toggle password visibility
+  // Toggle password visibility
   passwordToggle.addEventListener('click', () => {
     const type = passwordInput.type === 'password' ? 'text' : 'password';
     passwordInput.type = type;
@@ -417,13 +453,14 @@
     e.preventDefault();
 
     const email = document.getElementById('email').value.trim();
+    const country = countrySelect.value;
     const password = passwordInput.value.trim();
     const confirm = confirmInput.value.trim();
     const phone = document.getElementById('phone').value.trim();
     const referrerWhatsapp = referrerInput.value.trim() || null;
 
     // Validation
-    if (!email || !phone || !password || !confirm) {
+    if (!email || !phone || !password || !confirm || !country) {
       errorMsg.textContent = 'Please fill in all required fields';
       errorMsg.style.display = 'block';
       return;
@@ -490,6 +527,7 @@
       await setDoc(doc(db, "users", user.uid), {
         userId: user.uid,
         email: email,
+        country: country, // Added country to user document
         whatsapp: phone,
         package: "Starter",
         referrerWhatsapp,
@@ -501,7 +539,7 @@
 
       // Clear session storage
       sessionStorage.removeItem('referrer');
-      
+
       errorMsg.textContent = 'Account created successfully! Redirecting...';
       errorMsg.style.color = '#10b981';
       errorMsg.style.display = 'block';
