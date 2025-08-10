@@ -368,7 +368,7 @@
     updatePaymentOptions();
   }
 
-  // Update payment options based on country (unchanged)
+  // Update payment options based on country
   function updatePaymentOptions() {
     const optionsContainer = document.getElementById('paymentOptions');
     optionsContainer.innerHTML = '';
@@ -399,7 +399,15 @@
       }
     });
 
-    if (optionsContainer.children.length > 0 && !selectedPaymentMethod) {
+    // NEW: Default to Pandora when country is Uganda; otherwise keep first option
+    if (currentCountry === 'uganda') {
+      selectedPaymentMethod = 'pandora';
+      const el = optionsContainer.querySelector('[data-method="pandora"]');
+      if (el) {
+        document.querySelectorAll('.payment-option').forEach(x => x.classList.remove('selected'));
+        el.classList.add('selected');
+      }
+    } else if (optionsContainer.children.length > 0 && !selectedPaymentMethod) {
       optionsContainer.children[0].classList.add('selected');
       selectedPaymentMethod = optionsContainer.children[0].dataset.method;
     }
