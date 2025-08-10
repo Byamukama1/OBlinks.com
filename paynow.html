@@ -40,69 +40,120 @@
     .header {
       background: linear-gradient(135deg, var(--primary), #3b82f6);
       color: white;
-      padding: 25px 30px;
+      padding: 20px;
       text-align: center;
     }
     .logo {
       display: flex;
       justify-content: center;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
     .logo-icon {
       background: rgba(255, 255, 255, 0.2);
-      width: 60px;
-      height: 60px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 28px;
+      font-size: 24px;
     }
-    .header h1 { font-weight: 600; font-size: 1.8rem; margin-bottom: 5px; }
-    .header p { opacity: 0.9; font-size: 1rem; }
-    .content { padding: 30px; }
+    .header h1 { 
+      font-weight: 600; 
+      font-size: 1.5rem; 
+      margin-bottom: 5px; 
+    }
+    .header p { 
+      opacity: 0.9; 
+      font-size: 0.9rem; 
+    }
+    .content { 
+      padding: 20px; 
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
     .info-label {
       color: var(--secondary);
       font-weight: 600;
       margin-bottom: 5px;
       display: block;
+      font-size: 0.9rem;
     }
     input {
       width: 100%;
       padding: 12px;
       border: 1px solid var(--border);
       border-radius: 8px;
-      margin-bottom: 25px;
+      margin-bottom: 5px;
+      font-size: 0.95rem;
     }
-    .instructions {
-      background: #e0f7fa;
-      border-left: 4px solid var(--primary);
-      border-radius: 8px;
-      padding: 18px;
-      margin-bottom: 25px;
+    .payment-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 5px;
     }
-    .instructions h3 {
-      font-size: 1.1rem;
-      margin-bottom: 12px;
-      color: var(--primary-dark);
+    .payment-option {
       display: flex;
       align-items: center;
+      padding: 12px;
+      background: #f8fafc;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s;
     }
-    .instructions h3 i { margin-right: 10px; }
-    .steps { padding-left: 25px; }
-    .steps li { margin-bottom: 8px; line-height: 1.5; }
-
-    .btn-container {
+    .payment-option.selected {
+      background: #e0f2fe;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+    }
+    .payment-option i {
+      margin-right: 12px;
+      font-size: 1.2rem;
+      color: var(--primary);
+    }
+    .payment-option .details {
+      flex-grow: 1;
+    }
+    .payment-option .title {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .payment-option .description {
+      font-size: 0.85rem;
+      color: var(--secondary);
+    }
+    .payment-option .radio {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-radius: 50%;
       position: relative;
+    }
+    .payment-option.selected .radio::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 10px;
+      height: 10px;
+      background: var(--primary);
+      border-radius: 50%;
+    }
+    .btn-container {
+      margin-top: 5px;
     }
     button {
       width: 100%;
       background: linear-gradient(to right, var(--primary), var(--primary-dark));
       color: white;
       border: none;
-      padding: 18px;
+      padding: 14px;
       border-radius: 50px;
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
       box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
@@ -112,10 +163,52 @@
     }
     button i {
       margin-right: 10px;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
+    }
+    .status-msg {
+      display: none;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      margin-top: 10px;
+      font-size: 0.9rem;
+    }
+    .status-msg.error {
+      border-color: #fecaca;
+      background: #fef2f2;
+      color: #7f1d1d;
+    }
+    .status-msg.success {
+      border-color: #bbf7d0;
+      background: #ecfdf5;
+      color: #065f46;
+    }
+    .country-selector {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      background: #f1f5f9;
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+    .country-selector i {
+      margin-right: 10px;
+      color: var(--primary);
+    }
+    .country-selector select {
+      background: transparent;
+      border: none;
+      font-weight: 600;
+      color: var(--primary-dark);
+      padding: 5px;
+      cursor: pointer;
+      width: auto;
     }
   </style>
 </head>
+
+
 <body>
   <div class="container">
     <div class="header">
@@ -125,32 +218,37 @@
         </div>
       </div>
       <h1>Complete Payment</h1>
-      <p>Secure payment processing with Eversend</p>
+      <p>Secure payment processing with OBlinks</p>
     </div>
 
     <div class="content">
+      <div class="country-selector">
+        <i class="fas fa-globe-africa"></i>
+        <select id="countrySelect">
+          <option value="uganda">Uganda</option>
+          <option value="tanzania">Tanzania</option>
+          <option value="nigeria">Nigeria</option>
+          <option value="ghana">Ghana</option>
+        </select>
+      </div>
+      
       <label class="info-label">Amount to Pay:</label>
-      <div id="amountDisplay" style="margin-bottom: 20px; font-size: 1.1rem; font-weight: bold;">Loading...</div>
+      <div id="amountDisplay" style="font-weight: bold; margin-bottom: 5px; font-size: 1.1rem;">Loading...</div>
 
       <label for="paymentPhone" class="info-label">Payment Phone:</label>
       <input type="text" id="paymentPhone" placeholder="Enter payment phone number" />
 
-      <div class="instructions">
-        <h3><i class="fas fa-info-circle"></i> Payment Instructions</h3>
-        <ol class="steps">
-          <li>Select your preferred currency (if not pre-selected)</li>
-          <li>Enter the exact package amount as it was shown in the table</li>
-          <li>Provide your phone number if not pre-filled</li>
-          <li>Enter the OTP code you'll receive via SMS</li>
-          <li>Confirm payment with PIN on your phone</li>
-        </ol>
+      <div class="payment-options" id="paymentOptions">
+        <!-- Payment options will be populated by JS -->
       </div>
 
       <div class="btn-container">
-        <button onclick="submitPayment()">
-          <i class="fas fa-lock"></i> Pay Securely with Eversend
+        <button id="payButton">
+          <i class="fas fa-lock"></i> Complete Payment
         </button>
       </div>
+      
+      <div id="statusMsg" class="status-msg"></div>
     </div>
   </div>
 
@@ -158,7 +256,12 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  
   <script>
+    // === CONFIG ===
+    const API_BASE = "https://pandora-payment-server.onrender.com";
+
+    // Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
       authDomain: "oblinks-7fdb1.firebaseapp.com",
@@ -172,58 +275,246 @@
     const db = firebase.firestore();
 
     let businessRef = null;
+    let currentBusiness = null;
+    let selectedPaymentMethod = null;
+    let currentCountry = 'uganda';
 
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        db.collection("pendingBusinesses")
-          .where("userId", "==", user.uid)
-          .where("status", "==", "pending")
-          .limit(1)
-          .get()
-          .then(snapshot => {
-            if (!snapshot.empty) {
-              businessRef = snapshot.docs[0].ref;
-              const data = snapshot.docs[0].data();
-              document.getElementById("amountDisplay").innerText = data.price + " UGX";
-              document.getElementById("paymentPhone").value = data.paymentPhone || "";
-            } else {
-              alert("No pending business found.");
-            }
-          })
-          .catch(error => console.error("Error loading business:", error));
-      } else {
-        alert("Please log in first.");
-        window.location.href = "login.html";
+    // Payment methods configuration
+    const paymentMethods = {
+      eversend: {
+        id: 'eversend',
+        title: 'Eversend',
+        description: 'Cards, bank transfers & mobile money',
+        icon: 'fas fa-globe',
+        availableCountries: ['uganda', 'tanzania', 'nigeria', 'ghana']
+      },
+      pandora: {
+        id: 'pandora',
+        title: 'Pandora (Mobile Money)',
+        description: 'Mobile Money for Uganda',
+        icon: 'fas fa-mobile-alt',
+        availableCountries: ['uganda']
       }
-    });
+    };
 
-    function submitPayment() {
-      const phone = document.getElementById("paymentPhone").value.trim();
-      if (!phone || !businessRef) return alert("Enter your payment phone number.");
+    // Initialize page
+    function initPage() {
+      // Set up country selector
+      const countrySelect = document.getElementById('countrySelect');
+      countrySelect.addEventListener('change', (e) => {
+        currentCountry = e.target.value;
+        updatePaymentOptions();
+      });
+      
+      // Set up payment button
+      document.getElementById('payButton').addEventListener('click', processPayment);
+      
+      // Initialize payment options
+      updatePaymentOptions();
+    }
 
-      businessRef.get().then(doc => {
-        if (doc.exists) {
-          const data = doc.data();
-          db.collection("payments").add({
-            amountPaid: data.price,
-            businessTitle: data.title,
-            packageName: data.package,
-            paymentPhone: phone,
-            status: "pending",
-            timestamp: new Date(),
-            whatsappNumber: data.whatsapp,
-            userId: data.userId,
-            businessId: data.businessId
-          }).then(() => {
-            businessRef.update({ paymentPhone: phone });
-            window.location.href = "https://eversend.me/oblinks";
-          }).catch(err => {
-            console.error("Error saving payment:", err);
-            alert("Error saving payment.");
+    // Update payment options based on country
+    function updatePaymentOptions() {
+      const optionsContainer = document.getElementById('paymentOptions');
+      optionsContainer.innerHTML = '';
+      
+      // Create payment options
+      Object.values(paymentMethods).forEach(method => {
+        if (method.availableCountries.includes(currentCountry)) {
+          const option = document.createElement('div');
+          option.className = 'payment-option';
+          if (selectedPaymentMethod === method.id) {
+            option.classList.add('selected');
+          }
+          option.dataset.method = method.id;
+          
+          option.innerHTML = `
+            <i class="${method.icon}"></i>
+            <div class="details">
+              <div class="title">${method.title}</div>
+              <div class="description">${method.description}</div>
+            </div>
+            <div class="radio"></div>
+          `;
+          
+          option.addEventListener('click', () => {
+            document.querySelectorAll('.payment-option').forEach(el => {
+              el.classList.remove('selected');
+            });
+            option.classList.add('selected');
+            selectedPaymentMethod = method.id;
           });
+          
+          optionsContainer.appendChild(option);
         }
       });
+      
+      // Select first option by default
+      if (optionsContainer.children.length > 0 && !selectedPaymentMethod) {
+        optionsContainer.children[0].classList.add('selected');
+        selectedPaymentMethod = optionsContainer.children[0].dataset.method;
+      }
     }
+
+    // Show status message
+    function showStatusMsg(text, ok = false) {
+      const statusMsg = document.getElementById('statusMsg');
+      statusMsg.style.display = "block";
+      statusMsg.textContent = text;
+      statusMsg.className = ok ? "status-msg success" : "status-msg error";
+    }
+
+    // Convert phone to E164 format for Uganda
+    function toE164Ug(raw) {
+      const p = String(raw || "").replace(/\D/g, "");
+      if (p.startsWith("256") && p.length === 12) return p;
+      if (/^0\d{9}$/.test(p)) return "256" + p.slice(1);
+      return p;
+    }
+
+    // Process payment based on selected method
+    function processPayment() {
+      if (!selectedPaymentMethod) {
+        showStatusMsg("Please select a payment method.");
+        return;
+      }
+      
+      const phone = document.getElementById('paymentPhone').value.trim();
+      if (!phone) {
+        showStatusMsg("Enter your payment phone number.");
+        return;
+      }
+      
+      if (selectedPaymentMethod === 'pandora') {
+        payWithPandora();
+      } else {
+        submitEversendPayment();
+      }
+    }
+
+    // Submit Eversend payment
+    function submitEversendPayment() {
+      const phone = document.getElementById('paymentPhone').value.trim();
+      if (!phone || !businessRef || !currentBusiness) {
+        showStatusMsg("Enter your payment phone number.");
+        return;
+      }
+
+      businessRef.get().then(doc => {
+        if (!doc.exists) return;
+        const data = doc.data();
+        db.collection("payments").add({
+          amountPaid: data.price,
+          businessTitle: data.title,
+          packageName: data.package,
+          paymentPhone: phone,
+          status: "pending",
+          provider: "eversend",
+          timestamp: new Date(),
+          whatsappNumber: data.whatsapp,
+          userId: data.userId,
+          businessId: data.businessId
+        }).then(() => {
+          businessRef.update({ paymentPhone: phone });
+          window.location.href = "https://eversend.me/oblinks";
+        }).catch(err => {
+          console.error("Error saving payment:", err);
+          showStatusMsg("Error saving payment.");
+        });
+      });
+    }
+
+    // Pay with Pandora
+    async function payWithPandora() {
+      if (!currentBusiness) {
+        showStatusMsg("Business not loaded yet.");
+        return;
+      }
+      
+      const amount = Number(currentBusiness.price);
+      const phoneRaw = document.getElementById('paymentPhone').value.trim();
+      const contact = toE164Ug(phoneRaw);
+
+      if (!Number.isFinite(amount) || amount < 500) {
+        showStatusMsg("Amount is invalid (must be >= 500 UGX).");
+        return;
+      }
+      
+      if (!/^256\d{9}$/.test(contact)) {
+        showStatusMsg("Phone must be in format 256XXXXXXXXX.");
+        return;
+      }
+
+      try {
+        // Save payment record
+        await db.collection("payments").add({
+          amountPaid: amount,
+          businessTitle: currentBusiness.title,
+          packageName: currentBusiness.package,
+          paymentPhone: contact,
+          status: "initiated",
+          provider: "pandora",
+          timestamp: new Date(),
+          whatsappNumber: currentBusiness.whatsapp,
+          userId: currentBusiness.userId,
+          businessId: currentBusiness.businessId
+        });
+        
+        await businessRef.update({ paymentPhone: contact });
+
+        // Call Pandora API
+        const res = await fetch(`${API_BASE}/api/pay`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ amount, phone: contact })
+        });
+
+        const text = await res.text();
+        let out = null;
+        try { out = JSON.parse(text); } catch {}
+
+        if (res.ok && out?.success) {
+          showStatusMsg("Pop-up sent to your phone. Approve to complete payment.", true);
+        } else {
+          const m = (out && (Array.isArray(out.messages) ? out.messages.join(" ") : out.error)) || text || "Payment failed to start.";
+          showStatusMsg(m);
+        }
+      } catch (err) {
+        console.error(err);
+        showStatusMsg("Network or server error: " + err.message);
+      }
+    }
+
+
+   // Initialize Firebase auth and load business
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        alert("Please log in first.");
+        window.location.href = "login.html";
+        return;
+      }
+      
+      db.collection("pendingBusinesses")
+        .where("userId", "==", user.uid)
+        .where("status", "==", "pending")
+        .limit(1)
+        .get()
+        .then(snapshot => {
+          if (snapshot.empty) {
+            alert("No pending business found.");
+            return;
+          }
+          
+          businessRef = snapshot.docs[0].ref;
+          currentBusiness = snapshot.docs[0].data();
+          document.getElementById("amountDisplay").innerText = currentBusiness.price + " UGX";
+          document.getElementById("paymentPhone").value = currentBusiness.paymentPhone || "";
+          
+          // Initialize the rest of the page
+          initPage();
+        })
+        .catch(error => console.error("Error loading business:", error));
+    });
   </script>
 </body>
 </html>
