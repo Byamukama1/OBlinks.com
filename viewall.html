@@ -493,123 +493,188 @@
     </div>
 
  
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import {
-    getFirestore,
-    doc,
-    getDoc,
-    query,
-    collection,
-    where,
-    getDocs
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
-    authDomain: "oblinks-7fdb1.firebaseapp.com",
-    projectId: "oblinks-7fdb1",
-    storageBucket: "oblinks-7fdb1.appspot.com",
-    messagingSenderId: "587017639779",
-    appId: "1:587017639779:web:d11b60f40f431cfc202556"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  const businessId = new URLSearchParams(window.location.search).get("id");
-  const loader = document.getElementById("loader");
-  const notFound = document.getElementById("not-found");
-  const detailsSection = document.getElementById("business-details");
-  const businessTitle = document.getElementById("businessTitle");
-  const businessDescription = document.getElementById("businessDescription");
-  const businessLocation = document.getElementById("businessLocation");
-  const businessImage = document.getElementById("businessImage");
-  const itemsContainer = document.getElementById("itemsList");
-
-  if (!businessId) {
-    loader.style.display = "none";
-    notFound.style.display = "block";
-    notFound.textContent = "No business ID provided.";
-  } else {
-    const businessRef = doc(db, "businesses", businessId);
-    getDoc(businessRef).then((docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        loader.style.display = "none";
-        detailsSection.style.display = "block";
-
-businessTitle.textContent = data.businessTitle || "Untitled";
-        businessDescription.textContent = data.description || "No description provided.";
-        businessLocation.textContent = data.location || "No location specified.";
-        if (data.mediaUrls && data.mediaUrls.length > 0) {
-          businessImage.src = data.mediaUrls[0];
-        }
-
-        if (data.whatsapp) {
-          document.getElementById("whatsappBtn").href = `https://wa.me/${data.whatsapp}`;
-        }
-
-        // Fetch & render items
-        const itemsRef = query(collection(db, "items"), where("businessId", "==", businessId));
-        getDocs(itemsRef).then((querySnapshot) => {
-          if (querySnapshot.empty) {
-            itemsContainer.innerHTML = "<p>No items found for this business.</p>";
-          } else {
-            querySnapshot.forEach((doc) => {
-              const item = doc.data();
-              const card = document.createElement("div");
-              card.className = "item-card";
-
-              const img = document.createElement("img");
-              img.src = item.mediaUrls?.[0] || "https://via.placeholder.com/300x200";
-              img.alt = item.name;
-
-              const name = document.createElement("h4");
-              name.textContent = item.name;
-
-              const price = document.createElement("p");
-              price.textContent = `UGX ${item.price}`;
-              price.className = "price";
-
-const orderBtn = document.createElement("button");
-              orderBtn.innerHTML = `<i class="fas fa-shopping-cart"></i> Order`;
-              orderBtn.onclick = () => {
-                sessionStorage.setItem("businessId", businessId);
-                sessionStorage.setItem("itemName", item.name);
-                sessionStorage.setItem("itemPrice", item.price);
-                sessionStorage.setItem("itemImage", item.mediaUrls?.[0] || "");
-                window.location.href = "order.html";
-              };
-
-              card.appendChild(img);
-              card.appendChild(name);
-              card.appendChild(price);
-              card.appendChild(orderBtn);
-              itemsContainer.appendChild(card);
-            });
-          }
-        }).catch((error) => {
-          itemsContainer.innerHTML = "<p>Error loading items.</p>";
-        });
-
-        // ✅ Share Button Logic: Correct business link copy
-        document.getElementById("shareBtn").addEventListener("click", function () {
-          const link = `https://onlinemarket-ug.com/viewall.html?id=${businessId}`;
-          navigator.clipboard.writeText(link)
-            .then(() => alert("✅ Link copied to clipboard!"))
-            .catch(err => alert("❌ Failed to copy link."));
-        });
-
-      } else {
-        loader.style.display = "none";
-        notFound.style.display = "block";
-        notFound.textContent = "Business not found.";
+<script>
+  // Firebase configuration  
+  const firebaseConfig = {  
+    apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",  
+    authDomain: "oblinks-7fdb1.firebaseapp.com",  
+    projectId: "oblinks-7fdb1",  
+    storageBucket: "oblinks-7fdb1.appspot.com",  
+    messagingSenderId: "587017639779",  
+    appId: "1:587017639779:web:d11b60f40f431cfc202556"  
+  };  
+  
+  // Initialize Firebase  
+  firebase.initializeApp(firebaseConfig);  
+  const db = firebase.firestore();  
+  
+  const container = document.getElementById('business-cards-container');  
+  const lightbox = document.getElementById('lightbox');  
+  const lightboxContent = document.getElementById('lightbox-content');  
+  const closeLightbox = document.getElementById('close-lightbox');  
+  
+  function loadBusinesses() {
+    container.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner"></i></div>';
+    const q = db.collection("businesses").orderBy("timestamp", "desc");
+    q.get().then((querySnapshot) => {
+      container.innerHTML = '';
+      if (querySnapshot.empty) {
+        container.innerHTML = '<p class="no-results">No businesses found. Be the first to add one!</p>';
+        return;
       }
+      querySnapshot.forEach((doc) => {
+        const business = doc.data();
+        createBusinessCard(business, doc.id);
+      });
+      initCarousels();
     }).catch((error) => {
-      loader.style.display = "none";
-      notFound.style.display = "block";
-      notFound.textContent = "Error loading business data.";
+      console.error("Error loading businesses: ", error);
+      container.innerHTML = '<p class="error">Failed to load businesses. Please try again later.</p>';
+    });
+  }
+
+  function createBusinessCard(business, docId) {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.category = business.category || 'all';
+
+    let mediaHTML = '';
+    if (business.mediaUrls && business.mediaUrls.length > 0) {
+      mediaHTML = '<div class="media-scroll">';
+      business.mediaUrls.forEach((url, index) => {
+        const isVideo = url.endsWith('.mp4') || url.endsWith('.webm');
+        mediaHTML += `
+          <div class="media-item" data-index="${index}">
+            ${isVideo ? `<video src="${url}" muted playsinline></video>` : `<img src="${url}" alt="${business.title}">`}
+          </div>`;
+      });
+      mediaHTML += '</div><div class="media-indicators">';
+      for (let i = 0; i < business.mediaUrls.length; i++) {
+        mediaHTML += `<div class="media-indicator ${i === 0 ? 'active' : ''}"></div>`;
+      }
+      mediaHTML += '</div>';
+    } else {
+      mediaHTML = `
+        <div class="media-scroll">
+          <div class="media-item">
+            <img src="https://via.placeholder.com/300x200?text=No+Image" alt="No image">
+          </div>
+        </div>
+        <div class="media-indicators">
+          <div class="media-indicator active"></div>
+        </div>`;
+    }
+
+    const buttonsHTML = `
+      <div class="btn-container">
+        <button class="btn btn-order" data-id="${docId}">
+          <i class="fas fa-shopping-cart"></i> Order
+        </button>
+        <a href="https://wa.me/${business.whatsapp || ''}" class="btn btn-chat" target="_blank">
+          <i class="fab fa-whatsapp"></i> Chat
+        </a>
+        ${business.whatsapp ? `<a href="tel:+${business.whatsapp}" class="btn btn-call"><i class="fas fa-phone"></i> Call</a>` : ''}
+        <a href="viewall.html?id=${docId}" class="btn btn-view"><i class="fas fa-eye"></i> Details</a>
+        ${business.businessLink ? `<a href="${business.businessLink}" class="btn btn-link" target="_blank"><i class="fas fa-link"></i></a>` : ''}
+        <button class="btn btn-share" data-id="${docId}"><i class="fas fa-share-alt"></i> Share</button>
+      </div>`;
+
+    card.innerHTML = `
+      <div class="card-media">${mediaHTML}</div>
+      <div class="card-header">
+        <h2 class="card-title" onclick="window.location.href='viewall.html?id=${docId}'" style="cursor: pointer;">${business.title || 'Untitled Business'}</h2>
+        <div class="card-country">${business.location || 'Location not specified'}</div>
+      </div>
+      <div class="card-body">
+        <p class="card-description" onclick="window.location.href='viewall.html?id=${docId}'" style="cursor: pointer;">${business.description || 'No description provided'}</p>
+        ${buttonsHTML}
+      </div>`;
+
+    container.appendChild(card);
+
+    const orderBtn = card.querySelector(".btn-order");
+    if (orderBtn) {
+      orderBtn.addEventListener("click", () => {
+        const businessId = orderBtn.getAttribute("data-id");
+        window.location.href = `order_form.html?id=${businessId}`;
+      });
+    }
+  }
+
+  function initCarousels() {
+    setInterval(() => {
+      document.querySelectorAll('.media-scroll').forEach(carousel => {
+        const scrollWidth = carousel.scrollWidth;
+        const scrollLeft = carousel.scrollLeft;
+        const clientWidth = carousel.clientWidth;
+        let nextPos = scrollLeft + clientWidth;
+        if (nextPos >= scrollWidth) {
+          nextPos = 0;
+        }
+        carousel.scrollTo({ left: nextPos, behavior: 'smooth' });
+
+        const itemCount = carousel.querySelectorAll('.media-item').length;
+        const currentIndex = Math.round(nextPos / clientWidth);
+        const indicators = carousel.nextElementSibling.querySelectorAll('.media-indicator');
+        indicators.forEach((indicator, index) => {
+          indicator.classList.toggle('active', index === currentIndex % itemCount);
+        });
+      });
+    }, 2000);
+  }
+
+  function initLightbox() {
+    closeLightbox.addEventListener('click', () => {
+      lightbox.style.display = 'none';
+    });
+
+    document.addEventListener('click', (e) => {
+      const mediaItem = e.target.closest('.media-item img, .media-item video');
+      if (mediaItem) {
+        const mediaType = mediaItem.tagName.toLowerCase();
+        const mediaSrc = mediaItem.src;
+        lightboxContent.innerHTML = mediaType === 'video'
+          ? `<video src="${mediaSrc}" controls autoplay></video>`
+          : `<img src="${mediaSrc}" alt="Business media">`;
+        lightbox.style.display = 'flex';
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadBusinesses();
+    initLightbox();
+    initSearch();
+    initShareButton();
+  });
+
+  function initSearch() {
+    const searchInput = document.getElementById('search-input');
+    if (!searchInput) return;
+
+    searchInput.addEventListener('input', function () {
+      const keyword = this.value.toLowerCase().trim();
+      const cards = document.querySelectorAll('.card');
+
+      cards.forEach(card => {
+        const title = card.querySelector('.card-title')?.textContent.toLowerCase() || '';
+        const description = card.querySelector('.card-description')?.textContent.toLowerCase() || '';
+        const matches = title.includes(keyword) || description.includes(keyword);
+        card.style.display = matches ? 'flex' : 'none';
+      });
+    });
+  }
+
+  function initShareButton() {
+    document.addEventListener('click', function (e) {
+      const shareBtn = e.target.closest('.btn-share');
+      if (shareBtn) {
+        const businessId = shareBtn.getAttribute('data-id');
+        const shareLink = `https://onlinemarket-ug.com/viewall.html?id=${businessId}`;
+        navigator.clipboard.writeText(shareLink)
+          .then(() => alert("✅ Link copied: " + shareLink))
+          .catch(() => alert("❌ Failed to copy link"));
+      }
     });
   }
 </script>
