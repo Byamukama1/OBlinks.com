@@ -259,20 +259,17 @@
   
   
 
-
 <script>
-  // === CONFIG ===
-  const API_BASE = "https://pandora-payment-server.onrender.com";
+  /* =======================
+   *  OBlinks – Pay Page JS
+   *  Calls your live server:
+   *  https://oblinks-new-server-pandora-payments.onrender.com
+   * ======================= */
 
-  // Same currency data & conversion as selectpackage.html
-  const currencyData = {
-    uganda:    { name: 'Uganda',    symbol: 'UGX', flag: '🇺🇬', rate: 1,      format: n => `UGX ${Number(n).toLocaleString()}` },
-    tanzania:  { name: 'Tanzania',  symbol: 'TZS', flag: '🇹🇿', rate: 0.63,   format: n => `TZS ${Math.round(n).toLocaleString()}` },
-    ghana:     { name: 'Ghana',     symbol: 'GH₵', flag: '🇬🇭', rate: 0.00034, format: n => `GH₵ ${Number(n).toFixed(2)}` },
-    nigeria:   { name: 'Nigeria',   symbol: '₦',   flag: '🇳🇬', rate: 0.42,   format: n => `₦${Math.round(n).toLocaleString()}` }
-  };
+  // === BACKEND ===
+  const API_BASE = "https://oblinks-new-server-pandora-payments.onrender.com";
 
-  // Firebase
+  // === FIREBASE ===
   const firebaseConfig = {
     apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
     authDomain: "oblinks-7fdb1.firebaseapp.com",
@@ -285,291 +282,264 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
 
+  // === CURRENCY ===
+  const currencyData = {
+    uganda:   { symbol: "UGX", rate: 1,       format: n => `UGX ${Number(n).toLocaleString()}` },
+    tanzania: { symbol: "TZS", rate: 0.63,    format: n => `TZS ${Math.round(n).toLocaleString()}` },
+    ghana:    { symbol: "GH₵", rate: 0.00034, format: n => `GH₵ ${Number(n).toFixed(2)}` },
+    nigeria:  { symbol: "₦",   rate: 0.42,    format: n => `₦${Math.round(n).toLocaleString()}` }
+  };
+
+  // === PAGE STATE ===
   let businessRef = null;
   let currentBusiness = null;
   let selectedPaymentMethod = null;
 
-  // Display amounts derived from session storage
-  let amountUGX = null;            // base (UGX) from selected package
-  let amountLocal = null;          // converted for selected country
-  let currentCountry = 'uganda';   // default
-  let currentSymbol = 'UGX';
+  let currentCountry = "uganda";
+  let amountUGX = 0;     // base price (UGX)
+  let amountLocal = 0;   // converted display price
+  let currentSymbol = "UGX";
 
-  // Payment methods configuration (unchanged)
+  // === PAYMENT METHODS (Pandora default for Uganda) ===
   const paymentMethods = {
-    eversend: {
-      id: 'eversend',
-      title: 'Eversend',
-      description: 'Cards, bank transfers & mobile money',
-      icon: 'fas fa-globe',
-      availableCountries: ['uganda', 'tanzania', 'nigeria', 'ghana']
-    },
     pandora: {
-      id: 'pandora',
-      title: 'Pandora (Mobile Money)',
-      description: 'Mobile Money for Uganda',
-      icon: 'fas fa-mobile-alt',
-      availableCountries: ['uganda']
+      id: "pandora",
+      title: "Pandora (Mobile Money)",
+      description: "Mobile Money for Uganda",
+      icon: "fas fa-mobile-alt",
+      availableCountries: ["uganda"]
+    },
+    eversend: {
+      id: "eversend",
+      title: "Eversend",
+      description: "Cards, bank & mobile money",
+      icon: "fas fa-globe",
+      availableCountries: ["uganda", "tanzania", "ghana", "nigeria"]
     }
   };
 
-  // ====== NEW: hydrate from sessionStorage ======
-  function hydrateFromSession() {
-    const raw = sessionStorage.getItem("businessSelections");
-    if (!raw) return; // fall back to Firestore price display if needed
-
-    const data = JSON.parse(raw); // { country: 'Uganda', package: { name, price, commission, items } }
-    const countryName = (data.country || "").toLowerCase();
-    const nameToKey = { 'uganda':'uganda', 'tanzania':'tanzania', 'ghana':'ghana', 'nigeria':'nigeria' };
-
-    const key = nameToKey[countryName] || 'uganda';
-    currentCountry = key;
-
-    const pkg = data.package || {};
-    amountUGX = Number(pkg.price || 0); // base price saved by selectpackage.html is in UGX
-    const rate = currencyData[key].rate;
-    amountLocal = amountUGX * rate;
-    currentSymbol = currencyData[key].symbol;
-
-    // Update UI: country dropdown + amount tag
-    const countrySelect = document.getElementById('countrySelect');
-    if (countrySelect) {
-      countrySelect.value = key;
-    }
-    const amountDisplay = document.getElementById('amountDisplay');
-    if (amountDisplay) {
-      amountDisplay.textContent = amountUGX === 0
-        ? 'Free'
-        : currencyData[key].format(amountLocal);
-    }
-  }
-
-  // Initialize page
-  function initPage() {
-    const countrySelect = document.getElementById('countrySelect');
-    countrySelect.addEventListener('change', (e) => {
-      currentCountry = e.target.value;
-
-      // Recompute displayed amount when user changes country on pay page
-      const rate = currencyData[currentCountry].rate;
-      currentSymbol = currencyData[currentCountry].symbol;
-      amountLocal = (Number(amountUGX || 0)) * rate;
-
-      const amountDisplay = document.getElementById('amountDisplay');
-      amountDisplay.textContent = (amountUGX || 0) === 0
-        ? 'Free'
-        : currencyData[currentCountry].format(amountLocal);
-
-      updatePaymentOptions();
-    });
-
-    document.getElementById('payButton').addEventListener('click', processPayment);
-
-    updatePaymentOptions();
-  }
-
-  // Update payment options based on country
-  function updatePaymentOptions() {
-    const optionsContainer = document.getElementById('paymentOptions');
-    optionsContainer.innerHTML = '';
-
-    Object.values(paymentMethods).forEach(method => {
-      if (method.availableCountries.includes(currentCountry)) {
-        const option = document.createElement('div');
-        option.className = 'payment-option';
-        if (selectedPaymentMethod === method.id) option.classList.add('selected');
-        option.dataset.method = method.id;
-
-        option.innerHTML = `
-          <i class="${method.icon}"></i>
-          <div class="details">
-            <div class="title">${method.title}</div>
-            <div class="description">${method.description}</div>
-          </div>
-          <div class="radio"></div>
-        `;
-
-        option.addEventListener('click', () => {
-          document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
-          option.classList.add('selected');
-          selectedPaymentMethod = method.id;
-        });
-
-        optionsContainer.appendChild(option);
-      }
-    });
-
-    // NEW: Default to Pandora when country is Uganda; otherwise keep first option
-    if (currentCountry === 'uganda') {
-      selectedPaymentMethod = 'pandora';
-      const el = optionsContainer.querySelector('[data-method="pandora"]');
-      if (el) {
-        document.querySelectorAll('.payment-option').forEach(x => x.classList.remove('selected'));
-        el.classList.add('selected');
-      }
-    } else if (optionsContainer.children.length > 0 && !selectedPaymentMethod) {
-      optionsContainer.children[0].classList.add('selected');
-      selectedPaymentMethod = optionsContainer.children[0].dataset.method;
-    }
-  }
-
+  // === UI HELPERS ===
   function showStatusMsg(text, ok = false) {
-    const statusMsg = document.getElementById('statusMsg');
-    statusMsg.style.display = "block";
-    statusMsg.textContent = text;
-    statusMsg.className = ok ? "status-msg success" : "status-msg error";
+    const el = document.getElementById("statusMsg");
+    el.style.display = "block";
+    el.textContent = text;
+    el.className = ok ? "status-msg success" : "status-msg error";
   }
 
-  // Convert phone to E164 for Uganda & block unsupported prefixes (unchanged)
+  // UG (E.164) + block 079
   function toE164Ug(raw) {
     let p = String(raw || "").replace(/\D/g, "");
     if (/^0\d{8,9}$/.test(p)) p = "256" + p.slice(1);
-    if (p.startsWith("25679")) {
-      return { valid: false, reason: "079 prefix is not yet supported for payments." };
-    }
+    if (p.startsWith("25679")) return { valid: false, reason: "079 prefix is not yet supported." };
     if (/^256\d{9}$/.test(p)) return { valid: true, phone: p };
-    return { valid: false, reason: "Invalid phone number format. Use 256XXXXXXXXX." };
+    return { valid: false, reason: "Use 256XXXXXXXXX or 0XXXXXXXXX" };
   }
 
-  function processPayment() {
-    if (!selectedPaymentMethod) return showStatusMsg("Please select a payment method.");
-    const phone = document.getElementById('paymentPhone').value.trim();
-    if (!phone) return showStatusMsg("Enter your payment phone number.");
-
-    if (selectedPaymentMethod === 'pandora') {
-      payWithPandora();
-    } else {
-      submitEversendPayment();
-    }
+  // Prefer explicit packageName, else infer from name/narrative
+  function pickPackageName(pkgName, narrative) {
+    const s = String(pkgName || narrative || "").toLowerCase();
+    if (/pro\s*plus/.test(s)) return "Pro Plus";
+    if (/standard/.test(s))  return "Standard";
+    if (/starter/.test(s))   return "Starter";
+    if (/basic/.test(s))     return "Basic";
+    if (/pro/.test(s))       return "Pro";
+    return (pkgName && String(pkgName)) || "Paid";
   }
 
-  // Eversend uses the displayed/local price (per country)
-  function submitEversendPayment() {
-    const phone = document.getElementById('paymentPhone').value.trim();
-    if (!phone || !businessRef) {
-      showStatusMsg("Enter your payment phone number.");
-      return;
-    }
-    const amount = (amountUGX || 0) === 0 ? 0 : Math.max(0, Math.round(amountLocal));
+  // Hydrate selection from selectpackage.html (sessionStorage)
+  function hydrateFromSession() {
+    const raw = sessionStorage.getItem("businessSelections");
+    if (!raw) return;
+    const data = JSON.parse(raw); // { country, package: { name, price, ... } }
 
-    businessRef.get().then(doc => {
-      if (!doc.exists) return;
-      const data = doc.data ? doc.data() : {};
-      db.collection("payments").add({
-        amountPaid: amount,
-        currency: currentSymbol,
-        businessTitle: data.title || currentBusiness?.title || "",
-        packageName: (currentBusiness?.package) || "",
-        paymentPhone: phone,
-        status: "pending",
-        provider: "eversend",
-        timestamp: new Date(),
-        whatsappNumber: data.whatsapp || currentBusiness?.whatsapp || "",
-        userId: data.userId || currentBusiness?.userId || "",
-        businessId: data.businessId || currentBusiness?.businessId || ""
-      }).then(() => {
-        if (businessRef.update) businessRef.update({ paymentPhone: phone });
-        window.location.href = "https://eversend.me/oblinks";
-      }).catch(err => {
-        console.error("Error saving payment:", err);
-        showStatusMsg("Error saving payment.");
-      });
+    const map = { uganda:"uganda", tanzania:"tanzania", ghana:"ghana", nigeria:"nigeria" };
+    currentCountry = map[(data.country || "").toLowerCase()] || "uganda";
+
+    amountUGX = Number(data.package?.price || 0);
+    currentSymbol = currencyData[currentCountry].symbol;
+    amountLocal = amountUGX * currencyData[currentCountry].rate;
+
+    // UI
+    document.getElementById("countrySelect").value = currentCountry;
+    document.getElementById("amountDisplay").textContent =
+      amountUGX ? currencyData[currentCountry].format(amountLocal) : "Free";
+  }
+
+  // Render payment options
+  function renderPaymentOptions() {
+    const wrap = document.getElementById("paymentOptions");
+    wrap.innerHTML = "";
+
+    Object.values(paymentMethods).forEach(m => {
+      if (!m.availableCountries.includes(currentCountry)) return;
+
+      const div = document.createElement("div");
+      div.className = "payment-option";
+      div.dataset.method = m.id;
+      div.innerHTML = `
+        <i class="${m.icon}"></i>
+        <div class="details">
+          <div class="title">${m.title}</div>
+          <div class="description">${m.description}</div>
+        </div>
+        <div class="radio"></div>
+      `;
+      div.onclick = () => {
+        document.querySelectorAll(".payment-option").forEach(x => x.classList.remove("selected"));
+        div.classList.add("selected");
+        selectedPaymentMethod = m.id;
+      };
+      wrap.appendChild(div);
     });
+
+    // Default selection
+    const prefer = currentCountry === "uganda" ? "pandora" : wrap.firstElementChild?.dataset.method;
+    if (prefer) {
+      selectedPaymentMethod = prefer;
+      const el = wrap.querySelector(`[data-method="${prefer}"]`);
+      if (el) el.classList.add("selected");
+    }
   }
 
-  // Pandora requires UGX amount (server calls Pandora in UGX)
-  async function payWithPandora() {
-    if (!businessRef) {
-      showStatusMsg("Business not loaded yet.");
-      return;
-    }
-    const amount = Number(amountUGX || 0); // base price in UGX from session
-    const phoneRaw = document.getElementById('paymentPhone').value.trim();
-    const phoneData = toE164Ug(phoneRaw);
+  // COUNTRY CHANGE
+  document.getElementById("countrySelect").addEventListener("change", (e) => {
+    currentCountry = e.target.value;
+    currentSymbol = currencyData[currentCountry].symbol;
+    amountLocal = amountUGX * currencyData[currentCountry].rate;
+    document.getElementById("amountDisplay").textContent =
+      amountUGX ? currencyData[currentCountry].format(amountLocal) : "Free";
+    renderPaymentOptions();
+  });
 
-    if (!Number.isFinite(amount) || amount < 500) {
-      showStatusMsg("Amount is invalid (must be >= 500 UGX).");
-      return;
-    }
-    if (!phoneData.valid) {
-      showStatusMsg(phoneData.reason);
-      return;
-    }
+  // === PAYMENT FLOW ===
+  async function handlePayClick() {
+    if (!selectedPaymentMethod) return showStatusMsg("Please select a payment method.");
+    const phoneRaw = document.getElementById("paymentPhone").value.trim();
+    if (!phoneRaw) return showStatusMsg("Enter your payment phone number.");
 
-    const contact = phoneData.phone;
+    if (selectedPaymentMethod === "pandora") {
+      return payWithPandora(phoneRaw);
+    }
+    return payWithEversend(phoneRaw);
+  }
+
+  async function payWithPandora(phoneRaw) {
+    if (!businessRef || !currentBusiness) return showStatusMsg("Business not loaded yet.");
+
+    const amount = Number(amountUGX || 0);
+    if (!Number.isFinite(amount) || amount < 500) return showStatusMsg("Amount must be ≥ 500 UGX.");
+
+    const p = toE164Ug(phoneRaw);
+    if (!p.valid) return showStatusMsg(p.reason);
+    const phone = p.phone;
+
+    // Build details for server
+    const userId = currentBusiness.userId || "";
+    const businessId = currentBusiness.businessId || currentBusiness.id || "";
+    const packageName = pickPackageName(
+      currentBusiness.package || sessionStorage.getItem("selectedPackageName"),
+      `OBlinks - ${currentBusiness.package || ""}`
+    );
+    const narrative = `OBlinks - ${packageName}`;
 
     try {
-      showStatusMsg("Initiating payment on your phone… please wait.");
-
+      showStatusMsg("Starting mobile money request… check your phone.");
+      // Save intent (optional UI record)
       await db.collection("payments").add({
+        provider: "pandora",
+        status: "initiated",
         amountPaid: amount,
         currency: "UGX",
-        businessTitle: currentBusiness?.title || "",
-        packageName: currentBusiness?.package || "",
-        paymentPhone: contact,
-        status: "initiated",
-        provider: "pandora",
-        timestamp: new Date(),
-        whatsappNumber: currentBusiness?.whatsapp || "",
-        userId: currentBusiness?.userId || "",
-        businessId: currentBusiness?.businessId || ""
+        paymentPhone: phone,
+        userId, businessId, packageName,
+        businessTitle: currentBusiness.title || "",
+        timestamp: new Date()
       });
 
-      if (businessRef.update) await businessRef.update({ paymentPhone: contact });
+      await businessRef.update?.({ paymentPhone: phone });
 
-      const res = await fetch(`${API_BASE}/api/pay`, {
+      // 🔥 Call your backend correctly
+      const resp = await fetch(`${API_BASE}/api/pay`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount, phone: contact })
+        body: JSON.stringify({
+          amount,
+          phone,
+          userId,
+          businessId,
+          packageName,
+          narrative
+        })
       });
 
-      const text = await res.text();
-      let out = null;
-      try { out = JSON.parse(text); } catch {}
+      const dataText = await resp.text();
+      let data; try { data = JSON.parse(dataText); } catch { data = null; }
 
-      if (res.ok && out?.success) {
-        showStatusMsg("Pop-up sent to your phone. Approve to complete payment.", true);
+      if (resp.ok && data?.transaction_ref) {
+        showStatusMsg("Prompt sent to your phone. Approve to complete payment.", true);
       } else {
-        const m = (out && (Array.isArray(out.messages) ? out.messages.join(" ") : out.error)) || text || "Payment failed to start.";
-        showStatusMsg(m);
+        const msg = (data && (data.messages?.join(" ") || data.error)) || dataText || "Payment failed to start.";
+        showStatusMsg(msg);
       }
     } catch (err) {
       console.error(err);
-      showStatusMsg("Network or server error: " + err.message);
+      showStatusMsg("Network/server error: " + err.message);
     }
   }
 
-  // Load user/business from Firestore (kept), then hydrate amounts from session
-  auth.onAuthStateChanged(user => {
+  // Basic passthrough for Eversend (kept for non-Uganda)
+  function payWithEversend(phone) {
+    if (!businessRef || !currentBusiness) return showStatusMsg("Business not loaded yet.");
+    const amount = amountUGX ? Math.max(0, Math.round(amountLocal)) : 0;
+
+    db.collection("payments").add({
+      provider: "eversend",
+      status: "pending",
+      amountPaid: amount,
+      currency: currentSymbol,
+      paymentPhone: phone,
+      businessTitle: currentBusiness.title || "",
+      packageName: currentBusiness.package || "",
+      userId: currentBusiness.userId || "",
+      businessId: currentBusiness.businessId || "",
+      timestamp: new Date()
+    }).then(async () => {
+      await businessRef.update?.({ paymentPhone: phone });
+      window.location.href = "https://eversend.me/oblinks";
+    }).catch(err => {
+      console.error(err);
+      showStatusMsg("Error saving payment.");
+    });
+  }
+
+  // === BOOTSTRAP ===
+  document.getElementById("payButton").addEventListener("click", handlePayClick);
+
+  auth.onAuthStateChanged(async (user) => {
     if (!user) {
       alert("Please log in first.");
-      window.location.href = "login.html";
+      location.href = "login.html";
       return;
     }
 
-    db.collection("pendingBusinesses")
+    // Load latest pending business for this user
+    const snap = await db.collection("pendingBusinesses")
       .where("userId", "==", user.uid)
       .where("status", "==", "pending")
       .limit(1)
-      .get()
-      .then(snapshot => {
-        if (snapshot.empty) {
-          alert("No pending business found.");
-          return;
-        }
+      .get();
 
-        businessRef = snapshot.docs[0].ref;
-        currentBusiness = snapshot.docs[0].data();
+    if (snap.empty) {
+      showStatusMsg("No pending business found for your account.");
+      return;
+    }
 
-        // Use session storage to set amounts + country + amount tag
-        hydrateFromSession();
+    businessRef = snap.docs[0].ref;
+    currentBusiness = snap.docs[0].data();
+    document.getElementById("paymentPhone").value = currentBusiness.paymentPhone || "";
 
-        // Also reflect the phone saved before (if any)
-        document.getElementById("paymentPhone").value = currentBusiness.paymentPhone || "";
-
-        initPage();
-      })
-      .catch(error => console.error("Error loading business:", error));
+    hydrateFromSession();
+    renderPaymentOptions();
   });
 </script>
 </body>
