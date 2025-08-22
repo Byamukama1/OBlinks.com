@@ -6,10 +6,7 @@
   <title>Sales Agent Upgrade – OBlinks</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    :root{
-      --primary:#2563eb;--primary-2:#1e40af;--bg:#f1f5f9;--card:#fff;--muted:#64748b;
-      --border:#e2e8f0;--ok:#10b981;--err:#ef4444;--shadow:0 10px 30px rgba(2,6,23,.08)
-    }
+    :root{--primary:#2563eb;--primary-2:#1e40af;--bg:#f1f5f9;--card:#fff;--muted:#64748b;--border:#e2e8f0;--shadow:0 10px 30px rgba(2,6,23,.08)}
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",sans-serif;background:linear-gradient(135deg,#f8fafc,#eef2ff);color:#0f172a;min-height:100vh}
     .wrap{max-width:820px;margin:32px auto;padding:16px}
@@ -50,12 +47,9 @@
 
       <div class="body">
         <div class="grid">
-          <!-- Left: Compact package table -->
           <div>
             <div class="section-title">Commission Rates by Package</div>
-            <p class="muted" style="margin-bottom:10px">
-              Pick the package that matches your goals. Higher packages = higher earnings.
-            </p>
+            <p class="muted" style="margin-bottom:10px">Pick the package that matches your goals. Higher packages = higher earnings.</p>
             <table aria-label="Commission by package">
               <thead>
                 <tr><th>Package</th><th>Commission</th><th>Price / year</th></tr>
@@ -81,10 +75,8 @@
             </div>
           </div>
 
-          <!-- Right: Payment form -->
           <div>
             <div class="section-title">Upgrade & Pay</div>
-
             <div class="field">
               <label for="pkg">Select Package</label>
               <select id="pkg">
@@ -127,10 +119,8 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
   <script>
-    // ===== Backend =====
     const API_BASE = "https://oblinks-new-server-pandora-payments.onrender.com";
 
-    // ===== Firebase =====
     const firebaseConfig = {
       apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
       authDomain: "oblinks-7fdb1.firebaseapp.com",
@@ -143,7 +133,6 @@
     const auth = firebase.auth();
     const db   = firebase.firestore();
 
-    // ===== Helpers =====
     const $ = s => document.querySelector(s);
     function showStatus(text, ok=false){
       const el = $("#status");
@@ -151,7 +140,6 @@
       el.className = "status " + (ok ? "ok" : "err");
       el.style.display = "block";
     }
-    // Uganda E.164 + block 079
     function toE164Ug(raw){
       let p = String(raw||"").replace(/\D/g,"");
       if(/^0\d{8,9}$/.test(p)) p = "256" + p.slice(1);
@@ -160,17 +148,11 @@
       return {valid:false,reason:"Use 256XXXXXXXXX or 0XXXXXXXXX"};
     }
 
-    // ===== State =====
     let currentUser = null;
 
     auth.onAuthStateChanged(async (user)=>{
-      if(!user){
-        alert("Please log in first.");
-        location.href = "login.html";
-        return;
-      }
+      if(!user){ alert("Please log in first."); location.href="login.html"; return; }
       currentUser = user;
-      // Optional prefill from users doc if present
       try{
         const snap = await db.collection("users").doc(user.uid).get();
         const phone = snap.exists ? (snap.data().phone || snap.data().whatsapp || "") : "";
@@ -178,11 +160,10 @@
       }catch(_){}
     });
 
-    // ===== Pay with Pandora (Agent upgrade) =====
     $("#payBtn").addEventListener("click", async ()=>{
       if(!currentUser) return showStatus("User not authenticated.");
       const opt = $("#pkg").selectedOptions[0];
-      if(!opt)   return showStatus("Please choose a package.");
+      if(!opt) return showStatus("Please choose a package.");
       const packageName = opt.value;
       const amount = Number(opt.dataset.amount || 0);
 
@@ -193,7 +174,7 @@
         $("#payBtn").disabled = true;
         showStatus("Starting mobile money request… check your phone.", true);
 
-        // Log payment intent (type = agent-upgrade)
+        // record payment intent
         await db.collection("payments").add({
           provider: "pandora",
           status: "initiated",
@@ -206,7 +187,7 @@
           timestamp: new Date()
         });
 
-        // Call backend to initiate Pandora payment
+        // call backend – no businessId; mark context
         const narrative = `OBlinks Agent Upgrade - ${packageName}`;
         const res = await fetch(`${API_BASE}/api/pay`,{
           method:"POST",
@@ -215,9 +196,9 @@
             amount,
             phone: p.phone,
             userId: currentUser.uid,
-            businessId: "",          // not used for agent upgrade
             packageName,
-            narrative
+            narrative,
+            context: "agent-upgrade"
           })
         });
 
