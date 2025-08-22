@@ -492,382 +492,115 @@
         <div class="modal-controls" id="modalControls"></div>
     </div>
 
-    <script type="module">
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
-            authDomain: "oblinks-7fdb1.firebaseapp.com",
-            projectId: "oblinks-7fdb1",
-            storageBucket: "oblinks-7fdb1.appspot.com",
-            messagingSenderId: "79327968002",
-            appId: "1:79327968002:web:8c5b0c44e9f9f2e67c04b3",
-            measurementId: "G-HF4PZ4C83N"
-        };
+ <script>
+  // Firebase configuration and initialization
+  const firebaseConfig = {
+    apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
+    authDomain: "oblinks-7fdb1.firebaseapp.com",
+    projectId: "oblinks-7fdb1",
+    storageBucket: "oblinks-7fdb1.appspot.com",
+    messagingSenderId: "587017639779",
+    appId: "1:587017639779:web:d11b60f40f431cfc202556"
+  };
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
-        
-        // Supported countries with currency codes
-        const SUPPORTED_COUNTRIES = {
-            'uganda': 'UGX',
-            'tanzania': 'TZS',
-            'nigeria': 'NGN',
-            'ghana': 'GHS'
-        };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-        // DOM elements
-        const productGrid = document.getElementById('productGrid');
-        const businessDescription = document.getElementById('businessDescription');
-        const actionBar = document.getElementById('actionBar');
-        const searchBar = document.querySelector('.search-bar');
-        const lightboxModal = document.getElementById('lightboxModal');
-        const modalContent = document.getElementById('modalContent');
-        const closeModal = document.getElementById('closeModal');
-        const modalControls = document.getElementById('modalControls');
-        const currencyNotice = document.getElementById('currencyNotice');
-        const currencyMessage = document.getElementById('currencyMessage');
-        
-        const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = new URLSearchParams(window.location.search);
+  const businessId = urlParams.get('id');
 
-        // Global variables
-        let currentBusiness = null;
-        let businessCurrency = null;
+  const businessTitle = document.getElementById('business-title');
+  const businessLocation = document.getElementById('business-location');
+  const businessDescription = document.getElementById('business-description');
+  const businessImage = document.getElementById('business-image');
+  const itemsContainer = document.getElementById('items-list');
 
-        /**
-         * Get currency for a country
-         * @param {string} country - Country name
-         * @returns {string|null} Currency code or null
-         */
-        function getCurrencyForCountry(country) {
-            if (!country) return null;
-            
-            const normalizedCountry = country.toLowerCase().trim();
-            
-            // Check for full country names
-            if (SUPPORTED_COUNTRIES[normalizedCountry]) {
-                return SUPPORTED_COUNTRIES[normalizedCountry];
-            }
-            
-            // Check for country codes
-            const countryCodeMap = {
-                'ug': 'UGX',
-                'tz': 'TZS',
-                'ng': 'NGN',
-                'gh': 'GHS'
-            };
-            
-            if (countryCodeMap[normalizedCountry]) {
-                return countryCodeMap[normalizedCountry];
-            }
-            
-            return null;
+  if (!businessId) {
+    businessTitle.textContent = "Business not found";
+    businessDescription.textContent = "No business ID provided in the URL.";
+  } else {
+    db.collection("businesses").doc(businessId).get().then((doc) => {
+      if (doc.exists) {
+        const business = doc.data();
+        businessTitle.textContent = business.title || "No Title";
+        businessLocation.textContent = business.location || "";
+        businessDescription.textContent = business.description || "";
+        if (business.mediaUrls && business.mediaUrls.length > 0) {
+          businessImage.src = business.mediaUrls[0];
+        } else {
+          businessImage.src = "https://via.placeholder.com/300x200?text=No+Image";
         }
 
-        /**
-         * Format price with currency tag if available
-         * @param {number} price - Price amount
-         * @returns {string} Formatted price
-         */
-        function formatPrice(price) {
-            if (businessCurrency) {
-                return `<span class="currency-tag">${businessCurrency}</span> ${parseInt(price).toLocaleString()}`;
-            }
-            return parseInt(price).toLocaleString();
-        }
-
-        /**
-         * Main business loading function
-         */
-        async function loadBusiness() {
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const businessDocId = urlParams.get('id');
-                
-                if (!businessDocId) {
-                    showError('No business ID provided');
-                    return;
-                }
-
-                // Load business data
-                const businessSnap = await db.collection("businesses").doc(businessDocId).get();
-                
-                if (!businessSnap.exists) {
-                    showError("Business not found");
-                    return;
-                }
-
-                currentBusiness = businessSnap.data();
-                
-                // Get business owner's country
-                if (currentBusiness.createdBy) {
-                    const ownerDoc = await db.collection("users").doc(currentBusiness.createdBy).get();
-                    
-                    if (ownerDoc.exists) {
-                        const ownerData = ownerDoc.data();
-                        businessCurrency = getCurrencyForCountry(ownerData.country);
-                        
-                        // Update currency notice
-                        if (businessCurrency) {
-                            currencyMessage.textContent = `Displaying prices in ${businessCurrency}`;
-                        } else {
-                            currencyMessage.textContent = "Prices displayed without currency tags";
-                        }
-                    }
-                }
-                
-                // Load and display items
-                const itemsQuery = db.collection("items")
-                    .where("businessId", "==", currentBusiness.businessId)
-                    .orderBy("timestamp", "desc");
-                
-                const itemsSnap = await itemsQuery.get();
-                const items = itemsSnap.docs.map(doc => doc.data());
-                
-                renderItems(items);
-                setupSearch(items);
-                setupMediaZoom();
-                renderBusinessDescription(currentBusiness);
-                renderActionButtons(currentBusiness);
-                
-            } catch (error) {
-                console.error("Error loading business:", error);
-                showError("Failed to load business data");
-            }
-        }
-
-        /**
-         * Render items with currency tags
-         * @param {Array} items - Array of item objects
-         */
-        function renderItems(items) {
-            if (!items.length) {
-                productGrid.innerHTML = '<div class="no-results">No items available for this business</div>';
-                return;
+db.collection("items").where("businessId", "==", businessId).get()
+          .then(querySnapshot => {
+            if (querySnapshot.empty) {
+              const emptyMsg = document.createElement('p');
+              emptyMsg.textContent = "No items available.";
+              itemsContainer.appendChild(emptyMsg);
+              return;
             }
 
-            productGrid.innerHTML = items.map(item => {
-                const url = item.mediaUrl || "";
-                const isVideo = url.endsWith('.mp4');
-                const formattedPrice = formatPrice(item.price || 0);
-                
-                return `
-                    <div class="product-card" data-name="${(item.title || '').toLowerCase()}">
-                        <div class="product-image" data-media-type="${isVideo ? 'video' : 'image'}" data-media-url="${url}">
-                            ${isVideo ? `
-                                <video muted loop playsinline style="width: 100%; border-radius: 8px;">
-                                    <source src="${url}" type="video/mp4">
-                                </video>
-                                <div class="play-icon">
-                                    <i class="fas fa-play"></i>
-                                </div>
-                            ` : `
-                                <img src="${url}" alt="${item.title || 'Item'}" style="width: 100%; border-radius: 8px;">
-                            `}
-                        </div>
-                        <div class="product-info">
-                            <div class="product-name">${item.title || 'No title'}</div>
-                            <div class="product-price">${formattedPrice}</div>
-                            <a href="order_form.html?businessId=${urlParams.get('id')}&itemName=${encodeURIComponent(item.title || '')}" class="order-button">
-                                ORDER NOW
-                            </a>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
+            querySnapshot.forEach(doc => {
+              const item = doc.data();
+              const itemCard = document.createElement('div');
+              itemCard.className = 'item-card';
 
-        /**
-         * Set up search functionality
-         * @param {Array} items - Array of item objects
-         */
-        function setupSearch(items) {
-            searchBar.addEventListener("input", function(e) {
-                const term = e.target.value.toLowerCase();
-                const cards = document.querySelectorAll(".product-card");
-                let count = 0;
+              const media = document.createElement('img');
+              media.src = item.mediaUrls?.[0] || 'https://via.placeholder.com/200x150?text=No+Image';
+              media.alt = item.name;
 
-                cards.forEach(card => {
-                    const name = card.dataset.name;
-                    const show = name.includes(term);
-                    card.style.display = show ? "block" : "none";
-                    if (show) count++;
-                });
+              const name = document.createElement('h4');
+              name.textContent = item.name;
 
-                if (count === 0) {
-                    productGrid.innerHTML = '<div class="no-results">No items match your search</div>';
-                }
+              const price = document.createElement('p');
+              price.className = 'item-price';
+              price.textContent = `UGX ${item.price}`;
+
+              const orderBtn = document.createElement('button');
+              orderBtn.className = 'order-btn';
+              orderBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Order';
+              orderBtn.onclick = () => {
+                sessionStorage.setItem('businessId', businessId);
+                sessionStorage.setItem('itemName', item.name);
+                sessionStorage.setItem('itemPrice', item.price);
+                sessionStorage.setItem('itemImage', media.src);
+                window.location.href = "order.html";
+              };
+
+itemCard.appendChild(media);
+              itemCard.appendChild(name);
+              itemCard.appendChild(price);
+              itemCard.appendChild(orderBtn);
+
+              itemsContainer.appendChild(itemCard);
             });
-        }
+          })
+          .catch(error => {
+            console.error("❌ Error getting items:", error);
+            const errMsg = document.createElement('p');
+            errMsg.textContent = "Failed to load items.";
+            itemsContainer.appendChild(errMsg);
+          });
+      } else {
+        businessTitle.textContent = "Business not found";
+        businessDescription.textContent = "This business does not exist.";
+      }
+    }).catch((error) => {
+      console.error("❌ Error fetching business:", error);
+    });
+  }
 
-        /**
-         * Set up media zoom functionality
-         */
-        function setupMediaZoom() {
-            document.querySelectorAll('.product-image').forEach(media => {
-                media.addEventListener('click', function(e) {
-                    if (e.target.closest('.play-icon')) return;
-                    
-                    const mediaType = this.dataset.mediaType;
-                    const mediaUrl = this.dataset.mediaUrl;
-                    
-                    openLightbox(mediaType, mediaUrl);
-                });
-            });
-            
-            closeModal.addEventListener('click', closeLightbox);
-            
-            lightboxModal.addEventListener('click', function(e) {
-                if (e.target === lightboxModal) {
-                    closeLightbox();
-                }
-            });
-            
-            document.addEventListener('keydown', function(e) {
-                if (e.key === "Escape" && lightboxModal.style.display === 'flex') {
-                    closeLightbox();
-                }
-            });
-        }
+  // ✅ Share function using correct URL format
+  window.shareBusiness = function () {
+    const businessId = new URLSearchParams(window.location.search).get("id");
+    if (!businessId) return alert("❌ No business ID found.");
 
-        /**
-         * Open lightbox with media
-         * @param {string} mediaType - 'image' or 'video'
-         * @param {string} mediaUrl - Media URL
-         */
-        function openLightbox(mediaType, mediaUrl) {
-            modalContent.innerHTML = '';
-            modalControls.innerHTML = '';
-            
-            if (mediaType === 'video') {
-                modalContent.innerHTML = `
-                    <video controls autoplay style="width: 100%; max-height: 80vh;">
-                        <source src="${mediaUrl}" type="video/mp4">
-                    </video>
-                `;
-                modalControls.innerHTML = 'Click anywhere outside or press ESC to close';
-            } else {
-                modalContent.innerHTML = `<img src="${mediaUrl}" alt="Zoomed view" style="max-width: 100%; max-height: 80vh;">`;
-                modalControls.innerHTML = 'Click to close or press ESC';
-            }
-            
-            lightboxModal.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
+    const shareUrl = `https://onlinemarket-ug.com/viewall.html?id=${businessId}`;
+    navigator.clipboard.writeText(shareUrl)
+      .then(() => alert("✅ Link copied! Share it on WhatsApp, Facebook, etc."))
+      .catch((err) => alert("❌ Failed to copy link."));
+  };
 
-        /**
-         * Close lightbox
-         */
-        function closeLightbox() {
-            const video = modalContent.querySelector('video');
-            if (video) video.pause();
-            
-            lightboxModal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-
-    /**
-         * Render business description
-         * @param {Object} business - Business data
-         */
-        function renderBusinessDescription(business) {
-            if (!business.description) {
-                businessDescription.style.display = 'none';
-                return;
-            }
-
-            businessDescription.innerHTML = `
-                <h2>About ${business.title || "the Business"}</h2>
-                <p>${business.description}</p>
-                <div style="text-align: center; margin-top: 15px; font-size: 12px; color: #777;">
-                    Powered by <a href="https://onlinemarket-ug.com" target="_blank" style="color: #1a73e8;">OBlinks</a>
-                </div>
-            `;
-        }
-
-        /**
-         * Render action buttons
-         * @param {Object} business - Business data
-         */
-        function renderActionButtons(business) {
-            let buttons = "";
-
-            if (business.whatsapp) {
-                buttons += `
-                    <a href="https://wa.me/${business.whatsapp}" class="action-button chat-button" target="_blank">
-                        <i class="fab fa-whatsapp"></i> Chat
-                    </a>
-                `;
-
-                buttons += `
-                    <a href="tel:+${business.whatsapp}" class="action-button call-button">
-                        <i class="fas fa-phone"></i> Call
-                    </a>
-                `;
-            }
-
-            if (business.businessLink) {
-                const link = business.businessLink.startsWith("http")
-                    ? business.businessLink
-                    : "https://" + business.businessLink;
-
-                buttons += `
-                    <a href="${link}" class="action-button link-button" target="_blank">
-                        <i class="fas fa-external-link-alt"></i> Visit
-                    </a>
-                `;
-            }
-
-            buttons += `
-                <button class="action-button share-button" onclick="shareBusiness()">
-                    <i class="fas fa-share-alt"></i> Share
-                </button>
-            `;
-
-            actionBar.innerHTML = buttons;
-            actionBar.style.display = 'flex';
-        }
-
-        /**
-         * Show error message
-         * @param {string} message - Error message
-         */
-        function showError(message) {
-            productGrid.innerHTML = `
-                <div class="no-results">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <p>${message}</p>
-                </div>
-            `;
-        }
-
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', () => {
-            loadBusiness();
-        });
-
-        // Share business function
-        window.shareBusiness = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const businessId = urlParams.get('id');
-            
-            if (!businessId) {
-                alert("❌ No business ID found in URL.");
-                return;
-            }
-            
-            const shareUrl = `https://onlinemarket-ug.com/preview/${businessId}`;
-            
-            navigator.clipboard.writeText(shareUrl)
-                .then(() => {
-                    alert("✅ Business link copied!\n\nShare it to your customers, friends, and on social media.");
-                })
-                .catch(err => {
-                    console.error('❌ Failed to copy:', err);
-                    alert("❌ Failed to copy link. Please try again.");
-                });
-        };
-    </script>
+</script>
 </body>
 </html>
