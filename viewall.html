@@ -554,5 +554,52 @@ if (data.mediaUrls && data.mediaUrls.length > 0) {
               const img = document.createElement("img");
               img.src = item.mediaUrls?.[0] || "https://via.placeholder.com/300x200";
               img.alt = item.name || "Item Image";
+
+const name = document.createElement("h4");
+              name.textContent = item.name;
+
+              const price = document.createElement("p");
+              price.textContent = `UGX ${item.price}`;
+              price.className = "price";
+
+              const orderBtn = document.createElement("button");
+              orderBtn.innerHTML = `<i class="fas fa-shopping-cart"></i> Order`;
+              orderBtn.onclick = () => {
+                sessionStorage.setItem("businessId", businessId);
+                sessionStorage.setItem("itemName", item.name);
+                sessionStorage.setItem("itemPrice", item.price);
+                sessionStorage.setItem("itemImage", item.mediaUrls?.[0] || "");
+                window.location.href = "order.html";
+              };
+
+              card.appendChild(img);
+              card.appendChild(name);
+              card.appendChild(price);
+              card.appendChild(orderBtn);
+              itemsList.appendChild(card);
+            });
+          }
+        });
+
+        // ✅ Correct Share Button Logic
+        document.getElementById("shareBtn").addEventListener("click", function () {
+          const link = `https://onlinemarket-ug.com/viewall.html?id=${businessId}`;
+          navigator.clipboard.writeText(link)
+            .then(() => alert("✅ Link copied to clipboard!"))
+            .catch(err => alert("❌ Failed to copy link."));
+        });
+
+} else {
+        document.getElementById("businessTitle").textContent = "Business Not Found";
+        document.getElementById("businessDescription").textContent = "The business ID provided does not exist.";
+      }
+    }).catch((error) => {
+      console.error("Error fetching business:", error);
+      document.getElementById("businessTitle").textContent = "Error loading business.";
+    });
+  } else {
+    document.getElementById("businessTitle").textContent = "No Business ID Found";
+  }
+</script>
 </body>
 </html>
