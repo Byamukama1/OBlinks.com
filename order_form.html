@@ -450,12 +450,12 @@
       }
 
       const businessData = businessSnap.data();
-      businessOwner = businessData.createdBy;
+businessOwner = businessData.createdBy || businessData.userId;
 
-      if (!businessOwner) {
-        alert("This business has no owner information.");
-        return;
-      }
+if (!businessOwner) {
+  alert("This business has no owner information.");
+  return;
+}
 
     } catch (err) {
       console.error("Error fetching business:", err);
