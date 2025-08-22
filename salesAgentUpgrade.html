@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sales Agent Upgrade – OBlinks</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root{
+      --primary:#2563eb;--primary-dark:#1e40af;--success:#10b981;--danger:#ef4444;
+      --text:#0f172a;--muted:#64748b;--bg:#f1f5f9;--card:#ffffff;--border:#e2e8f0;
+      --shadow:0 10px 30px rgba(2,6,23,.08)
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",sans-serif;background:linear-gradient(135deg,#f8fafc,#eef2ff);color:var(--text);min-height:100vh}
+    .wrap{max-width:780px;margin:32px auto;padding:20px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+    .head{padding:22px;background:linear-gradient(135deg,var(--primary),#3b82f6);color:#fff}
+    .head h1{font-size:1.4rem;font-weight:700}
+    .body{padding:22px}
+    .section-title{font-weight:700;margin:8px 0 12px;color:var(--primary-dark)}
+    .muted{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:1fr;gap:14px}
+    @media(min-width:720px){.grid{grid-template-columns:1.2fr .8fr}}
+    table{width:100%;border-collapse:collapse;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+    th,td{padding:12px;border-bottom:1px solid var(--border);text-align:left}
+    th{background:#f8fafc;font-weight:700}
+    .pill{display:inline-block;padding:4px 10px;border-radius:999px;font-weight:700;font-size:.85rem}
+    .pill.green{background:#ecfdf5;color:#065f46}
+    .pill.blue{background:#eff6ff;color:#1e40af}
+    .field{margin:10px 0}
+    label{font-weight:600;font-size:.92rem;color:#0f172a;display:block;margin-bottom:6px}
+    select,input{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;font-size:1rem;background:#fff}
+    .btn{display:inline-flex;align-items:center;gap:10px;padding:14px 18px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;font-weight:700;cursor:pointer;box-shadow:0 10px 20px rgba(37,99,235,.25);width:100%;justify-content:center}
+    .btn:disabled{opacity:.65;cursor:not-allowed;box-shadow:none}
+    .status{display:none;margin-top:12px;padding:12px;border-radius:10px;border:1px solid var(--border);background:#f8fafc;font-size:.95rem}
+    .status.ok{display:block;border-color:#bbf7d0;background:#ecfdf5;color:#065f46}
+    .status.err{display:block;border-color:#fecaca;background:#fef2f2;color:#7f1d1d}
+    .note{background:#f8fafc;border:1px dashed var(--border);border-radius:12px;padding:12px;margin-top:8px}
+    .footer{padding:16px;text-align:center;color:var(--muted);font-size:.9rem}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="head">
+        <h1><i class="fa-solid fa-user-tie"></i> Sales Agent Upgrade</h1>
+        <div class="muted" style="opacity:.95">Choose your agent package to increase your commission rate. Billed annually.</div>
+      </div>
+
+      <div class="body">
+        <!-- Left: Commission table / Right: Form -->
+        <div class="grid">
+          <div>
+            <div class="section-title">Commission Rates by Package</div>
+            <p class="muted" style="margin-bottom:10px">Your package in the <b>users</b> collection controls your commission on all referrals.</p>
+            <table>
+              <thead>
+                <tr><th>Package</th><th>Commission</th><th>Price / year</th><th>Best for</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Starter</td><td class="pill green">20%</td><td>UGX 0</td><td>Trying it out</td></tr>
+                <tr><td>Basic</td><td class="pill green">30%</td><td>UGX 10,000</td><td>First upgrades</td></tr>
+                <tr><td>Standard</td><td class="pill green">40%</td><td>UGX 30,000</td><td>Active agent</td></tr>
+                <tr><td>Advanced</td><td class="pill green">50%</td><td>UGX 50,000</td><td>Serious growth</td></tr>
+                <tr><td>Professional</td><td class="pill blue">60%</td><td>UGX 100,000</td><td>Full-time agent</td></tr>
+                <tr><td>Premium</td><td class="pill blue">70%</td><td>UGX 150,000</td><td>High volume</td></tr>
+                <tr><td>Enterprise</td><td class="pill blue">80%</td><td>UGX 200,000</td><td>Agency/Team</td></tr>
+              </tbody>
+            </table>
+            <div class="note">
+              After payment is approved, your package in <b>users</b> is updated automatically by the server webhook so your new commission rate applies immediately across the platform.
+            </div>
+          </div>
+
+          <div>
+            <div class="section-title">Upgrade & Pay</div>
+
+            <div class="field">
+              <label for="pkg">Select Package</label>
+              <select id="pkg">
+                <option value="" selected disabled>-- Choose package --</option>
+                <option value="Starter"  data-amount="0">Starter — 20% — UGX 0</option>
+                <option value="Basic"    data-amount="10000">Basic — 30% — UGX 10,000</option>
+                <option value="Standard" data-amount="30000">Standard — 40% — UGX 30,000</option>
+                <option value="Advanced" data-amount="50000">Advanced — 50% — UGX 50,000</option>
+                <option value="Professional" data-amount="100000">Professional — 60% — UGX 100,000</option>
+                <option value="Premium"  data-amount="150000">Premium — 70% — UGX 150,000</option>
+                <option value="Enterprise" data-amount="200000">Enterprise — 80% — UGX 200,000</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="phone">Payment Phone (MTN/Airtel – Uganda)</label>
+              <input id="phone" type="tel" placeholder="2567XXXXXXXX or 07XXXXXXXX" autocomplete="tel">
+            </div>
+
+            <button id="payBtn"><i class="fa-solid fa-lock"></i> Pay with Pandora (Mobile Money)</button>
+            <div id="status" class="status"></div>
+
+            <div class="note" style="margin-top:12px">
+              Pandora requires amounts in UGX and an E.164 phone (e.g. <b>25676XXXXXXX</b>). Prefix <b>079</b> is not supported.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">© OBlinks — Sales Agent Program</div>
+    </div>
+  </div>
+
+  <!-- Firebase compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script>
+    // ===== CONFIG =====
+    const API_BASE = "https://oblinks-new-server-pandora-payments.onrender.com"; // your live server
+    const firebaseConfig = {
+      apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
+      authDomain: "oblinks-7fdb1.firebaseapp.com",
+      projectId: "oblinks-7fdb1",
+      storageBucket: "oblinks-7fdb1.appspot.com",
+      messagingSenderId: "587017639779",
+      appId: "1:587017639779:web:d11b60f40f431cfc202556"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db   = firebase.firestore();
+
+    // ===== Helpers =====
+    const $ = (s)=>document.querySelector(s);
+    function showStatus(text, ok=false){
+      const el = $("#status");
+      el.textContent = text;
+      el.className = "status " + (ok? "ok":"err");
+      el.style.display = "block";
+    }
+    // E.164 for Uganda + block 079
+    function toE164Ug(raw){
+      let p = String(raw||"").replace(/\D/g,"");
+      if(/^0\d{8,9}$/.test(p)) p = "256" + p.slice(1);
+      if(p.startsWith("25679")) return {valid:false, reason:"079 prefix is not yet supported."};
+      if(/^256\d{9}$/.test(p)) return {valid:true, phone:p};
+      return {valid:false, reason:"Use 256XXXXXXXXX or 0XXXXXXXXX"};
+    }
+
+    // ===== State =====
+    let currentUser = null;
+
+    // Persist login across pages (Firebase Auth does this by default)
+    auth.onAuthStateChanged(async (user)=>{
+      if(!user){
+        alert("Please log in first.");
+        location.href = "login.html";
+        return;
+      }
+      currentUser = user;
+      // Optional: pre-fill phone from users doc if you store one
+      try{
+        const udoc = await db.collection("users").doc(user.uid).get();
+        const phone = udoc.exists ? (udoc.data().phone || udoc.data().whatsapp || "") : "";
+        if(phone) $("#phone").value = phone;
+      }catch(e){}
+    });
+
+    // ===== Pay with Pandora for Agent Upgrade =====
+    $("#payBtn").addEventListener("click", async ()=>{
+      if(!currentUser) return showStatus("User not authenticated.");
+      const pkgSel = $("#pkg");
+      const pkgName = pkgSel.value;
+      if(!pkgName) return showStatus("Please choose a package to upgrade.");
+
+      const amount = Number(pkgSel.selectedOptions[0].dataset.amount || 0); // UGX
+      const p = toE164Ug($("#phone").value);
+      if(!p.valid) return showStatus(p.reason);
+
+      try{
+        $("#payBtn").disabled = true;
+        showStatus("Starting mobile money request… watch your phone.", true);
+
+        // Record intent (type = agent-upgrade)
+        await db.collection("payments").add({
+          provider: "pandora",
+          status: "initiated",
+          amountPaid: amount,
+          currency: "UGX",
+          paymentPhone: p.phone,
+          packageName: pkgName,
+          type: "agent-upgrade",
+          userId: currentUser.uid,
+          timestamp: new Date()
+        });
+
+        // Hit backend with userId + packageName so webhook can update users collection on approval
+        const narrative = `OBlinks Agent Upgrade - ${pkgName}`;
+        const res = await fetch(`${API_BASE}/api/pay`,{
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({
+            amount,                 // UGX
+            phone: p.phone,         // E.164
+            userId: currentUser.uid,
+            businessId: "",         // not used here
+            packageName: pkgName,   // server/webhook uses this to update users collection
+            narrative
+          })
+        });
+
+        const text = await res.text();
+        let data = null; try{ data = JSON.parse(text) }catch{}
+        if(res.ok && (data?.transaction_ref || data?.success)){
+          showStatus("Prompt sent to your phone. Approve to complete payment.", true);
+        }else{
+          const msg = (data && (data.error || (data.messages||[]).join(" "))) || text || "Payment failed to start.";
+          showStatus(msg);
+        }
+      }catch(err){
+        console.error(err);
+        showStatus("Network/server error: " + err.message);
+      }finally{
+        $("#payBtn").disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
