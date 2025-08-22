@@ -492,8 +492,20 @@
         <div class="modal-controls" id="modalControls"></div>
     </div>
 
- <script>
-  // Firebase configuration and initialization
+ 
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getFirestore,
+    doc,
+    getDoc,
+    query,
+    collection,
+    where,
+    getDocs
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
   const firebaseConfig = {
     apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
     authDomain: "oblinks-7fdb1.firebaseapp.com",
@@ -503,104 +515,44 @@
     appId: "1:587017639779:web:d11b60f40f431cfc202556"
   };
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const businessId = urlParams.get('id');
+const businessId = new URLSearchParams(window.location.search).get("id");
 
-  const businessTitle = document.getElementById('business-title');
-  const businessLocation = document.getElementById('business-location');
-  const businessDescription = document.getElementById('business-description');
-  const businessImage = document.getElementById('business-image');
-  const itemsContainer = document.getElementById('items-list');
+  if (businessId) {
+    const docRef = doc(db, "businesses", businessId);
+    getDoc(docRef).then((docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        document.getElementById("businessTitle").textContent = data.businessTitle || "Untitled";
+        document.getElementById("businessDescription").textContent = data.description || "No description available";
+        document.getElementById("businessLocation").textContent = data.location || "No location given";
 
-  if (!businessId) {
-    businessTitle.textContent = "Business not found";
-    businessDescription.textContent = "No business ID provided in the URL.";
-  } else {
-    db.collection("businesses").doc(businessId).get().then((doc) => {
-      if (doc.exists) {
-        const business = doc.data();
-        businessTitle.textContent = business.title || "No Title";
-        businessLocation.textContent = business.location || "";
-        businessDescription.textContent = business.description || "";
-        if (business.mediaUrls && business.mediaUrls.length > 0) {
-          businessImage.src = business.mediaUrls[0];
-        } else {
-          businessImage.src = "https://via.placeholder.com/300x200?text=No+Image";
+        const whatsAppNumber = data.whatsapp || "";
+        if (whatsAppNumber) {
+          document.getElementById("whatsappBtn").href = `https://wa.me/${whatsAppNumber}`;
         }
 
-db.collection("items").where("businessId", "==", businessId).get()
-          .then(querySnapshot => {
-            if (querySnapshot.empty) {
-              const emptyMsg = document.createElement('p');
-              emptyMsg.textContent = "No items available.";
-              itemsContainer.appendChild(emptyMsg);
-              return;
-            }
+if (data.mediaUrls && data.mediaUrls.length > 0) {
+          const imageElement = document.getElementById("businessImage");
+          imageElement.src = data.mediaUrls[0];
+          imageElement.alt = "Business Media";
+        }
 
-            querySnapshot.forEach(doc => {
+        const itemsList = document.getElementById("itemsList");
+        const q = query(collection(db, "items"), where("businessId", "==", businessId));
+        getDocs(q).then((querySnapshot) => {
+          if (querySnapshot.empty) {
+            itemsList.innerHTML = "<p>No items found for this business.</p>";
+          } else {
+            querySnapshot.forEach((doc) => {
               const item = doc.data();
-              const itemCard = document.createElement('div');
-              itemCard.className = 'item-card';
+              const card = document.createElement("div");
+              card.className = "item-card";
 
-              const media = document.createElement('img');
-              media.src = item.mediaUrls?.[0] || 'https://via.placeholder.com/200x150?text=No+Image';
-              media.alt = item.name;
-
-              const name = document.createElement('h4');
-              name.textContent = item.name;
-
-              const price = document.createElement('p');
-              price.className = 'item-price';
-              price.textContent = `UGX ${item.price}`;
-
-              const orderBtn = document.createElement('button');
-              orderBtn.className = 'order-btn';
-              orderBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Order';
-              orderBtn.onclick = () => {
-                sessionStorage.setItem('businessId', businessId);
-                sessionStorage.setItem('itemName', item.name);
-                sessionStorage.setItem('itemPrice', item.price);
-                sessionStorage.setItem('itemImage', media.src);
-                window.location.href = "order.html";
-              };
-
-itemCard.appendChild(media);
-              itemCard.appendChild(name);
-              itemCard.appendChild(price);
-              itemCard.appendChild(orderBtn);
-
-              itemsContainer.appendChild(itemCard);
-            });
-          })
-          .catch(error => {
-            console.error("❌ Error getting items:", error);
-            const errMsg = document.createElement('p');
-            errMsg.textContent = "Failed to load items.";
-            itemsContainer.appendChild(errMsg);
-          });
-      } else {
-        businessTitle.textContent = "Business not found";
-        businessDescription.textContent = "This business does not exist.";
-      }
-    }).catch((error) => {
-      console.error("❌ Error fetching business:", error);
-    });
-  }
-
-  // ✅ Share function using correct URL format
-  window.shareBusiness = function () {
-    const businessId = new URLSearchParams(window.location.search).get("id");
-    if (!businessId) return alert("❌ No business ID found.");
-
-    const shareUrl = `https://onlinemarket-ug.com/viewall.html?id=${businessId}`;
-    navigator.clipboard.writeText(shareUrl)
-      .then(() => alert("✅ Link copied! Share it on WhatsApp, Facebook, etc."))
-      .catch((err) => alert("❌ Failed to copy link."));
-  };
-
-</script>
+              const img = document.createElement("img");
+              img.src = item.mediaUrls?.[0] || "https://via.placeholder.com/300x200";
+              img.alt = item.name || "Item Image";
 </body>
 </html>
