@@ -492,191 +492,383 @@
         <div class="modal-controls" id="modalControls"></div>
     </div>
 
- 
-<script>
-  // Firebase configuration  
-  const firebaseConfig = {  
-    apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",  
-    authDomain: "oblinks-7fdb1.firebaseapp.com",  
-    projectId: "oblinks-7fdb1",  
-    storageBucket: "oblinks-7fdb1.appspot.com",  
-    messagingSenderId: "587017639779",  
-    appId: "1:587017639779:web:d11b60f40f431cfc202556"  
-  };  
-  
-  // Initialize Firebase  
-  firebase.initializeApp(firebaseConfig);  
-  const db = firebase.firestore();  
-  
-  const container = document.getElementById('business-cards-container');  
-  const lightbox = document.getElementById('lightbox');  
-  const lightboxContent = document.getElementById('lightbox-content');  
-  const closeLightbox = document.getElementById('close-lightbox');  
-  
-  function loadBusinesses() {
-    container.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner"></i></div>';
-    const q = db.collection("businesses").orderBy("timestamp", "desc");
-    q.get().then((querySnapshot) => {
-      container.innerHTML = '';
-      if (querySnapshot.empty) {
-        container.innerHTML = '<p class="no-results">No businesses found. Be the first to add one!</p>';
-        return;
-      }
-      querySnapshot.forEach((doc) => {
-        const business = doc.data();
-        createBusinessCard(business, doc.id);
-      });
-      initCarousels();
-    }).catch((error) => {
-      console.error("Error loading businesses: ", error);
-      container.innerHTML = '<p class="error">Failed to load businesses. Please try again later.</p>';
-    });
-  }
+<script type="module">
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
+        authDomain: "oblinks-7fdb1.firebaseapp.com",
+        projectId: "oblinks-7fdb1",
+        storageBucket: "oblinks-7fdb1.appspot.com",
+        messagingSenderId: "79327968002",
+        appId: "1:79327968002:web:8c5b0c44e9f9f2e67c04b3",
+        measurementId: "G-HF4PZ4C83N"
+    };
 
-  function createBusinessCard(business, docId) {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.dataset.category = business.category || 'all';
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+    
+    // Supported countries with currency codes
+    const SUPPORTED_COUNTRIES = {
+        'uganda': 'UGX',
+        'tanzania': 'TZS',
+        'nigeria': 'NGN',
+        'ghana': 'GHS'
+    };
 
-    let mediaHTML = '';
-    if (business.mediaUrls && business.mediaUrls.length > 0) {
-      mediaHTML = '<div class="media-scroll">';
-      business.mediaUrls.forEach((url, index) => {
-        const isVideo = url.endsWith('.mp4') || url.endsWith('.webm');
-        mediaHTML += `
-          <div class="media-item" data-index="${index}">
-            ${isVideo ? `<video src="${url}" muted playsinline></video>` : `<img src="${url}" alt="${business.title}">`}
-          </div>`;
-      });
-      mediaHTML += '</div><div class="media-indicators">';
-      for (let i = 0; i < business.mediaUrls.length; i++) {
-        mediaHTML += `<div class="media-indicator ${i === 0 ? 'active' : ''}"></div>`;
-      }
-      mediaHTML += '</div>';
-    } else {
-      mediaHTML = `
-        <div class="media-scroll">
-          <div class="media-item">
-            <img src="https://via.placeholder.com/300x200?text=No+Image" alt="No image">
-          </div>
-        </div>
-        <div class="media-indicators">
-          <div class="media-indicator active"></div>
-        </div>`;
-    }
+    // DOM elements
+    const productGrid = document.getElementById('productGrid');
+    const businessDescription = document.getElementById('businessDescription');
+    const actionBar = document.getElementById('actionBar');
+    const searchBar = document.querySelector('.search-bar');
+    const lightboxModal = document.getElementById('lightboxModal');
+    const modalContent = document.getElementById('modalContent');
+    const closeModal = document.getElementById('closeModal');
+    const modalControls = document.getElementById('modalControls');
+    const currencyNotice = document.getElementById('currencyNotice');
+    const currencyMessage = document.getElementById('currencyMessage');
+    
+    const urlParams = new URLSearchParams(window.location.search);
 
-    const buttonsHTML = `
-      <div class="btn-container">
-        <button class="btn btn-order" data-id="${docId}">
-          <i class="fas fa-shopping-cart"></i> Order
-        </button>
-        <a href="https://wa.me/${business.whatsapp || ''}" class="btn btn-chat" target="_blank">
-          <i class="fab fa-whatsapp"></i> Chat
-        </a>
-        ${business.whatsapp ? `<a href="tel:+${business.whatsapp}" class="btn btn-call"><i class="fas fa-phone"></i> Call</a>` : ''}
-        <a href="viewall.html?id=${docId}" class="btn btn-view"><i class="fas fa-eye"></i> Details</a>
-        ${business.businessLink ? `<a href="${business.businessLink}" class="btn btn-link" target="_blank"><i class="fas fa-link"></i></a>` : ''}
-        <button class="btn btn-share" data-id="${docId}"><i class="fas fa-share-alt"></i> Share</button>
-      </div>`;
+    // Global variables
+    let currentBusiness = null;
+    let businessCurrency = null;
 
-    card.innerHTML = `
-      <div class="card-media">${mediaHTML}</div>
-      <div class="card-header">
-        <h2 class="card-title" onclick="window.location.href='viewall.html?id=${docId}'" style="cursor: pointer;">${business.title || 'Untitled Business'}</h2>
-        <div class="card-country">${business.location || 'Location not specified'}</div>
-      </div>
-      <div class="card-body">
-        <p class="card-description" onclick="window.location.href='viewall.html?id=${docId}'" style="cursor: pointer;">${business.description || 'No description provided'}</p>
-        ${buttonsHTML}
-      </div>`;
-
-    container.appendChild(card);
-
-    const orderBtn = card.querySelector(".btn-order");
-    if (orderBtn) {
-      orderBtn.addEventListener("click", () => {
-        const businessId = orderBtn.getAttribute("data-id");
-        window.location.href = `order_form.html?id=${businessId}`;
-      });
-    }
-  }
-
-  function initCarousels() {
-    setInterval(() => {
-      document.querySelectorAll('.media-scroll').forEach(carousel => {
-        const scrollWidth = carousel.scrollWidth;
-        const scrollLeft = carousel.scrollLeft;
-        const clientWidth = carousel.clientWidth;
-        let nextPos = scrollLeft + clientWidth;
-        if (nextPos >= scrollWidth) {
-          nextPos = 0;
+    /**
+     * Get currency for a country
+     * @param {string} country - Country name
+     * @returns {string|null} Currency code or null
+     */
+    function getCurrencyForCountry(country) {
+        if (!country) return null;
+        
+        const normalizedCountry = country.toLowerCase().trim();
+        
+        // Check for full country names
+        if (SUPPORTED_COUNTRIES[normalizedCountry]) {
+            return SUPPORTED_COUNTRIES[normalizedCountry];
         }
-        carousel.scrollTo({ left: nextPos, behavior: 'smooth' });
+        
+        // Check for country codes
+        const countryCodeMap = {
+            'ug': 'UGX',
+            'tz': 'TZS',
+            'ng': 'NGN',
+            'gh': 'GHS'
+        };
+        
+        if (countryCodeMap[normalizedCountry]) {
+            return countryCodeMap[normalizedCountry];
+        }
+        
+        return null;
+    }
 
-        const itemCount = carousel.querySelectorAll('.media-item').length;
-        const currentIndex = Math.round(nextPos / clientWidth);
-        const indicators = carousel.nextElementSibling.querySelectorAll('.media-indicator');
-        indicators.forEach((indicator, index) => {
-          indicator.classList.toggle('active', index === currentIndex % itemCount);
+    /**
+     * Format price with currency tag if available
+     * @param {number} price - Price amount
+     * @returns {string} Formatted price
+     */
+    function formatPrice(price) {
+        if (businessCurrency) {
+            return `<span class="currency-tag">${businessCurrency}</span> ${parseInt(price).toLocaleString()}`;
+        }
+        return parseInt(price).toLocaleString();
+    }
+
+    /**
+     * Main business loading function
+     */
+    async function loadBusiness() {
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const businessDocId = urlParams.get('id');
+            
+            if (!businessDocId) {
+                showError('No business ID provided');
+                return;
+            }
+
+            // Load business data
+            const businessSnap = await db.collection("businesses").doc(businessDocId).get();
+            
+            if (!businessSnap.exists) {
+                showError("Business not found");
+                return;
+            }
+
+            currentBusiness = businessSnap.data();
+            
+            // Get business owner's country
+            if (currentBusiness.createdBy) {
+                const ownerDoc = await db.collection("users").doc(currentBusiness.createdBy).get();
+                
+                if (ownerDoc.exists) {
+                    const ownerData = ownerDoc.data();
+                    businessCurrency = getCurrencyForCountry(ownerData.country);
+                    
+                    // Update currency notice
+                    if (businessCurrency) {
+                        currencyMessage.textContent = `Displaying prices in ${businessCurrency}`;
+                    } else {
+                        currencyMessage.textContent = "Prices displayed without currency tags";
+                    }
+                }
+            }
+            
+            // Load and display items
+            const itemsQuery = db.collection("items")
+                .where("businessId", "==", currentBusiness.businessId)
+                .orderBy("timestamp", "desc");
+            
+            const itemsSnap = await itemsQuery.get();
+            const items = itemsSnap.docs.map(doc => doc.data());
+            
+            renderItems(items);
+            setupSearch(items);
+            setupMediaZoom();
+            renderBusinessDescription(currentBusiness);
+            renderActionButtons(currentBusiness);
+            
+        } catch (error) {
+            console.error("Error loading business:", error);
+            showError("Failed to load business data");
+        }
+    }
+
+    /**
+     * Render items with currency tags
+     * @param {Array} items - Array of item objects
+     */
+    function renderItems(items) {
+        if (!items.length) {
+            productGrid.innerHTML = '<div class="no-results">No items available for this business</div>';
+            return;
+        }
+
+        productGrid.innerHTML = items.map(item => {
+            const url = item.mediaUrl || "";
+            const isVideo = url.endsWith('.mp4');
+            const formattedPrice = formatPrice(item.price || 0);
+            
+            return `
+                <div class="product-card" data-name="${(item.title || '').toLowerCase()}">
+                    <div class="product-image" data-media-type="${isVideo ? 'video' : 'image'}" data-media-url="${url}">
+                        ${isVideo ? `
+                            <video muted loop playsinline style="width: 100%; border-radius: 8px;">
+                                <source src="${url}" type="video/mp4">
+                            </video>
+                            <div class="play-icon">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        ` : `
+                            <img src="${url}" alt="${item.title || 'Item'}" style="width: 100%; border-radius: 8px;">
+                        `}
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">${item.title || 'No title'}</div>
+                        <div class="product-price">${formattedPrice}</div>
+                        <a href="order_form.html?businessId=${urlParams.get('id')}&itemName=${encodeURIComponent(item.title || '')}" class="order-button">
+                            ORDER NOW
+                        </a>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    /**
+     * Set up search functionality
+     * @param {Array} items - Array of item objects
+     */
+    function setupSearch(items) {
+        searchBar.addEventListener("input", function(e) {
+            const term = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll(".product-card");
+            let count = 0;
+
+            cards.forEach(card => {
+                const name = card.dataset.name;
+                const show = name.includes(term);
+                card.style.display = show ? "block" : "none";
+                if (show) count++;
+            });
+
+            if (count === 0) {
+                productGrid.innerHTML = '<div class="no-results">No items match your search</div>';
+            }
         });
-      });
-    }, 2000);
-  }
+    }
 
-  function initLightbox() {
-    closeLightbox.addEventListener('click', () => {
-      lightbox.style.display = 'none';
+    /**
+     * Set up media zoom functionality
+     */
+    function setupMediaZoom() {
+        document.querySelectorAll('.product-image').forEach(media => {
+            media.addEventListener('click', function(e) {
+                if (e.target.closest('.play-icon')) return;
+                
+                const mediaType = this.dataset.mediaType;
+                const mediaUrl = this.dataset.mediaUrl;
+                
+                openLightbox(mediaType, mediaUrl);
+            });
+        });
+        
+        closeModal.addEventListener('click', closeLightbox);
+        
+        lightboxModal.addEventListener('click', function(e) {
+            if (e.target === lightboxModal) {
+                closeLightbox();
+            }
+        });
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === "Escape" && lightboxModal.style.display === 'flex') {
+                closeLightbox();
+            }
+        });
+    }
+
+    /**
+     * Open lightbox with media
+     * @param {string} mediaType - 'image' or 'video'
+     * @param {string} mediaUrl - Media URL
+     */
+    function openLightbox(mediaType, mediaUrl) {
+        modalContent.innerHTML = '';
+        modalControls.innerHTML = '';
+        
+        if (mediaType === 'video') {
+            modalContent.innerHTML = `
+                <video controls autoplay style="width: 100%; max-height: 80vh;">
+                    <source src="${mediaUrl}" type="video/mp4">
+                </video>
+            `;
+            modalControls.innerHTML = 'Click anywhere outside or press ESC to close';
+        } else {
+            modalContent.innerHTML = `<img src="${mediaUrl}" alt="Zoomed view" style="max-width: 100%; max-height: 80vh;">`;
+            modalControls.innerHTML = 'Click to close or press ESC';
+        }
+        
+        lightboxModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    /**
+     * Close lightbox
+     */
+    function closeLightbox() {
+        const video = modalContent.querySelector('video');
+        if (video) video.pause();
+        
+        lightboxModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    /**
+     * Render business description
+     * @param {Object} business - Business data
+     */
+    function renderBusinessDescription(business) {
+        if (!business.description) {
+            businessDescription.style.display = 'none';
+            return;
+        }
+
+        businessDescription.innerHTML = `
+            <h2>About ${business.title || "the Business"}</h2>
+            <p>${business.description}</p>
+            <div style="text-align: center; margin-top: 15px; font-size: 12px; color: #777;">
+                Powered by <a href="https://onlinemarket-ug.com" target="_blank" style="color: #1a73e8;">OBlinks</a>
+            </div>
+        `;
+    }
+
+    /**
+     * Render action buttons
+     * @param {Object} business - Business data
+     */
+    function renderActionButtons(business) {
+        let buttons = "";
+
+        if (business.whatsapp) {
+            buttons += `
+                <a href="https://wa.me/${business.whatsapp}" class="action-button chat-button" target="_blank">
+                    <i class="fab fa-whatsapp"></i> Chat
+                </a>
+            `;
+
+            buttons += `
+                <a href="tel:+${business.whatsapp}" class="action-button call-button">
+                    <i class="fas fa-phone"></i> Call
+                </a>
+            `;
+        }
+
+        if (business.businessLink) {
+            const link = business.businessLink.startsWith("http")
+                ? business.businessLink
+                : "https://" + business.businessLink;
+
+            buttons += `
+                <a href="${link}" class="action-button link-button" target="_blank">
+                    <i class="fas fa-external-link-alt"></i> Visit
+                </a>
+            `;
+        }
+
+        buttons += `
+            <button class="action-button share-button" onclick="shareBusiness()">
+                <i class="fas fa-share-alt"></i> Share
+            </button>
+        `;
+
+        actionBar.innerHTML = buttons;
+        actionBar.style.display = 'flex';
+    }
+
+    /**
+     * Show error message
+     * @param {string} message - Error message
+     */
+    function showError(message) {
+        productGrid.innerHTML = `
+            <div class="no-results">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>${message}</p>
+            </div>
+        `;
+    }
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', () => {
+        loadBusiness();
     });
 
-    document.addEventListener('click', (e) => {
-      const mediaItem = e.target.closest('.media-item img, .media-item video');
-      if (mediaItem) {
-        const mediaType = mediaItem.tagName.toLowerCase();
-        const mediaSrc = mediaItem.src;
-        lightboxContent.innerHTML = mediaType === 'video'
-          ? `<video src="${mediaSrc}" controls autoplay></video>`
-          : `<img src="${mediaSrc}" alt="Business media">`;
-        lightbox.style.display = 'flex';
-      }
-    });
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    loadBusinesses();
-    initLightbox();
-    initSearch();
-    initShareButton();
-  });
-
-  function initSearch() {
-    const searchInput = document.getElementById('search-input');
-    if (!searchInput) return;
-
-    searchInput.addEventListener('input', function () {
-      const keyword = this.value.toLowerCase().trim();
-      const cards = document.querySelectorAll('.card');
-
-      cards.forEach(card => {
-        const title = card.querySelector('.card-title')?.textContent.toLowerCase() || '';
-        const description = card.querySelector('.card-description')?.textContent.toLowerCase() || '';
-        const matches = title.includes(keyword) || description.includes(keyword);
-        card.style.display = matches ? 'flex' : 'none';
-      });
-    });
-  }
-
-  function initShareButton() {
-    document.addEventListener('click', function (e) {
-      const shareBtn = e.target.closest('.btn-share');
-      if (shareBtn) {
-        const businessId = shareBtn.getAttribute('data-id');
-        const shareLink = `https://onlinemarket-ug.com/viewall.html?id=${businessId}`;
-        navigator.clipboard.writeText(shareLink)
-          .then(() => alert("✅ Link copied: " + shareLink))
-          .catch(() => alert("❌ Failed to copy link"));
-      }
-    });
-  }
+    // Share business function - UPDATED to use the correct URL format
+    window.shareBusiness = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const businessId = urlParams.get('id');
+        
+        if (!businessId) {
+            alert("❌ No business ID found in URL.");
+            return;
+        }
+        
+        // Create the shareable URL in the requested format
+        const shareUrl = `https://onlinemarket-ug.com/viewall.html?id=${businessId}`;
+        
+        navigator.clipboard.writeText(shareUrl)
+            .then(() => {
+                alert("✅ Business link copied!\n\nShare it to your customers, friends, and on social media.");
+            })
+            .catch(err => {
+                console.error('❌ Failed to copy:', err);
+                alert("❌ Failed to copy link. Please try again.");
+            });
+    };
 </script>
 </body>
 </html>
