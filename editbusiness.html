@@ -744,564 +744,572 @@
   </div>
   
 
+
 <script>
-  // Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
-    authDomain: "oblinks-7fdb1.firebaseapp.com",
-    projectId: "oblinks-7fdb1",
-    storageBucket: "oblinks-7fdb1.appspot.com",
-    messagingSenderId: "587017639779",
-    appId: "1:587017639779:web:d11b60f40f431cfc202556"
-  };
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCGVVpcWS9ae1DH1J8qoaK1TwnSX_W5FkQ",
+  authDomain: "oblinks-7fdb1.firebaseapp.com",
+  projectId: "oblinks-7fdb1",
+  storageBucket: "oblinks-7fdb1.appspot.com",
+  messagingSenderId: "587017639779",
+  appId: "1:587017639779:web:d11b60f40f431cfc202556"
+};
 
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const auth = firebase.auth();
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
 
-  // Global state
-  let currentUser = null;
-  let selectedBusiness = null;
-  let maxItems = 0;
-  let currentItems = 0;
-  let userBusinesses = [];
+// Global state
+let currentUser = null;
+let selectedBusiness = null;
+let maxItems = 0;
+let currentItems = 0;
+let userBusinesses = [];
 
 // Check authentication
-  auth.onAuthStateChanged(user => {
-    currentUser = user;
-    if (!user) {
-      window.location.href = "login.html";
-    } else {
-      loadUserBusinesses();
-    }
-  });
-
-  // Load user's businesses (accepts both userId and createdBy)
-  function loadUserBusinesses() {
-    const spinner = document.getElementById('loading-spinner');
-    spinner.style.display = 'block';
-
-    Promise.all([
-      db.collection("businesses").where("userId", "==", currentUser.uid).get(),
-      db.collection("businesses").where("createdBy", "==", currentUser.uid).get()
-    ])
-    .then(([userIdSnap, createdBySnap]) => {
-      spinner.style.display = 'none';
-
-      const mergedDocsMap = new Map();
-      userIdSnap.forEach(doc => mergedDocsMap.set(doc.id, doc));
-      createdBySnap.forEach(doc => mergedDocsMap.set(doc.id, doc));
-
-      if (mergedDocsMap.size === 0) {
-        showNotification("You don't have any businesses to edit", "error");
-        return;
-      }
-
-      userBusinesses = [];
-      const select = document.getElementById('business-select');
-      select.innerHTML = '';
-
-      mergedDocsMap.forEach(doc => {
-        const business = {
-          id: doc.id,
-          ...doc.data()
-        };
-        userBusinesses.push(business);
-
-        const option = document.createElement('option');
-        option.value = doc.id;
-        option.textContent = business.title;
-        select.appendChild(option);
-      });
-    })
-    .catch(error => {
-      spinner.style.display = 'none';
-      console.error("Error loading businesses:", error);
-      showNotification("Failed to load businesses: " + error.message, "error");
-    });
+auth.onAuthStateChanged(user => {
+  currentUser = user;
+  if (!user) {
+    window.location.href = "login.html";
+  } else {
+    loadUserBusinesses();
   }
+});
+
+// Load user's businesses (accepts both userId and createdBy)
+function loadUserBusinesses() {
+  const spinner = document.getElementById('loading-spinner');
+  spinner.style.display = 'block';
+
+  Promise.all([
+    db.collection("businesses").where("userId", "==", currentUser.uid).get(),
+    db.collection("businesses").where("createdBy", "==", currentUser.uid).get()
+  ])
+  .then(([userIdSnap, createdBySnap]) => {
+    spinner.style.display = 'none';
+
+    const mergedDocsMap = new Map();
+    userIdSnap.forEach(doc => mergedDocsMap.set(doc.id, doc));
+    createdBySnap.forEach(doc => mergedDocsMap.set(doc.id, doc));
+
+    const select = document.getElementById('business-select');
+    select.innerHTML = '';
+    // placeholder option (keeps UX consistent)
+    const ph = document.createElement('option');
+    ph.value = '';
+    ph.textContent = 'click here to Select Business to edit';
+    select.appendChild(ph);
+
+    userBusinesses = [];
+    mergedDocsMap.forEach(doc => {
+      const business = { id: doc.id, ...doc.data() };
+      userBusinesses.push(business);
+
+      const option = document.createElement('option');
+      option.value = doc.id;
+      option.textContent = business.title || '(no title)';
+      select.appendChild(option);
+    });
+
+    if (mergedDocsMap.size === 0) {
+      showNotification("You don't have any businesses to edit", "error");
+    }
+  })
+  .catch(error => {
+    spinner.style.display = 'none';
+    console.error("Error loading businesses:", error);
+    showNotification("Failed to load businesses: " + error.message, "error");
+  });
+}
 
 // Business selection handler
-  document.getElementById('business-select').addEventListener('change', function() {
-    const businessId = this.value;
-    if (!businessId) {
-      document.getElementById('edit-form').style.display = 'none';
-      document.getElementById('package-info').style.display = 'none';
-      return;
-    }
-
-    const business = userBusinesses.find(b => b.id === businessId);
-    if (!business) return;
-
-    selectedBusiness = business;
-    loadBusinessData(business);
-  });
-
-  // Load business data and items
-  function loadBusinessData(business) {
-    const spinner = document.getElementById('loading-spinner');
-    spinner.style.display = 'block';
-
-    // Show package info
-    document.getElementById('package-info').style.display = 'flex';
-    document.getElementById('selected-package').textContent = business.package;
-
-    // Get package items limit - STARTER PACKAGE INCREASED TO 6 ITEMS
-    const packageLimits = {
-      'Starter': 6,  // Changed from 2 to 6
-      'Basic': 10,
-      'Standard': 30,
-      'Advanced': 50,
-      'Professional': 70,
-      'Premium': 90,
-      'Enterprise': 100
-    };
-
-    maxItems = packageLimits[business.package] || 6;
-    document.getElementById('selected-items').textContent = maxItems;
-
-    // Fill business data
-    document.getElementById('business-title').value = business.title || '';
-    document.getElementById('business-location').value = business.location || '';
-    document.getElementById('business-category').value = business.category || '';
-    document.getElementById('business-description').value = business.description || '';
-    document.getElementById('business-link').value = business.businessLink || '';
-    document.getElementById('whatsapp-number').value = business.whatsapp || '';
-
-    // Load items
-    db.collection("items")
-      .where("businessId", "==", business.businessId) // Query by businessId, not document ID
-      .get()
-      .then(querySnapshot => {
-        spinner.style.display = 'none';
-
-        const itemsContainer = document.getElementById('items-container');
-        itemsContainer.innerHTML = '';
-        currentItems = 0;
-
-        querySnapshot.forEach(doc => {
-          const item = doc.data();
-          addItemToForm(item.title, item.price, item.mediaUrl, doc.id);
-        });
-
-        // Update item counter
-        updateItemCounter();
-
-        // Show the form
-        document.getElementById('edit-form').style.display = 'block';
-        document.getElementById('save-btn').disabled = false;
-
-        // Update current items count
-        document.getElementById('current-items-count').textContent = currentItems;
-      })
-      .catch(error => {
-        spinner.style.display = 'none';
-        console.error("Error loading items:", error);
-        showNotification("Failed to load business items: " + error.message, "error");
-      });
+document.getElementById('business-select').addEventListener('change', function() {
+  const businessId = this.value;
+  if (!businessId) {
+    document.getElementById('edit-form').style.display = 'none';
+    document.getElementById('package-info').style.display = 'none';
+    return;
   }
 
-// Update item counter
-  function updateItemCounter() {
-    const counter = document.getElementById('item-counter');
-    counter.textContent = `${currentItems}/${maxItems}`;
+  const business = userBusinesses.find(b => b.id === businessId);
+  if (!business) return;
 
-    // Disable add button if limit reached
-    const addBtn = document.getElementById('add-item-btn');
-    if (currentItems >= maxItems) {
-      addBtn.disabled = true;
-      addBtn.innerHTML = '<i class="fas fa-ban"></i> Package Limit Reached';
-    } else {
-      addBtn.disabled = false;
-      addBtn.innerHTML = '<i class="fas fa-plus"></i> Add New Item';
-    }
+  selectedBusiness = business;
+  loadBusinessData(business);
+});
+
+// Load business data and items (robust to missing businessId field)
+function loadBusinessData(business) {
+  const spinner = document.getElementById('loading-spinner');
+  spinner.style.display = 'block';
+
+  // Show package info
+  document.getElementById('package-info').style.display = 'flex';
+  document.getElementById('selected-package').textContent = business.package || 'Starter';
+
+  // Items allowed per package (fallbacks)
+  const packageLimits = {
+    'Starter': 6,
+    'Basic': 10,
+    'Standard': 30,
+    'Advanced': 50,
+    'Professional': 70,
+    'Premium': 90,
+    'Enterprise': 100
+  };
+  maxItems = packageLimits[business.package] || 6;
+  document.getElementById('selected-items').textContent = maxItems;
+
+  // Fill business fields
+  document.getElementById('business-title').value = business.title || '';
+  document.getElementById('business-location').value = business.location || '';
+  document.getElementById('business-category').value = business.category || '';
+  document.getElementById('business-description').value = business.description || '';
+  document.getElementById('business-link').value = business.businessLink || '';
+  document.getElementById('whatsapp-number').value = business.whatsapp || '';
+
+  // IMPORTANT: fallback to document id if businessId is missing
+  const bid = business.businessId || business.id;
+
+  // If no id, show the form (business fields editable) without items
+  if (!bid) {
+    spinner.style.display = 'none';
+    const itemsContainer = document.getElementById('items-container');
+    itemsContainer.innerHTML = '';
+    currentItems = 0;
+    updateItemCounter();
+    document.getElementById('current-items-count').textContent = currentItems;
+    document.getElementById('edit-form').style.display = 'block';
+    document.getElementById('save-btn').disabled = false;
+    return;
   }
 
-  // Add item to form with optional data
-  function addItemToForm(title = '', price = '', mediaUrl = '', itemId = '') {
-    if (currentItems < maxItems) {
+  // Load items for this business
+  db.collection("items")
+    .where("businessId", "==", bid)
+    .get()
+    .then(querySnapshot => {
+      spinner.style.display = 'none';
+
       const itemsContainer = document.getElementById('items-container');
-      const newItem = document.createElement('div');
-      newItem.className = 'item-card';
-      if (itemId) newItem.dataset.itemId = itemId;
+      itemsContainer.innerHTML = '';
+      currentItems = 0;
 
-      newItem.innerHTML = `
-        <div class="item-media">
-          <div class="file-input-wrapper">
-            <input type="file" class="media-input" accept="image/*,video/*">
-            ${mediaUrl ? '' : `
-              <div class="placeholder">
-                <i class="fas fa-image fa-2x"></i>
-                <p>Click to upload image or video</p>
-              </div>
-            `}
-          </div>
-        </div>
-        <div class="item-body">
-          <input type="text" class="form-control item-title" placeholder="Item Title" 
-                 value="${title}" style="margin-bottom: 10px;">
-          <input type="text" class="form-control item-price" placeholder="Price (UGX)" 
-                 value="${price}" style="margin-bottom: 15px;">
-          <div class="item-actions">
-            <button class="delete-btn delete-item">
-              <i class="fas fa-trash"></i> Delete
-            </button>
-          </div>
-        </div>
-      `;
-
-      itemsContainer.appendChild(newItem);
-      currentItems++;
-
-      // Add media input event
-      const mediaInput = newItem.querySelector('.media-input');
-      mediaInput.addEventListener('change', handleMediaUpload);
-
-      // Add delete button event
-      const deleteBtn = newItem.querySelector('.delete-item');
-      deleteBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        if (confirm('Are you sure you want to delete this item?')) {
-          if (itemId) {
-            newItem.dataset.delete = "true";
-            newItem.style.opacity = "0.6";
-            deleteBtn.disabled = true;
-          } else {
-            newItem.remove();
-            currentItems--;
-            updateItemCounter();
-          }
-        }
+      querySnapshot.forEach(doc => {
+        const item = doc.data();
+        addItemToForm(item.title, item.price, item.mediaUrl, doc.id);
       });
-
-      // If we have a media URL, create preview
-      if (mediaUrl) {
-        createMediaPreview(newItem, mediaUrl);
-      }
 
       updateItemCounter();
-    }
+      document.getElementById('edit-form').style.display = 'block';
+      document.getElementById('save-btn').disabled = false;
+      document.getElementById('current-items-count').textContent = currentItems;
+    })
+    .catch(error => {
+      // Even if items fail to load, still show the form so user can edit fields
+      console.error("Error loading items:", error);
+      spinner.style.display = 'none';
+      showNotification("Failed to load business items: " + error.message, "error");
+
+      const itemsContainer = document.getElementById('items-container');
+      itemsContainer.innerHTML = '';
+      currentItems = 0;
+      updateItemCounter();
+      document.getElementById('current-items-count').textContent = currentItems;
+
+      document.getElementById('edit-form').style.display = 'block';
+      document.getElementById('save-btn').disabled = false;
+    });
+}
+
+// Update item counter
+function updateItemCounter() {
+  const counter = document.getElementById('item-counter');
+  counter.textContent = `${currentItems}/${maxItems}`;
+
+  const addBtn = document.getElementById('add-item-btn');
+  if (currentItems >= maxItems) {
+    addBtn.disabled = true;
+    addBtn.innerHTML = '<i class="fas fa-ban"></i> Package Limit Reached';
+  } else {
+    addBtn.disabled = false;
+    addBtn.innerHTML = '<i class="fas fa-plus"></i> Add New Item';
   }
+}
 
-// Create media preview
-  function createMediaPreview(itemElement, mediaUrl) {
-    const wrapper = itemElement.querySelector('.file-input-wrapper');
-    wrapper.innerHTML = '';
+// Add item to form with optional data
+function addItemToForm(title = '', price = '', mediaUrl = '', itemId = '') {
+  if (currentItems < maxItems) {
+    const itemsContainer = document.getElementById('items-container');
+    const newItem = document.createElement('div');
+    newItem.className = 'item-card';
+    if (itemId) newItem.dataset.itemId = itemId;
 
-    const isVideo = mediaUrl.endsWith('.mp4') || mediaUrl.includes('video');
-    const controlsDiv = document.createElement("div");
-    controlsDiv.style.position = "relative";
-    controlsDiv.style.width = "100%";
-    controlsDiv.style.height = "100%";
-    controlsDiv.style.borderRadius = "10px";
-    controlsDiv.style.overflow = "hidden";
+    newItem.innerHTML = `
+      <div class="item-media">
+        <div class="file-input-wrapper">
+          <input type="file" class="media-input" accept="image/*,video/*">
+          ${mediaUrl ? '' : `
+            <div class="placeholder">
+              <i class="fas fa-image fa-2x"></i>
+              <p>Click to upload image or video</p>
+            </div>
+          `}
+        </div>
+      </div>
+      <div class="item-body">
+        <input type="text" class="form-control item-title" placeholder="Item Title" 
+               value="${title}" style="margin-bottom: 10px;">
+        <input type="text" class="form-control item-price" placeholder="Price (UGX)" 
+               value="${price}" style="margin-bottom: 15px;">
+        <div class="item-actions">
+          <button class="delete-btn delete-item">
+            <i class="fas fa-trash"></i> Delete
+          </button>
+        </div>
+      </div>
+    `;
 
-    // Create media element
-    let mediaElement;
-    if (isVideo) {
-      mediaElement = document.createElement("video");
-      mediaElement.src = mediaUrl;
-      mediaElement.controls = true;
-      mediaElement.muted = true;
-      mediaElement.style.width = "100%";
-      mediaElement.style.height = "100%";
-      mediaElement.style.objectFit = "cover";
-    } else {
-      mediaElement = document.createElement("img");
-      mediaElement.src = mediaUrl;
-      mediaElement.alt = "Uploaded image";
-      mediaElement.style.width = "100%";
-      mediaElement.style.height = "100%";
-      mediaElement.style.objectFit = "contain";
-    }
+    itemsContainer.appendChild(newItem);
+    currentItems++;
 
-    // Make media clickable for replacement
-    mediaElement.style.cursor = "pointer";
-    mediaElement.onclick = () => {
-      const fileInput = document.createElement("input");
-      fileInput.type = "file";
-      fileInput.accept = "image/*,video/*";
-      fileInput.style.display = "none";
-      document.body.appendChild(fileInput);
+    // Add media input event
+    const mediaInput = newItem.querySelector('.media-input');
+    mediaInput.addEventListener('change', handleMediaUpload);
 
-      fileInput.addEventListener('change', (ev) => {
-        handleReplaceMediaUpload(ev, wrapper);
-      });
-
-      fileInput.click();
-
-      fileInput.addEventListener('blur', () => {
-        document.body.removeChild(fileInput);
-      });
-    };
-
-    const replaceIndicator = document.createElement("div");
-    replaceIndicator.className = "media-replace";
-    replaceIndicator.innerHTML = '<i class="fas fa-sync-alt"></i><br>Click to replace media';
-
-    const zoomBtn = document.createElement("button");
-    zoomBtn.innerHTML = `<i class="fas fa-search-plus"></i>`;
-    zoomBtn.className = "zoom-btn";
-    zoomBtn.onclick = (e) => {
-      e.stopPropagation();
-      openLightbox(mediaUrl, isVideo ? 'video' : 'image');
-    };
-
-    const urlInput = document.createElement("input");
-    urlInput.type = "hidden";
-    urlInput.className = "media-url";
-    urlInput.value = mediaUrl;
-
-    controlsDiv.appendChild(mediaElement);
-    controlsDiv.appendChild(replaceIndicator);
-    controlsDiv.appendChild(zoomBtn);
-    wrapper.appendChild(controlsDiv);
-    wrapper.appendChild(urlInput);
-  }
-
-  // Upload to Cloudinary
-  async function uploadMedia(file) {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "Unsigned upload");
-
-    try {
-      const response = await fetch("https://api.cloudinary.com/v1_1/dp81zzxlh/auto/upload", {
-        method: "POST",
-        body: formData
-      });
-      return await response.json();
-    } catch (error) {
-      throw new Error(`Upload failed: ${error.message}`);
-    }
-  }
-
-  // Handle replace media upload
-  async function handleReplaceMediaUpload(e, wrapper) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'video/webm'];
-    if (!validTypes.includes(file.type)) {
-      alert('Only images (JPEG, PNG, GIF) and videos (MP4, WebM) are allowed');
-      return;
-    }
-
-    if (file.size > 10 * 1024 * 1024) {
-      alert('File size must be less than 10MB');
-      return;
-    }
-
-    wrapper.innerHTML = `<div class="upload-progress"><i class="fas fa-spinner fa-spin"></i> Uploading...</div>`;
-
-    try {
-      const data = await uploadMedia(file);
-      wrapper.innerHTML = "";
-      createMediaPreview(wrapper.closest(".item-card"), data.secure_url);
-    } catch (error) {
-      wrapper.innerHTML = `<div class="upload-error"><i class="fas fa-exclamation-triangle"></i> ${error.message}</div>`;
-    }
-  }
-
-  // Handle initial media upload
-  async function handleMediaUpload(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'video/webm'];
-    if (!validTypes.includes(file.type)) {
-      alert('Only images (JPEG, PNG, GIF) and videos (MP4, WebM) are allowed');
-      return;
-    }
-
-    if (file.size > 10 * 1024 * 1024) {
-      alert('File size must be less than 10MB');
-      return;
-    }
-
-    const wrapper = e.target.parentElement;
-    wrapper.innerHTML = `<div class="upload-progress"><i class="fas fa-spinner fa-spin"></i> Uploading...</div>`;
-
-    try {
-      const data = await uploadMedia(file);
-      wrapper.innerHTML = "";
-      createMediaPreview(wrapper.closest(".item-card"), data.secure_url);
-    } catch (error) {
-      wrapper.innerHTML = `<div class="upload-error"><i class="fas fa-exclamation-triangle"></i> ${error.message}</div>`;
-    }
-  }
-
-// Open lightbox for zooming
-  function openLightbox(src, type) {
-    const lightbox = document.getElementById('lightbox');
-    const content = document.getElementById('lightbox-content');
-
-    if (type === 'image') {
-      content.innerHTML = `<img src="${src}" alt="Zoomed product image">`;
-    } else {
-      content.innerHTML = `<video src="${src}" controls autoplay></video>`;
-    }
-
-    lightbox.style.display = 'flex';
-  }
-
-  // Close lightbox
-  document.querySelector('.close-lightbox').addEventListener('click', function() {
-    document.getElementById('lightbox').style.display = 'none';
-  });
-
-  // Close lightbox when clicking outside content
-  document.getElementById('lightbox').addEventListener('click', function(e) {
-    if (e.target === this) {
-      this.style.display = 'none';
-    }
-  });
-
-  // Save changes button - UPDATED VERSION WITH TIMESTAMP FIELD
-  document.getElementById('save-btn').addEventListener('click', async function() {
-    // Validate form
-    const businessTitle = document.getElementById('business-title').value;
-    const businessLocation = document.getElementById('business-location').value;
-    const businessCategory = document.getElementById('business-category').value;
-    const businessDescription = document.getElementById('business-description').value;
-    const whatsappNumber = document.getElementById('whatsapp-number').value;
-    const businessLink = document.getElementById('business-link').value;
-
-    if (!businessTitle || !businessLocation || !businessCategory || !businessDescription || !whatsappNumber) {
-      showNotification('Please fill in all required fields', 'error');
-      return;
-    }
-
-    // Collect items and prepare media arrays
-    const mediaUrls = [];
-    const mediaTypes = [];
-    const items = [];
-
-    document.querySelectorAll(".item-card").forEach(card => {
-      const title = card.querySelector(".item-title").value;
-      const price = card.querySelector(".item-price").value;
-      const mediaInput = card.querySelector(".media-url");
-      const mediaUrl = mediaInput ? mediaInput.value : null;
-      const itemId = card.dataset.itemId;
-      const isDeleted = card.dataset.delete === "true";
-
-      if (title && price && mediaUrl && !isDeleted) {
-        mediaUrls.push(mediaUrl);
-        const isVideo = mediaUrl.match(/\.(mp4|webm|mov|avi)$/i);
-        mediaTypes.push(isVideo ? 'video' : 'image');
-
-        items.push({
-          title,
-          price: parseInt(price),
-          mediaUrl,
-          itemId
-        });
+    // Add delete button event
+    const deleteBtn = newItem.querySelector('.delete-item');
+    deleteBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      if (confirm('Are you sure you want to delete this item?')) {
+        if (itemId) {
+          newItem.dataset.delete = "true";
+          newItem.style.opacity = "0.6";
+          deleteBtn.disabled = true;
+        } else {
+          newItem.remove();
+          currentItems--;
+          updateItemCounter();
+        }
       }
     });
 
-    if (items.length === 0) {
-      showNotification('Please add at least one item with media', 'error');
-      return;
+    // If we have a media URL, create preview
+    if (mediaUrl) {
+      createMediaPreview(newItem, mediaUrl);
     }
 
-    try {
-      const saveButton = this;
-      saveButton.disabled = true;
-      saveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    updateItemCounter();
+  }
+}
 
-      const batch = db.batch();
-      const businessRef = db.collection("businesses").doc(selectedBusiness.id);
+// Create media preview
+function createMediaPreview(itemElement, mediaUrl) {
+  const wrapper = itemElement.querySelector('.file-input-wrapper');
+  wrapper.innerHTML = '';
 
-      batch.update(businessRef, {
-        title: businessTitle,
-        location: businessLocation,
-        category: businessCategory,
-        description: businessDescription,
-        whatsapp: whatsappNumber,
-        businessLink: businessLink || null,
-        mediaUrls: mediaUrls,
-        mediaTypes: mediaTypes,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  const isVideo = mediaUrl.endsWith('.mp4') || mediaUrl.includes('video');
+  const controlsDiv = document.createElement("div");
+  controlsDiv.style.position = "relative";
+  controlsDiv.style.width = "100%";
+  controlsDiv.style.height = "100%";
+  controlsDiv.style.borderRadius = "10px";
+  controlsDiv.style.overflow = "hidden";
+
+  let mediaElement;
+  if (isVideo) {
+    mediaElement = document.createElement("video");
+    mediaElement.src = mediaUrl;
+    mediaElement.controls = true;
+    mediaElement.muted = true;
+    mediaElement.style.width = "100%";
+    mediaElement.style.height = "100%";
+    mediaElement.style.objectFit = "cover";
+  } else {
+    mediaElement = document.createElement("img");
+    mediaElement.src = mediaUrl;
+    mediaElement.alt = "Uploaded image";
+    mediaElement.style.width = "100%";
+    mediaElement.style.height = "100%";
+    mediaElement.style.objectFit = "contain";
+  }
+
+  // Replace media on click
+  mediaElement.style.cursor = "pointer";
+  mediaElement.onclick = () => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*,video/*";
+    fileInput.style.display = "none";
+    document.body.appendChild(fileInput);
+
+    fileInput.addEventListener('change', (ev) => {
+      handleReplaceMediaUpload(ev, wrapper);
+    });
+
+    fileInput.click();
+    fileInput.addEventListener('blur', () => {
+      document.body.removeChild(fileInput);
+    });
+  };
+
+  const replaceIndicator = document.createElement("div");
+  replaceIndicator.className = "media-replace";
+  replaceIndicator.innerHTML = '<i class="fas fa-sync-alt"></i><br>Click to replace media';
+
+  const zoomBtn = document.createElement("button");
+  zoomBtn.innerHTML = `<i class="fas fa-search-plus"></i>`;
+  zoomBtn.className = "zoom-btn";
+  zoomBtn.onclick = (e) => {
+    e.stopPropagation();
+    openLightbox(mediaUrl, isVideo ? 'video' : 'image');
+  };
+
+  const urlInput = document.createElement("input");
+  urlInput.type = "hidden";
+  urlInput.className = "media-url";
+  urlInput.value = mediaUrl;
+
+  controlsDiv.appendChild(mediaElement);
+  controlsDiv.appendChild(replaceIndicator);
+  controlsDiv.appendChild(zoomBtn);
+  wrapper.appendChild(controlsDiv);
+  wrapper.appendChild(urlInput);
+}
+
+// Upload to Cloudinary
+async function uploadMedia(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", "Unsigned upload");
+
+  try {
+    const response = await fetch("https://api.cloudinary.com/v1_1/dp81zzxlh/auto/upload", {
+      method: "POST",
+      body: formData
+    });
+    return await response.json();
+  } catch (error) {
+    throw new Error(`Upload failed: ${error.message}`);
+  }
+}
+
+// Handle replace media upload
+async function handleReplaceMediaUpload(e, wrapper) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'video/webm'];
+  if (!validTypes.includes(file.type)) {
+    alert('Only images (JPEG, PNG, GIF) and videos (MP4, WebM) are allowed');
+    return;
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    alert('File size must be less than 10MB');
+    return;
+  }
+
+  wrapper.innerHTML = `<div class="upload-progress"><i class="fas fa-spinner fa-spin"></i> Uploading...</div>`;
+
+  try {
+    const data = await uploadMedia(file);
+    wrapper.innerHTML = "";
+    createMediaPreview(wrapper.closest(".item-card"), data.secure_url);
+  } catch (error) {
+    wrapper.innerHTML = `<div class="upload-error"><i class="fas fa-exclamation-triangle"></i> ${error.message}</div>`;
+  }
+}
+
+// Handle initial media upload
+async function handleMediaUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'video/webm'];
+  if (!validTypes.includes(file.type)) {
+    alert('Only images (JPEG, PNG, GIF) and videos (MP4, WebM) are allowed');
+    return;
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    alert('File size must be less than 10MB');
+    return;
+  }
+
+  const wrapper = e.target.parentElement;
+  wrapper.innerHTML = `<div class="upload-progress"><i class="fas fa-spinner fa-spin"></i> Uploading...</div>`;
+
+  try {
+    const data = await uploadMedia(file);
+    wrapper.innerHTML = "";
+    createMediaPreview(wrapper.closest(".item-card"), data.secure_url);
+  } catch (error) {
+    wrapper.innerHTML = `<div class="upload-error"><i class="fas fa-exclamation-triangle"></i> ${error.message}</div>`;
+  }
+}
+
+// Open lightbox for zooming
+function openLightbox(src, type) {
+  const lightbox = document.getElementById('lightbox');
+  const content = document.getElementById('lightbox-content');
+
+  if (type === 'image') {
+    content.innerHTML = `<img src="${src}" alt="Zoomed product image">`;
+  } else {
+    content.innerHTML = `<video src="${src}" controls autoplay></video>`;
+  }
+
+  lightbox.style.display = 'flex';
+}
+
+// Close lightbox
+document.querySelector('.close-lightbox').addEventListener('click', function() {
+  document.getElementById('lightbox').style.display = 'none';
+});
+
+// Close lightbox when clicking outside content
+document.getElementById('lightbox').addEventListener('click', function(e) {
+  if (e.target === this) this.style.display = 'none';
+});
+
+// Save changes button - UPDATED VERSION WITH SAFE BUSINESS ID
+document.getElementById('save-btn').addEventListener('click', async function() {
+  // Validate form
+  const businessTitle = document.getElementById('business-title').value;
+  const businessLocation = document.getElementById('business-location').value;
+  const businessCategory = document.getElementById('business-category').value;
+  const businessDescription = document.getElementById('business-description').value;
+  const whatsappNumber = document.getElementById('whatsapp-number').value;
+  const businessLink = document.getElementById('business-link').value;
+
+  if (!businessTitle || !businessLocation || !businessCategory || !businessDescription || !whatsappNumber) {
+    showNotification('Please fill in all required fields', 'error');
+    return;
+  }
+
+  // Collect items and prepare media arrays
+  const mediaUrls = [];
+  const mediaTypes = [];
+  const items = [];
+
+  document.querySelectorAll(".item-card").forEach(card => {
+    const title = card.querySelector(".item-title").value;
+    const price = card.querySelector(".item-price").value;
+    const mediaInput = card.querySelector(".media-url");
+    const mediaUrl = mediaInput ? mediaInput.value : null;
+    const itemId = card.dataset.itemId;
+    const isDeleted = card.dataset.delete === "true";
+
+    if (title && price && mediaUrl && !isDeleted) {
+      mediaUrls.push(mediaUrl);
+      const isVideo = mediaUrl.match(/\.(mp4|webm|mov|avi)$/i);
+      mediaTypes.push(isVideo ? 'video' : 'image');
+
+      items.push({
+        title,
+        price: parseInt(price),
+        mediaUrl,
+        itemId
       });
-
-      items.forEach(item => {
-        const itemData = {
-          title: item.title,
-          price: item.price,
-          mediaUrl: item.mediaUrl,
-          businessId: selectedBusiness.businessId,
-          lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
-          timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        };
-
-        if (item.itemId) {
-          const itemRef = db.collection('items').doc(item.itemId);
-          batch.update(itemRef, itemData);
-        } else {
-          const newItemRef = db.collection('items').doc();
-          itemData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-          itemData.userId = currentUser.uid;
-          batch.set(newItemRef, itemData);
-        }
-      });
-
-      // Process deleted items
-      document.querySelectorAll('.item-card[data-delete="true"]').forEach(card => {
-        const itemId = card.dataset.itemId;
-        if (itemId) {
-          const itemRef = db.collection('items').doc(itemId);
-          batch.delete(itemRef);
-        }
-      });
-
-      await batch.commit();
-
-      showNotification('Business updated successfully!', 'success');
-
-      saveButton.innerHTML = '<i class="fas fa-save"></i> Save Changes';
-      saveButton.disabled = false;
-
-      loadBusinessData(selectedBusiness);
-    } catch (error) {
-      console.error('Error updating business: ', error);
-      showNotification('Error updating business: ' + error.message, 'error');
-      this.innerHTML = '<i class="fas fa-save"></i> Save Changes';
-      this.disabled = false;
     }
   });
 
-  // Add event listener for "Add New Item" button
-  document.getElementById('add-item-btn').addEventListener('click', function(e) {
-    e.preventDefault();
-    addItemToForm();
-  });
+  if (items.length === 0) {
+    showNotification('Please add at least one item with media', 'error');
+    return;
+  }
+
+  try {
+    const saveButton = this;
+    saveButton.disabled = true;
+    saveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+    const batch = db.batch();
+    const businessRef = db.collection("businesses").doc(selectedBusiness.id);
+
+    batch.update(businessRef, {
+      title: businessTitle,
+      location: businessLocation,
+      category: businessCategory,
+      description: businessDescription,
+      whatsapp: whatsappNumber,
+      businessLink: businessLink || null,
+      mediaUrls: mediaUrls,
+      mediaTypes: mediaTypes,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    // Use safe business id for items
+    const bid = selectedBusiness.businessId || selectedBusiness.id;
+
+    items.forEach(item => {
+      const itemData = {
+        title: item.title,
+        price: item.price,
+        mediaUrl: item.mediaUrl,
+        businessId: bid,
+        lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      if (item.itemId) {
+        const itemRef = db.collection('items').doc(item.itemId);
+        batch.update(itemRef, itemData);
+      } else {
+        const newItemRef = db.collection('items').doc();
+        itemData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+        itemData.userId = currentUser.uid;
+        batch.set(newItemRef, itemData);
+      }
+    });
+
+    // Process deleted items
+    document.querySelectorAll('.item-card[data-delete="true"]').forEach(card => {
+      const itemId = card.dataset.itemId;
+      if (itemId) {
+        const itemRef = db.collection('items').doc(itemId);
+        batch.delete(itemRef);
+      }
+    });
+
+    await batch.commit();
+
+    showNotification('Business updated successfully!', 'success');
+
+    saveButton.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+    saveButton.disabled = false;
+
+    loadBusinessData(selectedBusiness);
+  } catch (error) {
+    console.error('Error updating business: ', error);
+    showNotification('Error updating business: ' + error.message, 'error');
+    this.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+    this.disabled = false;
+  }
+});
+
+// Add event listener for "Add New Item" button
+document.getElementById('add-item-btn').addEventListener('click', function(e) {
+  e.preventDefault();
+  addItemToForm();
+});
 
 // Show notification
-  function showNotification(message, type) {
-    const notificationArea = document.getElementById('notification-area');
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
+function showNotification(message, type) {
+  const notificationArea = document.getElementById('notification-area');
+  const notification = document.createElement('div');
+  notification.className = `notification notification-${type}`;
 
-    let icon = '';
-    if (type === 'success') {
-      icon = '<i class="fas fa-check-circle"></i>';
-    } else if (type === 'error') {
-      icon = '<i class="fas fa-exclamation-circle"></i>';
-    }
+  let icon = '';
+  if (type === 'success') icon = '<i class="fas fa-check-circle"></i>';
+  if (type === 'error') icon = '<i class="fas fa-exclamation-circle"></i>';
 
-    notification.innerHTML = `
-      ${icon}
-      <span>${message}</span>
-    `;
+  notification.innerHTML = `${icon}<span>${message}</span>`;
+  notificationArea.appendChild(notification);
 
-    notificationArea.appendChild(notification);
-
-    // Auto remove after 5 seconds
-    setTimeout(() => {
-      notification.remove();
-    }, 5000);
-  }
+  setTimeout(() => notification.remove(), 5000);
+}
 </script>
 </body>
 </html>
